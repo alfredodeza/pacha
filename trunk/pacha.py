@@ -22,11 +22,6 @@ from lib import install, uninstall
     
 #    def __init__(self, package):
 #        self.package = package
-
-# Maybe a function works better at handling a pacackage install:
-
-#def install(package)
-#    """Handles the package installation via the main.conf file ONLY"""
     
 # we are better off creating a class that reads the config
 # files and then decides what needs to be done
@@ -63,6 +58,7 @@ def main():
     parser = OptionParser()
     parser.add_option('--install', action="store_true",
         help="Installs pacha to /opt/ and creates the symlinks")
+
     parser.add_option('--uninstall', action="store_true",
             help="Destroys the symlinks and all pacha installed files")
 
