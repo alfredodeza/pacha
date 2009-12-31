@@ -8,13 +8,15 @@ import os
 import shutil
 
 def main():
-    home = os.environ.get('HOME')
-    cuy_dir = home+'/.cuy'
-    print "Removing Cuy install dir: %s" % cuy_dir
+    pacha_dir = '/opt/pacha'
+    log.append(module='uninstall', line="removing pacha dir at /opt/pacha")
+    
     try:
-        shutil.rmtree(cuy_dir)
+        shutil.rmtree(pacha_dir)
         os.remove('/usr/bin/cuy')
-        print "Destroyed symlink"
+        log.append(module='uninstall', line="destroyed symlink")
     except OSError,e:
-        print e
+        log.append(module='uninstall', type='ERROR',
+                line=e)
+       
 
