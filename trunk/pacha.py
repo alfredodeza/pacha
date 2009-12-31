@@ -22,6 +22,7 @@
 # Create validation class for proper structure
 # Create input values for command line options
 
+import sys
 from optparse import OptionParser
 from subprocess import call
 from lib import install, uninstall
@@ -68,8 +69,29 @@ from lib import install, uninstall
 #                call(a2enmod, shell=True)
 #        call(install, shell=True)
         
-main():
+def main():
     """All command line options happen here"""
+    parser = OptionParser()
+    parser.add_option('--install', action="store_true",
+        help="Installs pacha to /opt/ and creates the symlinks")
+    parser.add_option('--uninstall', action="store_true",
+            help="Destroys the symlinks and all pacha installed files")
+
+    options, arguments = parser.parse_args()
+
+    # Cleanest way to show the help menu if no options are given
+    if len(sys.argv) == 1:
+        parser.print_help()
+
+    if options.install:
+        install.main()
+
+    if options.uninstall:
+        uninstall.main()
+
+
+
+
 
 
 if __name__ == '__main__':
