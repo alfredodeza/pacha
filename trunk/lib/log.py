@@ -5,25 +5,23 @@
 #
 """Handles all logging for Pacha. Not using Python's logging module
 knowlingly."""
+
 import os
-import shutil
 from time import strftime
-from subprocess import call
 
+def log(module='pacha', type='INFO', line=''):
+    """Simple function to write to a log file"""
 
-class Log(object):
-    """Main class of the log module"""
+    log_file = '/var/log/pacha.log'
+    if os.path.isfile(log_file):
+        open_log = open(log_file, 'a')
+    else:
+        open_log = open(log_file, 'w')
 
-    def __init__(self,
-            log_file = '/var/log/pacha.log',
-            type = 'INFO',
-            timestamp = strftime('%b %d %H:%M:%S'),
-            module = 'pacha'):
-        self.log_file = log_file
-        self.type = type
-        self.timestamp = timestamp
-        self.module = module
-        
+    timestamp = strftime('%b %d %H:%M:%S')
+    log_line = "%s %s %s %s" % (timestamp, type, module, line)
+    open_log.write(log_line+'\n')
+    open_log.close()
 
 
 
