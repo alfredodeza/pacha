@@ -5,38 +5,41 @@
 #
 """Copies all files and directories to the current user home folder."""
 import os
+import sys
 import shutil
 from subprocess import call
-import database
+import log
 
 def main():
     """Create the directory and copy all the files"""
     pacha_dir = '/opt/pacha'
     try:
-        #    print "Installing CUY..."
-        shutil.copytree(cwd_abs, cuy_dir)
-        #print "copied files to: %s" % cuy_dir
-        absolute_cuy = cuy_dir+'/cuy.py'
-        executable = '/usr/bin/cuy'
+        log.append(module='install', line="Creating pacha dir")
+        shutil.copytree(cwd_abs, pacha_dir)
+        log.append(module='install', line="Copied files to /opt/pacha")
+        
+        absolute_pacha = pacha_dir+'/pacha.py'
+        executable = '/usr/bin/pacha'
         os.symlink(absolute_cuy, executable)
-        #print "created symlink at: %s" % executable
-        #Initialize the database
-        db = database.Worker()
-        #print "initialized the database"
-
+        log.append(module='install',
+                line="Created pacha executable isymlink at /usr/bin/pacha")
 
     except OSError, e:
         if e.errno == 13:
-            print "You need to run with sudo privileges"
+            sys.stderr.write("You need to run with sudo privileges")
+            log.append(module='install', type='ERROR',
+                    line = 'Permission denied installing pacha')
         if e.errno == 17:
-            pass
+            log.append(module='install', type='ERROR',line=e)
         else:
-            print e
+            log.append(module='install', type='ERROR',line=e)
+                   
 
     finally:
         # Get correct permissions
         user = os.getlogin()
-        command = "chown -R %s:%s %s" % (user,user,cuy_dir)
+        command = "chmod a+x %s" % absolute_pacha
         call(command, shell=True)
-        print "checked correct permissions in install directory"
-        print "install done!"
+        log.append(module='install', 
+                line="Corrected permissions for pacha executable")
+        log.append(module='install', line="Installation completed")
