@@ -26,7 +26,8 @@ def append(module='pacha', type='INFO', line=''):
         open_log.close()
 
     except IOError:
-        sys.stderr.write("Permission denied to write log file")
+        sys.stderr.write("Permission denied to write log file ")
+        sys.exit(1)
 
 
 

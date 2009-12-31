@@ -1,4 +1,4 @@
-# main.py
+#!/usr/bin/env python
 #
 # Copyright 2009 Alfredo Deza
 #

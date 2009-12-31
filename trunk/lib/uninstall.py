@@ -6,6 +6,7 @@
 """Removes all installation files"""
 import os
 import shutil
+import log
 
 def main():
     pacha_dir = '/opt/pacha'
@@ -13,7 +14,7 @@ def main():
     
     try:
         shutil.rmtree(pacha_dir)
-        os.remove('/usr/bin/cuy')
+        os.remove('/usr/bin/pacha')
         log.append(module='uninstall', line="destroyed symlink")
     except OSError,e:
         log.append(module='uninstall', type='ERROR',
