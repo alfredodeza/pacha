@@ -31,3 +31,7 @@ class Host(object):
             info = '%s already present'
             log.append(module='host', type='WARNING', line=info)
 
+def hostname():
+    """Return the hostname of this machine"""
+    name = os.uname()[1]
+    return name

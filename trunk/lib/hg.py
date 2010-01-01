@@ -11,6 +11,7 @@ import os
 from time import strftime
 import log
 import confparser
+import host
 
 class Hg(object):
     """Does local commits and pushed to a central Pacha Master location"""
@@ -43,19 +44,22 @@ class Hg(object):
         except Exception:
             print Exception
 
-    def watch(self, path):
+    def hgrc(self, path):
         """An option to write the default path in hgrc for pushing
         via hg"""
         conf = '/opt/pacha/conf/pacha.conf'
         parse = confparser.Parse(conf)
         parse.options() # get all the options in the config file
         norm_path = os.path.normpath(path)
+        base_path = os.path.basename(path)
+        machine = host.hostname()
         #hgrc = norm_path+'/.hg/hgrc'
         try:
+
             hgrc = open(norm_path+'/.hg/hgrc', 'w')
             hgrc.write('[paths]\n')
-            ssh_line = "default = ssh://%s@%s/%s" % (parse.user, parse.host,
-                       parse.path)
+            ssh_line = "default = ssh://%s@%s/%s/%s/%s" % (parse.user, parse.host,
+                       parse.path, machine, base_path)
             hgrc.write(ssh_line)
             hgrc.close()
 
