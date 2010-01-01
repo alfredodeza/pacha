@@ -52,7 +52,8 @@ from lib import install, uninstall
 #                a2enmod = "a2enmod %s" % module
 #                call(a2enmod, shell=True)
 #        call(install, shell=True)
-        
+    
+    
 def main():
     """All command line options happen here"""
     parser = OptionParser()
@@ -61,6 +62,9 @@ def main():
 
     parser.add_option('--uninstall', action="store_true",
             help="Destroys the symlinks and all pacha installed files")
+
+    parser.add_option('--add-host',
+            help="Creates structure for saving a host configs")
 
     options, arguments = parser.parse_args()
 
