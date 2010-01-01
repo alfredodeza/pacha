@@ -20,4 +20,6 @@ def main():
         log.append(module='uninstall', type='ERROR',
                 line=e)
        
-
+if __name__ == '__main__':
+    main()
+                

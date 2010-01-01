@@ -34,3 +34,7 @@ def main():
         if e.errno == 13:
             sys.stderr.write("You need to run with sudo privileges")
             sys.exit(0)
+
+if __name__ == '__main__':
+    main()
+

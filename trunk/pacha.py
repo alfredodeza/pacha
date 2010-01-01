@@ -26,7 +26,6 @@ def main():
     parser.add_option('--watch',
            help="Provide a path for Pacha to watch")
 
-
     options, arguments = parser.parse_args()
 
     # Cleanest way to show the help menu if no options are given
@@ -54,4 +53,5 @@ if __name__ == '__main__':
 # Pacha WATCH needs to create the hostname directory in the remote PAChA Server
 # Pacha WATCH needs to clone the current repo to PACHA SERVER
 # the parameter for WATCH needs to be automatic from `pwd` (e.g. you need to be in
-# the same directory to watch.
+# the same directory to watch.) and it should be able to tell if you provided a path
+# and create that path
