@@ -10,6 +10,7 @@ from subprocess import call, PIPE
 import os
 from time import strftime
 import log
+import confparser
 
 class Hg(object):
     """Does local commits and pushed to a central Pacha Master location"""
@@ -28,6 +29,10 @@ class Hg(object):
     def commit(self):
         """hg local commits that are needed before a push to a centralized 
         server"""
+        #TODO:
+        # Automatically detect if a user modified a file to commit and then
+        # push the changes
+        # For now, the user has to manually commit
 
     def push(self):
         """Pushes the repository to the centralized Pacha Master server"""
@@ -37,3 +42,18 @@ class Hg(object):
             call(command, shell=True, stdout=PIPE, stderr=PIPE)
         except Exception:
             print Exception
+
+    def watch(self):
+        """An option to write the default path in hgrc for pushing
+        via hg"""
+        conf = '../conf/pacha.conf'
+        parse = confparser.Parse(conf)
+        parse.options() # get all the options in the config file
+        try:
+            print "default = ssh://%s@%s/%s" % (parse.user, parse.host,
+                    parse.path)
+        except Exception, e:
+            print e
+
+
+        

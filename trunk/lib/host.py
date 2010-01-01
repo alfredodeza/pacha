@@ -30,10 +30,4 @@ class Host(object):
         else:
             info = '%s already present'
             log.append(module='host', type='WARNING', line=info)
-        
-
-
-
-
-
 
