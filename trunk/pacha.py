@@ -14,7 +14,7 @@
 import sys
 from optparse import OptionParser
 from subprocess import call
-from lib import install, uninstall
+from lib import install, uninstall, hg
 
 # Do we need a class or a simple function?
 #class InstallPackage(object):
@@ -66,6 +66,10 @@ def main():
     parser.add_option('--add-host',
             help="Creates structure for saving a host configs")
 
+    parser.add_option('--watch',
+           help="Provide a path for Pacha to watch")
+
+
     options, arguments = parser.parse_args()
 
     # Cleanest way to show the help menu if no options are given
@@ -77,6 +81,10 @@ def main():
 
     if options.uninstall:
         uninstall.main()
+
+    if options.watch:
+        mercurial = hg.Hg()
+        mercurial.watch(options.watch)
 
 if __name__ == '__main__':
     main()

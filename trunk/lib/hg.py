@@ -43,15 +43,22 @@ class Hg(object):
         except Exception:
             print Exception
 
-    def watch(self):
+    def watch(self, path):
         """An option to write the default path in hgrc for pushing
         via hg"""
-        conf = '../conf/pacha.conf'
+        conf = '/opt/pacha/conf/pacha.conf'
         parse = confparser.Parse(conf)
         parse.options() # get all the options in the config file
+        norm_path = os.path.normpath(path)
+        #hgrc = norm_path+'/.hg/hgrc'
         try:
-            print "default = ssh://%s@%s/%s" % (parse.user, parse.host,
-                    parse.path)
+            hgrc = open(norm_path+'/.hg/hgrc', 'w')
+            hgrc.write('[paths]\n')
+            ssh_line = "default = ssh://%s@%s/%s" % (parse.user, parse.host,
+                       parse.path)
+            hgrc.write(ssh_line)
+            hgrc.close()
+
         except Exception, e:
             print e
 
