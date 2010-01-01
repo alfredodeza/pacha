@@ -34,19 +34,3 @@ def main():
         if e.errno == 13:
             sys.stderr.write("You need to run with sudo privileges")
             sys.exit(0)
-#            log.append(module='install', type='ERROR',
-#                    line = 'Permission denied installing pacha')
-#        if e.errno == 17:
-#            log.append(module='install', type='ERROR',line=e)
-#        else:
-#            log.append(module='install', type='ERROR',line=e)
-                   
-
-#    finally:
-        # Get correct permissions
-#        user = os.getlogin()
-#        command = "chmod a+x %s" % absolute_pacha
-#        call(command, shell=True)
-#        log.append(module='install', 
-#                line="Corrected permissions for pacha executable")
-#        log.append(module='install', line="Installation completed")

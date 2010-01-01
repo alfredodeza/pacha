@@ -1,21 +1,39 @@
-# hg.py
+# Author: Alfredo Deza
+# Email: alfredodeza [at] gmail dot com
+# License: MIT
+# Copyright 2009-2010 Alfredo Deza
 #
-# Copyright 2009 Alfredo Deza
-#
-# This program is free software: you can redistribute it and/or modify it 
-# under the terms of the GNU General Public License version 3,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but 
-# WITHOUT ANY WARRANTY; without even the implied warranties of 
-# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR 
-# PURPOSE.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""SSH connections and file transfers with limited options like non
+standard ports. This is a simple wrapper to suit Pacha."""
 
-"""Handle HG calls over SSH connections and return meaningful information in the process."""
+from subprocess import call, PIPE
+import os
+from time import strftime
+import log
 
-from subprocess import Popen, PIPE
+class Hg(object):
+    """Does local commits and pushed to a central Pacha Master location"""
 
+    def __init__(self,
+            port = 22,
+            host = None,
+            user = None,
+            dir = None
+            ):
+        self.port = port
+        self.host = host
+        self.user = user
+        self.dir = dir
 
+    def commit(self):
+        """hg local commits that are needed before a push to a centralized 
+        server"""
+
+    def push(self):
+        """Pushes the repository to the centralized Pacha Master server"""
+        command = "scp -P%s ~/.cuy/keys/%s_%s.keys %s@%s:~/.ssh/authorized_keys" % (
+                self.port, self.user, self.host, self.user, self.host)
+        try: 
+            call(command, shell=True, stdout=PIPE, stderr=PIPE)
+        except Exception:
+            print Exception
