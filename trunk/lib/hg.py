@@ -71,7 +71,6 @@ class Hg(object):
 
         else:
             sys.stderr.write("No repository found here: %s" % path)
-                    line="no repository found: %s" % path)
 
     def validate(self, path):
         """Validates a working HG path"""
