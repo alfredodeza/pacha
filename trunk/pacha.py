@@ -57,6 +57,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-# TODO
-# Pacha WATCH needs to create the hostname directory in the remote PAChA Server
-# Pacha WATCH needs to clone the current repo to PACHA SERVER
