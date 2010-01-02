@@ -75,7 +75,9 @@ class Hg(object):
     def clone(self):
         """Clones a given repository to the remote Pacha server"""
         # needs to be called when --watch is passed, runs just one time
-        command = "hg clone %s ssh://%s@%s/%s
+        command = "hg clone %s ssh://%s@%s/%s "
+        # TODO: need to add trusted USERS in the global .hgrc 
+        # maybe even adding root as the trusted user...
 
     def validate(self):
         """Validates a working HG path"""
