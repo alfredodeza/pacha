@@ -8,6 +8,7 @@ standard ports. This is a simple wrapper to suit Pacha."""
 
 from subprocess import call, PIPE
 import os
+import sys
 from time import strftime
 import log
 import confparser
