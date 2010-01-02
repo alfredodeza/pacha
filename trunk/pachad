@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+#
+# Copyright 2009 Alfredo Deza
+#
+# Pacha Daemon
+
+import os
+import sys
+from optparse import OptionParser
+from subprocess import call
+from lib import supay
+    
+def main():
+    """All command line options happen here"""
+    parser = OptionParser()
+
+    parser.add_option('--start', action="store_true",
+           help="starts daemon")
+    parser.add_option('--stop', action="store_true",
+           help="stops daemons")
+    
+    options, arguments = parser.parse_args()
+
+    # Cleanest way to show the help menu if no options are given
+    if len(sys.argv) == 1:
+        parser.print_help()
+
+    if options.start:
+        daemon = supay.Daemon(name='pachad')
+        daemon.start()
+        while True:
+            from time import sleep
+            sleep(100)
+
+    if options.stop:
+        daemon = supay.Daemon(name='pachad')
+        daemon.stop()
+
+if __name__ == '__main__':
+    main()
+

@@ -1,0 +1,59 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:           pacha
+# Required-Start:     $network
+# Required-Stop:      $network
+# Default-Start:      2 3 4 5
+# Default-Stop:       0 1 6
+# Short-Description:  Start the pacha daemon.
+### END INIT INFO
+#
+# Copyright (c) 2010 Alfredo Deza, alfredodeza [at] gmail [dot] com
+# Licence: MIT
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/pacha
+DAEMON=/opt/pacha/pachad
+NAME=pacha
+DESC="Pacha daemon"
+LOGDIR=/var/log/pacha.log
+
+test -f $DAEMON || exit 0
+
+set -e
+
+case "$1" in
+  start)
+    $DAEMON --start
+    ;;
+  stop)
+    $DAEMON --stop
+    ;;
+  #reload)
+    #
+    #   If the daemon can reload its config files on the fly
+    #   for example by sending it SIGHUP, do it here.
+    #
+    #   If the daemon responds to changes in its config file
+    #   directly anyway, make this a do-nothing entry.
+    #
+    # echo "Reloading $DESC configuration files."
+    # start-stop-daemon --stop --signal 1 --quiet --pidfile \
+    #   /var/run/$NAME.pid --exec $DAEMON
+  #;;
+  restart|force-reload)
+    #
+    #   If the "reload" option is implemented, move the "force-reload"
+    #   option to the "reload" entry above. If not, "force-reload" is
+    #   just the same as "restart".
+    #
+    ;;
+  *)
+    N=/etc/init.d/$NAME
+    # echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+    echo "Usage: $N {start|stop|restart|force-reload}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
+
