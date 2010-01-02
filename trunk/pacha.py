@@ -6,6 +6,7 @@
 # Create controller for package installation
 # Create controller for Bash/SH commands
 
+import os
 import sys
 from optparse import OptionParser
 from subprocess import call
@@ -23,8 +24,12 @@ def main():
     parser.add_option('--add-host',
             help="Creates structure for saving a host configs")
 
-    parser.add_option('--watch',
+    parser.add_option('--watch', action="store_true",
            help="Provide a path for Pacha to watch")
+
+    parser.add_option('--foo', action='store_true',
+           help="Provide a path for Pacha to watch")
+
 
     options, arguments = parser.parse_args()
 
@@ -43,8 +48,19 @@ def main():
         new.create()
 
     if options.watch:
+        # a hack to have ambiguous optparse behavior 
+        if len(sys.argv) is 2: #no path
+            path = os.getcwd()
+
+        if len(sys.argv) >=3: #with path
+            path = sys.argv[2]
         mercurial = hg.Hg()
-        mercurial.hgrc(options.watch)
+        mercurial.hgrc(path)
+
+    if options.foo:
+        print options.foo
+        print sys.argv[2]
+
 
 if __name__ == '__main__':
     main()
@@ -52,6 +68,3 @@ if __name__ == '__main__':
 # TODO
 # Pacha WATCH needs to create the hostname directory in the remote PAChA Server
 # Pacha WATCH needs to clone the current repo to PACHA SERVER
-# the parameter for WATCH needs to be automatic from `pwd` (e.g. you need to be in
-# the same directory to watch.) and it should be able to tell if you provided a path
-# and create that path
