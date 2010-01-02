@@ -71,7 +71,6 @@ class Hg(object):
 
         else:
             sys.stderr.write("No repository found here: %s" % path)
-            log.append(module='hg', type='ERROR', 
                     line="no repository found: %s" % path)
 
     def validate(self, path):
