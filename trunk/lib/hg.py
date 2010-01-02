@@ -22,12 +22,18 @@ class Hg(object):
             port = 22,
             host = None,
             user = None,
-            dir = None
+            path = None
             ):
         self.port = port
         self.host = host
         self.user = user
-        self.dir = dir
+        self.path = os.path.normpath(path)
+        self.dir = os.path.basename(path)
+        self.hg_dir = self.path+'/.hg'
+        # read the config file once:
+        self.conf = '/opt/pacha/conf/pacha.conf'
+        self.parse = confparser.Parse(self.conf)
+        self.parse.options()
 
     def commit(self):
         """hg local commits that are needed before a push to a centralized 
@@ -39,48 +45,46 @@ class Hg(object):
 
     def push(self):
         """Pushes the repository to the centralized Pacha Master server"""
-        #command = "scp -P%s ~/.cuy/keys/%s_%s.keys %s@%s:~/.ssh/authorized_keys" % (
-        #        self.port, self.user, self.host, self.user, self.host)
-        #try: 
-        #    call(command, shell=True, stdout=PIPE, stderr=PIPE)
-        #except Exception:
-        #    print Exception
 
-    def hgrc(self, path):
+    def hgrc(self):
         """An option to write the default path in hgrc for pushing
         via hg"""
-        if self.validate(path):
+        if self.validate(self.path):
             conf = '/opt/pacha/conf/pacha.conf'
             parse = confparser.Parse(conf)
             parse.options() # get all the options in the config file
             log.append(module='hg', line="parsed options from config file")
-            norm_path = os.path.normpath(path)
-            base_path = os.path.basename(path)
+            #norm_path = os.path.normpath(path)
+            #base_path = os.path.basename(path)
             machine = host.hostname()
             try:
-                hgrc = open(norm_path+'/.hg/hgrc', 'w')
+                hgrc = open(self.path+'/.hg/hgrc', 'w')
                 hgrc.write('[paths]\n')
-                ssh_line = "default = ssh://%s@%s/%s/%s/%s" % (parse.user, parse.host,
-                           parse.path, machine, base_path)
+                ssh_line = "default = ssh://%s@%s/%s/%s/%s" % (self.parse.user, 
+                        self.parse.host, self.parse.path, machine, self.dir)
                 hgrc.write(ssh_line)
                 hgrc.close()
-                log.append(module='hg', line="wrote hgrc in %s" % path)
+                log.append(module='hg', line="wrote hgrc in %s" % self.path)
 
             except Exception, e:
                 log.append(module='hg', type='ERROR', line=e)
 
         else:
-            sys.stderr.write("No repository found here: %s" % path)
+            sys.stderr.write("No repository found here: %s" % self.path)
 
-    def validate(self, path):
+    def clone(self):
+        """Clones a given repository to the remote Pacha server"""
+        # needs to be called when --watch is passed, runs just one time
+        command = "hg clone %s ssh://%s@%s/%s
+
+    def validate(self):
         """Validates a working HG path"""
-        #normalize the path:
-        norm_path = os.path.normpath(path)
-        hg_dir = norm_path+'/.hg'
-        log.append(module='hg', line="validating repository at %s" % path)
-        if os.path.exists(hg_dir):
-            log.append(module='hg', line="hg repository found at %s" % path)
+        log.append(module='hg', line="validating repository at %s" % self.path)
+        if os.path.exists(self.hg_dir):
+            log.append(module='hg', 
+                    line="hg repository found at %s" % self.path)
             return True
         else:
-            log.append(module='hg', type='ERROR',  line="hg repository not found at %s" % path)
+            log.append(module='hg', type='ERROR',  
+                    line="hg repository not found at %s" % self.path)
             return False

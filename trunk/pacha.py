@@ -47,11 +47,10 @@ def main():
         # a hack to have ambiguous optparse behavior 
         if len(sys.argv) is 2: #no path
             path = os.getcwd()
-
         if len(sys.argv) >=3: #with path
             path = sys.argv[2]
-        mercurial = hg.Hg()
-        mercurial.hgrc(path)
+        mercurial = hg.Hg(path=path)
+        mercurial.hgrc()
 
 if __name__ == '__main__':
     main()
