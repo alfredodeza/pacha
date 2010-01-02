@@ -27,10 +27,6 @@ def main():
     parser.add_option('--watch', action="store_true",
            help="Provide a path for Pacha to watch")
 
-    parser.add_option('--foo', action='store_true',
-           help="Provide a path for Pacha to watch")
-
-
     options, arguments = parser.parse_args()
 
     # Cleanest way to show the help menu if no options are given
@@ -44,7 +40,7 @@ def main():
         uninstall.main()
 
     if options.add_host:
-        new = host.Host()
+        new = host.Host(host=options.add_host)
         new.create()
 
     if options.watch:
@@ -56,11 +52,6 @@ def main():
             path = sys.argv[2]
         mercurial = hg.Hg()
         mercurial.hgrc(path)
-
-    if options.foo:
-        print options.foo
-        print sys.argv[2]
-
 
 if __name__ == '__main__':
     main()
