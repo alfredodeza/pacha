@@ -51,6 +51,8 @@ def main():
             path = sys.argv[2]
         mercurial = hg.Hg(path=path)
         mercurial.hgrc()
+        # we do a first time clone:
+        mercurial.clone()
 
 if __name__ == '__main__':
     main()

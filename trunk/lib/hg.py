@@ -49,7 +49,7 @@ class Hg(object):
     def hgrc(self):
         """An option to write the default path in hgrc for pushing
         via hg"""
-        if self.validate(self.path):
+        if self.validate():
             conf = '/opt/pacha/conf/pacha.conf'
             parse = confparser.Parse(conf)
             parse.options() # get all the options in the config file
@@ -75,7 +75,11 @@ class Hg(object):
     def clone(self):
         """Clones a given repository to the remote Pacha server"""
         # needs to be called when --watch is passed, runs just one time
-        command = "hg clone %s ssh://%s@%s/%s "
+        machine = host.hostname()
+        command = "hg clone %s ssh://%s@%s/%s/%s/%s " % (self.path,
+                self.parse.user, self.parse.host, self.parse.path, 
+                machine, self.dir)
+        call(command, shell=True)
         # TODO: need to add trusted USERS in the global .hgrc 
         # maybe even adding root as the trusted user...
 
