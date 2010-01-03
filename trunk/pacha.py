@@ -10,7 +10,7 @@ import os
 import sys
 from optparse import OptionParser
 from subprocess import call
-from lib import install, uninstall, hg, host
+from lib import install, uninstall, hg, host, confparser
     
 def main():
     """All command line options happen here"""

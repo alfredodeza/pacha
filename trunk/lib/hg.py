@@ -16,7 +16,7 @@ import host
 import log
 
 class Hg(object):
-    """Does local commits and pushed to a central Pacha Master location"""
+    """Does local commits and pushes to a central Pacha Master location"""
 
     def __init__(self,
             port = 22,
@@ -30,10 +30,18 @@ class Hg(object):
         self.path = os.path.normpath(path)
         self.dir = os.path.basename(path)
         self.hg_dir = self.path+'/.hg'
-        # read the config file once:
+        # read the config file once and make sure is edited:
         self.conf = '/opt/pacha/conf/pacha.conf'
         self.parse = confparser.Parse(self.conf)
         self.parse.options()
+        try:
+            self.parse.user
+        except AttributeError:
+            log.append(module='hg', type='ERROR',
+            line='config file not edited')
+            sys.stderr.write('Pacha config file not edited!')
+            sys.exit(1)
+            
 
     def commit(self):
         """hg local commits that are needed before a push to a centralized 
@@ -54,8 +62,6 @@ class Hg(object):
             parse = confparser.Parse(conf)
             parse.options() # get all the options in the config file
             log.append(module='hg', line="parsed options from config file")
-            #norm_path = os.path.normpath(path)
-            #base_path = os.path.basename(path)
             machine = host.hostname()
             try:
                 hgrc = open(self.path+'/.hg/hgrc', 'w')
