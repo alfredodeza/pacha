@@ -39,17 +39,30 @@ class Hg(object):
         except AttributeError:
             log.append(module='hg', type='ERROR',
             line='config file not edited')
-            sys.stderr.write('Pacha config file not edited!')
+            sys.stderr.write('Pacha config file not edited! - Aborting')
             sys.exit(1)
             
 
     def commit(self):
-        """hg local commits that are needed before a push to a centralized 
-        server"""
+        """hg commits with a simple timestamp message"""
         #TODO:
         # Automatically detect if a user modified a file to commit and then
         # push the changes
         # For now, the user has to manually commit
+        timestamp = strftime('%b %d %H:%M:%S')
+        message = "pacha auto-commit: %s" % timestamp
+        # mercurial bug:
+        os.chdir(self.path)
+        command = 'hg ci -m "%s"' % message
+        call(command, shell=True)
+        log.append(module='hg', line='doing commit at %s' % self.path)
+
+    def hg_add(self):
+        """should only be used when --watch is called"""
+        command = "hg add"
+        os.chdir(self.path)
+        call(command, shell=True)
+        log.append(module='hg', line='added files to repo %s' % self.path)
 
     def push(self):
         """Pushes the repository to the centralized Pacha Master server"""
@@ -76,7 +89,10 @@ class Hg(object):
                 log.append(module='hg', type='ERROR', line=e)
 
         else:
-            sys.stderr.write("No repository found here: %s" % self.path)
+            self.initialize()
+            self.hg_add()
+            self.commit()
+            self.hgrc()
 
     def clone(self):
         """Clones a given repository to the remote Pacha server"""
@@ -86,6 +102,7 @@ class Hg(object):
                 self.parse.user, self.parse.host, self.parse.path, 
                 machine, self.dir)
         call(command, shell=True)
+        log.append(module='hg', line='%s' % command)
         # TODO: need to add trusted USERS in the global .hgrc 
         # maybe even adding root as the trusted user...
 
@@ -100,3 +117,11 @@ class Hg(object):
             log.append(module='hg', type='ERROR',  
                     line="hg repository not found at %s" % self.path)
             return False
+
+    def initialize(self):
+        """Creates a mercurial repository"""
+        # Change directory (hg bug)
+        os.chdir(self.path)
+        command = "hg init"
+        call(command, shell=True)
+        log.append(module='hg', line='created hg repo at %s' % self.path)
