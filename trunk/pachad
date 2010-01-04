@@ -24,14 +24,14 @@ class Watcher(object):
          """Report if a file changed and the change has not been commited"""
          log.append(module='pachad', line='watching for changes in %s' % self.path)
          run = Runners(location=self.path)
-         revision = run.hg_revision()
-         log.append(module='pachad', line='revision ID is: %s' % revision)
+         revision = run.hg_revision()[0]
+         log.append(module='pachad', line='revision ID is: %s at %s' % (revision, self.path))
          while True:
-            current_revision = run.hg_revision()
+            current_revision = run.hg_revision()[0]
             time.sleep(5)
-            new_revision = run.hg_revision()
+            new_revision = run.hg_revision()[0]
             if current_revision != new_revision:
-                log.append(module='pachad', line='found a new revision: %s' % new_revision)
+                log.append(module='pachad', line='found a new revision: %s at %s' % (new_revision, self.path))
 
 
 class Runners(object):
@@ -44,7 +44,7 @@ class Runners(object):
     def hg_revision(self):
         """Gets the revision ID from the path"""
         changeset = run_command(std="stdout", cmd="hg head")[0]
-        return changeset[-13:]
+        return changeset[-13:].split('\n')
 
 def run_command(std, cmd):
     """Runs a command via Popen"""
@@ -75,6 +75,7 @@ def main():
     if options.start:
         daemon = supay.Daemon(name='pachad')
         daemon.start()
+        log.append(module='pachad', line='Daemon started')
         while True:
             watch = Watcher(path='/tmp/foo')
             watch.report()
@@ -82,6 +83,7 @@ def main():
     if options.stop:
         daemon = supay.Daemon(name='pachad')
         daemon.stop()
+        log.append(module='pachad', line='Daemon stopped')
 
 if __name__ == '__main__':
     main()
