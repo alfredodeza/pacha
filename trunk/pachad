@@ -32,6 +32,8 @@ class Watcher(object):
             new_revision = run.hg_revision()[0]
             if current_revision != new_revision:
                 log.append(module='pachad', line='found a new revision: %s at %s' % (new_revision, self.path))
+            if run.modified:
+                log.append(module='pachad', line='we would do auto-commit here')
 
 
 class Runners(object):
@@ -45,6 +47,16 @@ class Runners(object):
         """Gets the revision ID from the path"""
         changeset = run_command(std="stdout", cmd="hg head")[0]
         return changeset[-13:].split('\n')
+
+    def modified(self):
+        """Checks if a file has been modified and not commited"""
+        out = run_command(std="stdout", cmd="hg st")
+        for file in out.stdout:
+            if file.startswith('M'):
+                #return file[2:]
+                log.append(module='pachad', line='found modified file: %s' % file[2:])
+                return True
+
 
 def run_command(std, cmd):
     """Runs a command via Popen"""
@@ -73,7 +85,7 @@ def main():
         parser.print_help()
 
     if options.start:
-        daemon = supay.Daemon(name='pachad')
+        daemon = supay.Daemon(name='pachad', log=False)
         daemon.start()
         log.append(module='pachad', line='Daemon started')
         while True:
@@ -81,7 +93,7 @@ def main():
             watch.report()
 
     if options.stop:
-        daemon = supay.Daemon(name='pachad')
+        daemon = supay.Daemon(name='pachad', log=False)
         daemon.stop()
         log.append(module='pachad', line='Daemon stopped')
 
