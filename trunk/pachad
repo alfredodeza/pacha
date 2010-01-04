@@ -6,10 +6,57 @@
 
 import os
 import sys
+import time
 from optparse import OptionParser
-from subprocess import call
-from lib import supay
+from subprocess import call, Popen, PIPE
+from lib import supay, log
     
+class Watcher(object):
+     """Handles all the Reports to display"""
+ 
+     def __init__(self,
+                  vcs=None,
+                  path=None):
+         self.path = os.path.normpath(path)
+         self.vcs = vcs
+ 
+     def report(self):
+         """Report if a file changed and the change has not been commited"""
+         log.append(module='pachad', line='watching for changes in %s' % self.path)
+         run = Runners(location=self.path)
+         revision = run.hg_revision()
+         log.append(module='pachad', line='revision ID is: %s' % revision)
+         while True:
+            current_revision = run.hg_revision()
+            time.sleep(5)
+            new_revision = run.hg_revision()
+            if current_revision != new_revision:
+                log.append(module='pachad', line='found a new revision: %s' % new_revision)
+
+
+class Runners(object):
+    """Handles everything related to Mercurial"""
+ 
+    def __init__(self, location=None):
+        self.location = location
+        os.chdir(location) # change directory (HG bug)
+
+    def hg_revision(self):
+        """Gets the revision ID from the path"""
+        changeset = run_command(std="stdout", cmd="hg head")[0]
+        return changeset[-13:]
+
+def run_command(std, cmd):
+    """Runs a command via Popen"""
+    if std == "stderr":
+        run = Popen(cmd, shell=True, stderr=PIPE)
+        out = run.stderr.readlines()
+    if std == "stdout":
+        run = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out = run.stdout.readlines()
+    return out
+
+
 def main():
     """All command line options happen here"""
     parser = OptionParser()
@@ -29,8 +76,8 @@ def main():
         daemon = supay.Daemon(name='pachad')
         daemon.start()
         while True:
-            from time import sleep
-            sleep(100)
+            watch = Watcher(path='/tmp/foo')
+            watch.report()
 
     if options.stop:
         daemon = supay.Daemon(name='pachad')
