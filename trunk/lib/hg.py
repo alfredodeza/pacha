@@ -61,7 +61,7 @@ class Hg(object):
         """Pushes the repository to the centralized Pacha Master server"""
         command = "hg push"
         os.chdir(self.path)
-        call(command, shell=True)
+        call(command, shell=True, stdout=PIPE, stderr=PIPE)
         log.append(module='hg', line='push to central pacha: %s' % self.path)
 
     def hgrc(self):
