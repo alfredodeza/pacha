@@ -32,7 +32,7 @@ class Watcher(object):
             new_revision = run.hg_revision()[0]
             if current_revision != new_revision:
                 log.append(module='pachad', line='found a new revision: %s at %s' % (new_revision, self.path))
-            if run.modified:
+            if run.modified() is True:
                 log.append(module='pachad', line='we would do auto-commit here')
 
 
@@ -51,12 +51,15 @@ class Runners(object):
     def modified(self):
         """Checks if a file has been modified and not commited"""
         out = run_command(std="stdout", cmd="hg st")
-        for file in out.stdout:
+        dir = os.getcwd()
+        for file in out:
+            file_name = file[2:].split('\n')[0] # get a nice file name
             if file.startswith('M'):
-                #return file[2:]
-                log.append(module='pachad', line='found modified file: %s' % file[2:])
+                log.append(module='pachad', line='found modified file: %s' % file_name)
                 return True
-
+            else:
+                return False
+                log.append(module='pachad', line='no changes with: %s' % file_name)
 
 def run_command(std, cmd):
     """Runs a command via Popen"""
