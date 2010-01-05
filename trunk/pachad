@@ -9,7 +9,7 @@ import sys
 import time
 from optparse import OptionParser
 from subprocess import call, Popen, PIPE
-from lib import supay, log
+from lib import supay, log, hg
     
 class Watcher(object):
      """Handles all the Reports to display"""
@@ -33,8 +33,8 @@ class Watcher(object):
             if current_revision != new_revision:
                 log.append(module='pachad', line='found a new revision: %s at %s' % (new_revision, self.path))
             if run.modified() is True:
-                log.append(module='pachad', line='we would do auto-commit here')
-
+                mercurial = hg.Hg(path=self.path)
+                mercurial.commit()
 
 class Runners(object):
     """Handles everything related to Mercurial"""

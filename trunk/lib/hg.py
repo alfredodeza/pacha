@@ -38,17 +38,10 @@ class Hg(object):
             self.parse.user
         except AttributeError:
             log.append(module='hg', type='ERROR',
-            line='config file not edited')
-            sys.stderr.write('Pacha config file not edited! - Aborting')
-            sys.exit(1)
-            
+            line='config file not edited - aborting')
 
     def commit(self):
         """hg commits with a simple timestamp message"""
-        #TODO:
-        # Automatically detect if a user modified a file to commit and then
-        # push the changes
-        # For now, the user has to manually commit
         timestamp = strftime('%b %d %H:%M:%S')
         message = "pacha auto-commit: %s" % timestamp
         # mercurial bug:
@@ -66,6 +59,10 @@ class Hg(object):
 
     def push(self):
         """Pushes the repository to the centralized Pacha Master server"""
+        command = "hg push"
+        os.chdir(self.path)
+        call(command, shell=True)
+        log.append(module='hg', line='push to central pacha: %s' % self.path)
 
     def hgrc(self):
         """An option to write the default path in hgrc for pushing
