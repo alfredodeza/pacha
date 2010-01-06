@@ -69,6 +69,10 @@ class Parse(object):
             if value.startswith('['):
                 list = eval(value)
                 setattr(self, key, list)
+            # Convert to dictionary if curly brackets
+            if value.startswith('{'):
+                dictionary = eval(value)
+                setattr(self, key ,dictionary)
             else:
                 setattr(self, key, value)
     def text_read(self):
