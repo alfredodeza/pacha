@@ -37,8 +37,11 @@ class Parse(object):
     """Parses a configuration file"""
     
     def __init__(self,
-                 config):
+                 config,
+                 new_value = None):
         self.config = open(config)
+        self.txt = open(config, 'a')
+        self.new_value = new_value
         
     def options(self):
         """Return a dictionary of values found in the config file"""
@@ -68,6 +71,17 @@ class Parse(object):
                 setattr(self, key, list)
             else:
                 setattr(self, key, value)
-         
-        
+    def text_read(self):
+        """Parses a text file line by line. Each line is a value. 
+        Returns a list of all the values in the text file.
+        Should *not* be edited by hand."""
+        lines = self.config.readlines()
+        values = []
+        for line in lines:
+            values.append(line.split('\n')[0])
+        return values
 
+    def text_append(self):
+        """Appends a value to a newline in a text file"""
+        self.txt.write(self.new_value)
+        self.txt.close()

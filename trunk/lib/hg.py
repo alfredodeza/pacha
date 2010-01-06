@@ -27,9 +27,13 @@ class Hg(object):
         self.port = port
         self.host = host
         self.user = user
-        self.path = os.path.normpath(path)
-        self.dir = os.path.basename(path)
-        self.hg_dir = self.path+'/.hg'
+        if os.path.exists(path):
+            self.path = os.path.normpath(path)
+            self.dir = os.path.basename(path)
+            self.hg_dir = self.path+'/.hg'
+        else:
+            log.append(module='hg', type='ERROR', 
+                    line='%s does not exist' % path)
         # read the config file once and make sure is edited:
         self.conf = '/opt/pacha/conf/pacha.conf'
         self.parse = confparser.Parse(self.conf)
