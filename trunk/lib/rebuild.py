@@ -45,32 +45,4 @@ class ExecConfig(object):
 class Sh(object):
     """Executes all the *.sh scripts in the sh folder"""
 
-def file_operations(filename, content):
-    """Simple function to move a config file and write a new one, Pacha
-    powered"""
-    # First we rename the file with a timestamp:
-    append = strftime('%m-%d_%H-%M-%S')+'_pacha.renamed'
-    old_file = filename+append
-    os.rename(filename, old_file)
-    # Now we write the new content:
-    new_file = open(filename, 'w')
-    new_file.write(content)
-    new_file.close()
-
-
-   
-    def remove(self, user):
-        """Matches a user and deletes it"""
-        key_file = open(self.key)
-        data = []
-        for line in key_file.readlines():
-            if user in line:
-                pass
-            else:
-                data.append(line)
-        key_file.close()
-        rewrite = open(self.key, 'w')
-        for key in data:
-            rewrite.write(key)
- 
 
