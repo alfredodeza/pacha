@@ -13,6 +13,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import confparser
+import os
+from time import strftime
 
 """Does all the rebuilding work when a host needs to be reconstructed 
 with Pacha. Minimal configurations come from pacha.conf and more complex
@@ -29,13 +31,31 @@ class ExecConfig(object):
         self.parse = confparser.Parse(self.conf)
         self.parse.options()
 
+
     def hostname(self):
         """Gets the hostname from the config file and applies it"""
-        if self.parse.hostname:
-            print self.parse.hostname
+        try:
+            hostname =  self.parse.hostnam
+            
+        except AttributeError:
+            log.append(module='rebuild', type='WARN',
+            line='no hostname defined in pacha.conf')
 
 class Sh(object):
     """Executes all the *.sh scripts in the sh folder"""
 
+def file_operations(filename, content):
+    """Simple function to move a config file and write a new one, Pacha
+    powered"""
+    # First we rename the file with a timestamp:
+    append = strftime('%m-%d_%H-%M-%S')+'_pacha.renamed'
+    old_file = filename+append
+    os.rename(filename, old_file)
+    # Now we write the new content:
+    new_file = open(filename, 'w')
+    new_file.write(content)
+    new_file.close()
 
+
+    
 
