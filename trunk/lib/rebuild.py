@@ -12,12 +12,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import confparser
+
 """Does all the rebuilding work when a host needs to be reconstructed 
 with Pacha. Minimal configurations come from pacha.conf and more complex
 executions come from the sh folder."""
 
-class Config(object):
-    """Reads pacha.conf and executes the values"""
+class ExecConfig(object):
+    """Reads pacha.conf and executes the values. Usually host related
+    settings like hostname, network and users."""
+    
+    def __init__(self):
+        # reads the config file and sets all the options
+        self.conf = '/opt/pacha/conf/pacha.conf'
+        self.parse = confparser.Parse(self.conf)
+        self.parse.options()
 
 class Sh(object):
     """Executes all the *.sh scripts in the sh folder"""
