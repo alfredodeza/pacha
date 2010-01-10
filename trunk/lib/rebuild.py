@@ -35,7 +35,8 @@ class ExecConfig(object):
     def hostname(self):
         """Gets the hostname from the config file and applies it"""
         try:
-            hostname =  self.parse.hostnam
+            hostname =  self.parse.hostname
+
             
         except AttributeError:
             log.append(module='rebuild', type='WARN',
@@ -57,5 +58,19 @@ def file_operations(filename, content):
     new_file.close()
 
 
-    
+   
+    def remove(self, user):
+        """Matches a user and deletes it"""
+        key_file = open(self.key)
+        data = []
+        for line in key_file.readlines():
+            if user in line:
+                pass
+            else:
+                data.append(line)
+        key_file.close()
+        rewrite = open(self.key, 'w')
+        for key in data:
+            rewrite.write(key)
+ 
 
