@@ -16,7 +16,8 @@ import confparser
 
 """Does all the rebuilding work when a host needs to be reconstructed 
 with Pacha. Minimal configurations come from pacha.conf and more complex
-executions come from the sh folder."""
+executions come from the sh folder.
+All executions should be done with Super User powers"""
 
 class ExecConfig(object):
     """Reads pacha.conf and executes the values. Usually host related
@@ -27,6 +28,11 @@ class ExecConfig(object):
         self.conf = '/opt/pacha/conf/pacha.conf'
         self.parse = confparser.Parse(self.conf)
         self.parse.options()
+
+    def hostname(self):
+        """Gets the hostname from the config file and applies it"""
+        if self.parse.hostname:
+            print self.parse.hostname
 
 class Sh(object):
     """Executes all the *.sh scripts in the sh folder"""
