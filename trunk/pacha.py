@@ -55,6 +55,10 @@ def main():
         mercurial.hgrc()
         # we do a first time clone:
         mercurial.clone()
+        # add the path to repos.txt
+        repos = open('/opt/pacha/conf/repos.txt', 'a')
+        repos.write(path)
+        repos.close()
 
 if __name__ == '__main__':
     main()
