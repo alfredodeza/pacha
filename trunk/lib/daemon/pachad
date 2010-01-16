@@ -9,6 +9,8 @@ import sys
 import time
 from optparse import OptionParser
 from subprocess import call, Popen, PIPE
+# fix for local imports
+sys.path.append('/opt/pacha')
 from lib import supay, log, hg, confparser
     
 class Watcher(object):
