@@ -6,7 +6,7 @@
 """SSH connections and file transfers with limited options like non
 standard ports. This is a simple wrapper to suit Pacha."""
 
-from subprocess import call, PIPE
+from subprocess import call, Popen, PIPE
 import os
 import sys
 from time import strftime
@@ -52,21 +52,21 @@ class Hg(object):
         # mercurial bug:
         os.chdir(self.path)
         command = 'hg ci -m "%s"' % message
-        call(command, shell=True)
+        Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         log.append(module='hg', line='doing commit at %s' % self.path)
 
     def hg_add(self):
         """should only be used when --watch is called"""
         command = "hg add"
         os.chdir(self.path)
-        call(command, shell=True)
+        Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         log.append(module='hg', line='added files to repo %s' % self.path)
 
     def push(self):
         """Pushes the repository to the centralized Pacha Master server"""
         command = "hg push"
         os.chdir(self.path)
-        call(command, shell=True, stdout=PIPE, stderr=PIPE)
+        Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         log.append(module='hg', line='push to central pacha: %s' % self.path)
 
     def hgrc(self):
@@ -103,7 +103,7 @@ class Hg(object):
         command = "hg clone %s ssh://%s@%s/%s/%s/%s " % (self.path,
                 self.parse.user, self.parse.host, self.parse.path, 
                 machine, self.dir)
-        call(command, shell=True)
+        Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         log.append(module='hg', line='%s' % command)
         # TODO: need to add trusted USERS in the global .hgrc 
         # maybe even adding root as the trusted user...
