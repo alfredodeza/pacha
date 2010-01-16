@@ -15,7 +15,7 @@ def main():
     pacha_dir = '/opt/pacha'
     absolute_pacha = pacha_dir+'/pacha.py'
     executable = '/usr/bin/pacha'
-    daemon = pacha_dir+'lib/daemon/pacha'
+    daemon = pacha_dir+'/lib/daemon/pacha'
     init = '/etc/init.d/'
     cwd = os.getcwd()
     cwd_abs = os.path.abspath(cwd)
