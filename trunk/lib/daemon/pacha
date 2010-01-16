@@ -12,7 +12,7 @@
 # Licence: MIT
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/pacha
-DAEMON=/opt/pacha/daemon/pachad
+DAEMON=/opt/pacha/lib/daemon/pachad
 NAME=pacha
 DESC="Pacha daemon"
 LOGDIR=/var/log/pacha.log
