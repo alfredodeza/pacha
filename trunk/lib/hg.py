@@ -43,7 +43,8 @@ class Hg(object):
         except AttributeError:
             log.append(module='hg', type='ERROR',
             line='config file not edited - aborting')
-
+            sys.stderr.write('pacha.conf not edited! - aborting\n')
+            sys.exit(1)
     def commit(self):
         """hg commits with a simple timestamp message"""
         timestamp = strftime('%b %d %H:%M:%S')
