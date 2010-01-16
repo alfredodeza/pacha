@@ -16,7 +16,7 @@ def main():
     absolute_pacha = pacha_dir+'/pacha.py'
     executable = '/usr/bin/pacha'
     daemon = pacha_dir+'lib/daemon/pacha'
-    init = '/etc/init.d/pacha'
+    init = '/etc/init.d/'
     cwd = os.getcwd()
     cwd_abs = os.path.abspath(cwd)
     try:
@@ -31,9 +31,9 @@ def main():
         log.append(module='install', 
                 line="Corrected permissions for pacha executable")
         log.append(module='install', line="Installation completed")
-        os.symlink(daemon, init)
+        shutil.copy(daemon, init)
         log.append(module='install', 
-            line="created symlink for daemon")
+            line="copied pacha daemon file to init.d")
         call('/etc/init.d/pacha start', shell=True)
         log.append(module='install', line="started daemon")
 
