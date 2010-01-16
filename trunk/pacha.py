@@ -35,7 +35,7 @@ def main():
 
     if options.install:
         install.main()
-        print "Pacha was completely removed"
+        print "Pacha finished installing."
 
     if options.uninstall:
         uninstall.main()
