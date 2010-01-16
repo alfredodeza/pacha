@@ -15,6 +15,8 @@ def main():
     pacha_dir = '/opt/pacha'
     absolute_pacha = pacha_dir+'/pacha.py'
     executable = '/usr/bin/pacha'
+    daemon = pacha_dir+'/daemon/pacha'
+    init = '/etc/init.d/pachad'
     cwd = os.getcwd()
     cwd_abs = os.path.abspath(cwd)
     try:
@@ -29,6 +31,12 @@ def main():
         log.append(module='install', 
                 line="Corrected permissions for pacha executable")
         log.append(module='install', line="Installation completed")
+        os.symlink(daemon, init)
+        log.append(module='install', 
+            line="created symlink for daemon")
+        call('/etc/init.d/pacha start', shell=True)
+        log.append(module='install',
+            line="started daemon")
 
     except OSError, e:
         if e.errno == 13:
