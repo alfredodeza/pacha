@@ -16,7 +16,7 @@ def main():
     absolute_pacha = pacha_dir+'/pacha.py'
     executable = '/usr/bin/pacha'
     daemon = pacha_dir+'/daemon/pacha'
-    init = '/etc/init.d/pachad'
+    init = '/etc/init.d/pacha'
     cwd = os.getcwd()
     cwd_abs = os.path.abspath(cwd)
     try:
@@ -35,8 +35,7 @@ def main():
         log.append(module='install', 
             line="created symlink for daemon")
         call('/etc/init.d/pacha start', shell=True)
-        log.append(module='install',
-            line="started daemon")
+        log.append(module='install', line="started daemon")
 
     except OSError, e:
         if e.errno == 13:

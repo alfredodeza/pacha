@@ -12,7 +12,7 @@
 # Licence: MIT
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/pacha
-DAEMON=/opt/pacha/pachad
+DAEMON=/opt/pacha/daemon/pachad
 NAME=pacha
 DESC="Pacha daemon"
 LOGDIR=/var/log/pacha.log
@@ -26,13 +26,10 @@ case "$1" in
   stop)
     $DAEMON --stop
     ;;
-  #reload)
-    #
-  #;;
-  #restart|force-reload)
-    #
-    #
-    #;;
+  restart|force-reload)
+    $DAEMON --stop && $DAEMON --start 
+    
+    ;;
   *)
     N=/etc/init.d/$NAME
     echo "Usage: $N {start|stop}" >&2
