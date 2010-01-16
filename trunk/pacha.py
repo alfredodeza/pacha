@@ -35,9 +35,11 @@ def main():
 
     if options.install:
         install.main()
+        print "Pacha was completely removed"
 
     if options.uninstall:
         uninstall.main()
+        print "Pacha finished uninstalling."
 
     if options.add_host:
         new = host.Host(host=options.add_host)
