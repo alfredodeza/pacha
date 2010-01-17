@@ -69,13 +69,35 @@ class Rebuild(object):
         """Create a directory to place all the old files"""
         os.mkdir('/opt/pacha/old_host')
 
-    def move_files(self):
+    def old_file(self, file):
         """Moves all the files to make room for the new versioned ones"""
+        if os.path.exists(file):
+            shutil.move(file, '/opt/pacha/old_host/')
 
-    def compare(self):
+    def specific_tracking(self):
+        """You can specify specific files to be rebuilt to avoid replacing
+        whole directories. Mercurial can't keep track of single files."""
+        conf = '/tmp/%s/conf/pacha.conf' % self.hostname
+        parse = confparser.Parse(conf)
+        parse.options()
+        #check if the config has dirs we have in tmp:
+        for dirname in self.tracked():
+            # we check the dirs in tmp and then get attributes if any
+            if hasattr(parse, dirname):
+                # now be build the paths and move stuff
+                for file in getattr(parse, dirname):
+                    default_path = "/%s/%s" % (dirname, file)
+                    self.old_file(default_path)
+                    replacer = '/tmp/%s/%s' % (self.hostname, path)
+                    shutil.move(replacer, default_path)
+
+
+    def tracked(self):
         """There needs to be a comparison between the copied files and the
         files that are in the config file. If they are being tracked but
         nothing is specified in the config the whole directory is moved."""
+        ls = os.listdir('/tmp/%s' % self.hostname)
+        return ls
 
 
 class ExecConfig(object):
@@ -97,10 +119,5 @@ class ExecConfig(object):
         except AttributeError:
             log.append(module='rebuild', type='WARN',
             line='no host defined in pacha.conf')
-
-
-
-class Sh(object):
-    """Executes all the *.sh scripts in the sh folder"""
 
 

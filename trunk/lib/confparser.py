@@ -87,5 +87,5 @@ class Parse(object):
 
     def text_append(self):
         """Appends a value to a newline in a text file"""
-        self.txt.write(self.new_value)
+        self.txt.write(self.new_value+'\n')
         self.txt.close()
