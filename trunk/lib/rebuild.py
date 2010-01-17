@@ -67,6 +67,15 @@ class Rebuild(object):
 
     def old_dir(self):
         """Create a directory to place all the old files"""
+        os.mkdir('/opt/pacha/old_host')
+
+    def move_files(self):
+        """Moves all the files to make room for the new versioned ones"""
+
+    def compare(self):
+        """There needs to be a comparison between the copied files and the
+        files that are in the config file. If they are being tracked but
+        nothing is specified in the config the whole directory is moved."""
 
 
 class ExecConfig(object):

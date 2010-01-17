@@ -70,7 +70,7 @@ class Parse(object):
                 list = eval(value)
                 setattr(self, key, list)
             # Convert to dictionary if curly brackets
-            if value.startswith('{'):
+            elif value.startswith('{'):
                 dictionary = eval(value)
                 setattr(self, key ,dictionary)
             else:
