@@ -71,6 +71,7 @@ when rebuilding."""
     if options.rebuild:
         try:
             run = rebuild.Rebuild()
+            run.retrieve_files()
 
         except KeyboardInterrupt:
             sys.exit(1)

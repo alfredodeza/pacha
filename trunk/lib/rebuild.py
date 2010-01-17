@@ -15,7 +15,8 @@
 import confparser
 import os
 from time import strftime
-import hg
+from subprocess import call
+import confparser
 
 """Does all the rebuilding work when a host needs to be reconstructed 
 with Pacha. Minimal configurations come from pacha.conf and more complex
@@ -28,7 +29,7 @@ All executions should be done with Super User powers.
     pacha server:
     pacha server user:
     machine to rebuild (hostname):
-3. This will clone all the files from the pacha server to /tmp/
+3. This will scp all the files from the pacha server to /tmp/pacha
 4. Pacha will read the config and install packages
 5. A dir will be created: /opt/pacha/old_host to move all files that will be 
 replaced
@@ -45,7 +46,27 @@ class Rebuild(object):
         self.server_user = raw_input("pacha server username: ")
         self.hostname = raw_input("machine to rebuild (hostname): ")
 
+    def retrieve_files(self):
+        """scp all the files we need to /tmp/pacha"""
+        command = "scp -r %s@%s:/opt/pacha/hosts/%s /tmp/" % (self.server_user,
+                self.server, self.hostname)
+        call(command, shell=True)
 
+    def install(self):
+        conf = '/tmp/%s/conf/pacha.conf' % self.hostname
+        parse = confparser.Parse(conf)
+        parse.options()
+        try:
+            packages = parse.packages()
+        except AttributeError:
+            sys.stderr.write(AttributeError)
+            sys.exit(1)
+        for package in packages:
+            command = "sudo apt-get -y install %s" % package
+            call(command, shell=True)
+
+    def old_dir(self):
+        """Create a directory to place all the old files"""
 
 
 class ExecConfig(object):
