@@ -16,6 +16,7 @@ import confparser
 import os
 from time import strftime
 from subprocess import call
+import shutil
 import confparser
 
 """Does all the rebuilding work when a host needs to be reconstructed 
@@ -57,22 +58,13 @@ class Rebuild(object):
         parse = confparser.Parse(conf)
         parse.options()
         try:
-            packages = parse.packages()
+            packages = parse.packages
         except AttributeError:
             sys.stderr.write(AttributeError)
             sys.exit(1)
         for package in packages:
             command = "sudo apt-get -y install %s" % package
             call(command, shell=True)
-
-    def old_dir(self):
-        """Create a directory to place all the old files"""
-        os.mkdir('/opt/pacha/old_host')
-
-    def old_file(self, file):
-        """Moves all the files to make room for the new versioned ones"""
-        if os.path.exists(file):
-            shutil.move(file, '/opt/pacha/old_host/')
 
     def specific_tracking(self):
         """You can specify specific files to be rebuilt to avoid replacing
@@ -87,8 +79,9 @@ class Rebuild(object):
                 # now be build the paths and move stuff
                 for file in getattr(parse, dirname):
                     default_path = "/%s/%s" % (dirname, file)
-                    self.old_file(default_path)
-                    replacer = '/tmp/%s/%s' % (self.hostname, path)
+                    shutil.move(default_path, default_path+'.old')
+                    replacer = '/tmp/%s/%s/%s' % (self.hostname, 
+                            dirname, file)
                     shutil.move(replacer, default_path)
 
 
