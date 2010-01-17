@@ -94,8 +94,8 @@ def main():
         log.append(module='pachad', line='Daemon started')
         
         while True:
-            repos = confparser.Parse(config='/opt/pacha/conf/repos.txt')
-            log.append(module='pachad', line='reading repos.txt config')
+            repos = confparser.Parse(config='/opt/pacha/conf/.repos')
+            log.append(module='pachad', line='reading .repos config')
 
             for repo in repos.text_read():
                 if os.path.exists(repo): # catches a path no longer there...
