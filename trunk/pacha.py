@@ -72,6 +72,9 @@ when rebuilding."""
         try:
             run = rebuild.Rebuild()
             run.retrieve_files()
+            run.install()
+            run.old_dir
+            run.specific_tracking()
 
         except KeyboardInterrupt:
             sys.exit(1)
