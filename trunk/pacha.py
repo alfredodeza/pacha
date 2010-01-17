@@ -10,7 +10,7 @@ import os
 import sys
 from optparse import OptionParser
 from subprocess import call
-from lib import install, uninstall, hg, host, confparser
+from lib import install, uninstall, hg, host, confparser, rebuild
     
 def main():
     """All command line options happen here"""
@@ -27,6 +27,9 @@ def main():
     parser.add_option('--watch', action="store_true",
            help="Provide a path for Pacha to watch")
 
+    parser.add_option('--rebuild', action="store_true",
+            help="Rebuilds all tracked files")
+
     options, arguments = parser.parse_args()
 
     # Cleanest way to show the help menu if no options are given
@@ -36,6 +39,11 @@ def main():
     if options.install:
         install.main()
         print "Pacha finished installing."
+        print "############################################################"
+        print """Remember to edit pacha.conf and run:
+pacha --watch /opt/pacha/conf
+This will keep track of all host specific configurations that will be needed
+when rebuilding."""
 
     if options.uninstall:
         uninstall.main()
@@ -59,6 +67,13 @@ def main():
         repos = open('/opt/pacha/conf/.repos', 'a')
         repos.write(path)
         repos.close()
+
+    if options.rebuild:
+        try:
+            run = rebuild.Rebuild()
+
+        except KeyboardInterrupt:
+            sys.exit(1)
 
 if __name__ == '__main__':
     main()

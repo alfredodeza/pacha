@@ -10,6 +10,11 @@ import shutil
 from subprocess import call
 import log
 
+def conf_watch():
+    """When installing Pacha for the first time, we need to version and watch
+    the configuration folder to be able to rebuild it later if needed."""
+
+
 def main():
     """Create the directory and copy all the files"""
     pacha_dir = '/opt/pacha'
@@ -41,6 +46,8 @@ def main():
         if e.errno == 13:
             sys.stderr.write("You need to run with sudo privileges")
             sys.exit(0)
+        else:
+            sys.stderr.write("%s" % e)
 
 if __name__ == '__main__':
     main()

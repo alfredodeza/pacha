@@ -15,11 +15,38 @@
 import confparser
 import os
 from time import strftime
+import hg
 
 """Does all the rebuilding work when a host needs to be reconstructed 
 with Pacha. Minimal configurations come from pacha.conf and more complex
 executions come from the sh folder.
-All executions should be done with Super User powers"""
+All executions should be done with Super User powers.
+
+### WORKFLOW ###
+1. Install Pacha on new machine
+2. run `pacha --rebuild` and answer the prompts:
+    pacha server:
+    pacha server user:
+    machine to rebuild (hostname):
+3. This will clone all the files from the pacha server to /tmp/
+4. Pacha will read the config and install packages
+5. A dir will be created: /opt/pacha/old_host to move all files that will be 
+replaced
+6. The config will say what files need to be replaced and copied from /tmp/
+to final location.
+7. A reboot it is strongly suggested, and printed.
+
+"""
+
+class Rebuild(object):
+    """ """
+    def __init__(self):
+        self.server = raw_input("pacha server (IP or FQDN): ")
+        self.server_user = raw_input("pacha server username: ")
+        self.hostname = raw_input("machine to rebuild (hostname): ")
+
+
+
 
 class ExecConfig(object):
     """Reads pacha.conf and executes the values. Usually host related
@@ -32,15 +59,16 @@ class ExecConfig(object):
         self.parse.options()
 
 
-    def hostname(self):
-        """Gets the hostname from the config file and applies it"""
+    def pacha_server(self):
+        """Determines where Pacha is located"""
         try:
-            hostname =  self.parse.hostname
-
+            host =  self.parse.host
             
         except AttributeError:
             log.append(module='rebuild', type='WARN',
-            line='no hostname defined in pacha.conf')
+            line='no host defined in pacha.conf')
+
+
 
 class Sh(object):
     """Executes all the *.sh scripts in the sh folder"""

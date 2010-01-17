@@ -106,7 +106,7 @@ class Hg(object):
         Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         log.append(module='hg', line='%s' % command)
         # TODO: need to add trusted USERS in the global .hgrc 
-        # maybe even adding root as the trusted user...
+        
 
     def validate(self):
         """Validates a working HG path"""
