@@ -1,6 +1,6 @@
 # __init__.py
 #
-# Copyright 2009 Alfredo Deza
+# Copyright 2009-2010 Alfredo Deza
 #
 # This program is free software: you can redistribute it and/or modify it 
 # under the terms of the GNU General Public License version 3,
