@@ -15,9 +15,9 @@
 import confparser
 import os
 from time import strftime
-from subprocess import call
+from subprocess import call, Popen, PIPE
 import shutil
-import confparser
+import confparser, log
 
 """Does all the rebuilding work when a host needs to be reconstructed 
 with Pacha. Minimal configurations come from pacha.conf and more complex
@@ -51,7 +51,9 @@ class Rebuild(object):
         """scp all the files we need to /tmp/pacha"""
         command = "scp -r %s@%s:/opt/pacha/hosts/%s /tmp/" % (self.server_user,
                 self.server, self.hostname)
-        call(command, shell=True)
+        run = Popen(command, shell=True, stdout=PIPE)
+        for line_out in run.stdout.readlines():
+            log.append(module='rebuild', line=line_out)
 
     def install(self):
         conf = '/tmp/%s/conf/pacha.conf' % self.hostname
