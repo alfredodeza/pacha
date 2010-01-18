@@ -94,25 +94,3 @@ class Rebuild(object):
         ls = os.listdir('/tmp/%s' % self.hostname)
         return ls
 
-
-class ExecConfig(object):
-    """Reads pacha.conf and executes the values. Usually host related
-    settings like hostname, network and users."""
-    
-    def __init__(self):
-        # reads the config file and sets all the options
-        self.conf = '/opt/pacha/conf/pacha.conf'
-        self.parse = confparser.Parse(self.conf)
-        self.parse.options()
-
-
-    def pacha_server(self):
-        """Determines where Pacha is located"""
-        try:
-            host =  self.parse.host
-            
-        except AttributeError:
-            log.append(module='rebuild', type='WARN',
-            line='no host defined in pacha.conf')
-
-
