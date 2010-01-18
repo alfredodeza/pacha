@@ -9,8 +9,7 @@
 import os
 import sys
 from optparse import OptionParser
-from subprocess import call
-from lib import install, uninstall, hg, host, confparser, rebuild
+from lib import install, uninstall, hg, host, rebuild
     
 def main():
     """All command line options happen here"""
@@ -73,7 +72,6 @@ when rebuilding."""
             run = rebuild.Rebuild()
             run.retrieve_files()
             run.install()
-            run.old_dir
             run.specific_tracking()
 
         except KeyboardInterrupt:
