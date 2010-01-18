@@ -19,23 +19,24 @@ import shutil
 from subprocess import call
 import log
 
-def conf_watch():
-    """When installing Pacha for the first time, we need to version and watch
-    the configuration folder to be able to rebuild it later if needed."""
-
-
-def main():
+def main(path):
     """Create the directory and copy all the files"""
     pacha_dir = '/opt/pacha'
     absolute_pacha = pacha_dir+'/pacha.py'
     executable = '/usr/bin/pacha'
     daemon = pacha_dir+'/lib/daemon/pacha'
     init = '/etc/init.d/'
-    cwd = os.getcwd()
-    cwd_abs = os.path.abspath(cwd)
+    pacha_source =  os.path.abspath(path)
+    print pacha_source
+#    cwd = os.getcwd()
+ #   cwd_abs = sys.path[0]
+ #   print "cwd",cwd
+   # cwd_abs = os.path.abspath(cwd)
+   # print "cwd_abs",cwd_abs
     try:
         log.append(module='install', line="Creating pacha dir")
-        shutil.copytree(cwd_abs, pacha_dir)
+        shutil.copytree(pacha_source, pacha_dir)
+        print "cpopying from %s to %s" % (pacha_source, pacha_dir)
         log.append(module='install', line="Copied files to /opt/pacha")
         os.symlink(absolute_pacha, executable)
         log.append(module='install',

@@ -36,7 +36,7 @@ def main():
         parser.print_help()
 
     if options.install:
-        install.main()
+        install.main(path=sys.path[0])
         print "Pacha finished installing."
         print "############################################################"
         print """Remember to edit pacha.conf and run:
