@@ -18,27 +18,26 @@ from subprocess import call, Popen, PIPE
 import shutil
 import confparser, log
 
-"""Does all the rebuilding work when a host needs to be reconstructed 
-with Pacha. Minimal configurations come from pacha.conf and more complex
-executions come from the sh folder.
-All executions should be done with Super User powers.
-
-### WORKFLOW ###
-1. Install Pacha on new machine
-2. run `pacha --rebuild` and answer the prompts:
-    pacha server:
-    pacha server user:
-    machine to rebuild (hostname):
-3. This will scp all the files from the pacha server to /tmp/pacha
-4. Pacha will read the config and install packages
-replaced
-6. The config will say what files need to be replaced and copied from /tmp/
-to final location.
-7. A reboot it is strongly suggested, and printed."""
 
 class Rebuild(object):
-    """Main class where we can retrieve files, copy them and move them
-    around when doing the rebuilding."""
+    """Does all the rebuilding work when a host needs to be reconstructed 
+    with Pacha. Minimal configurations come from pacha.conf and more complex
+    executions come from the sh folder.
+    All executions should be done with Super User powers.
+
+    ### WORKFLOW ###
+    1. Install Pacha on new machine
+    2. run `pacha --rebuild` and answer the prompts:
+        pacha server:
+        pacha server user:
+        machine to rebuild (hostname):
+    3. This will scp all the files from the pacha server to /tmp/pacha
+    4. Pacha will read the config and install packages
+    replaced
+    6. The config will say what files need to be replaced and copied from /tmp/
+    to final location.
+    7. A reboot it is strongly suggested, and printed."""
+
     def __init__(self):
         self.server = raw_input("pacha server (IP or FQDN): ")
         self.server_user = raw_input("pacha server username: ")
@@ -80,17 +79,20 @@ class Rebuild(object):
         for dirname in self.tracked():
             # we check the dirs in tmp and then get attributes if any
             if hasattr(parse, dirname):
-                log.append(module='rebuild', line="found dirs that have specific config")
+                log.append(module='rebuild', 
+                        line="found dirs that have specific config")
                 # now be build the paths and move stuff
                 for item in getattr(parse, dirname):
                     default_path = "/%s/%s" % (dirname, item)
                     shutil.move(default_path, default_path+'.old')
-                    log.append(module='rebuild', line="moving %s to %s" % (default_path, 
-                        default_path+'.old'))
+                    log.append(module='rebuild', 
+                            line="moving %s to %s" % (default_path, 
+                            default_path+'.old'))
                     replacer = '/tmp/%s/%s/%s' % (self.hostname, 
                             dirname, item)
                     shutil.move(replacer, default_path)
-                    log.append(module='rebuild', line="moving %s to %s" % (replacer, default_path))
+                    log.append(module='rebuild', 
+                            line="moving %s to %s" % (replacer, default_path))
 
 
     def tracked(self):
