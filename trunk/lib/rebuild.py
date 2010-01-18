@@ -12,9 +12,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import confparser
 import os
-from time import strftime
+import sys
 from subprocess import call, Popen, PIPE
 import shutil
 import confparser, log
@@ -32,16 +31,14 @@ All executions should be done with Super User powers.
     machine to rebuild (hostname):
 3. This will scp all the files from the pacha server to /tmp/pacha
 4. Pacha will read the config and install packages
-5. A dir will be created: /opt/pacha/old_host to move all files that will be 
 replaced
 6. The config will say what files need to be replaced and copied from /tmp/
 to final location.
-7. A reboot it is strongly suggested, and printed.
-
-"""
+7. A reboot it is strongly suggested, and printed."""
 
 class Rebuild(object):
-    """ """
+    """Main class where we can retrieve files, copy them and move them
+    around when doing the rebuilding."""
     def __init__(self):
         self.server = raw_input("pacha server (IP or FQDN): ")
         self.server_user = raw_input("pacha server username: ")
@@ -53,20 +50,24 @@ class Rebuild(object):
                 self.server, self.hostname)
         run = Popen(command, shell=True, stdout=PIPE)
         for line_out in run.stdout.readlines():
-            log.append(module='rebuild', line=line_out)
+            log.append(module='rebuild', line=line_out.strip('\n')[0])
 
     def install(self):
+        """Reads the config and install via apt-get any packages that have to 
+        be in form of a list"""
         conf = '/tmp/%s/conf/pacha.conf' % self.hostname
         parse = confparser.Parse(conf)
         parse.options()
         try:
             packages = parse.packages
-        except AttributeError:
-            sys.stderr.write(AttributeError)
+            for package in packages:
+                log.append(module='rebuild', line="installing %s" % package)
+                command = "sudo apt-get -y install %s" % package
+                call(command, shell=True)
+        except AttributeError, e:
+            log.append(module='rebuild', type='ERROR', line="%s" % e)
+            sys.stderr.write(e)
             sys.exit(1)
-        for package in packages:
-            command = "sudo apt-get -y install %s" % package
-            call(command, shell=True)
 
     def specific_tracking(self):
         """You can specify specific files to be rebuilt to avoid replacing
@@ -74,23 +75,28 @@ class Rebuild(object):
         conf = '/tmp/%s/conf/pacha.conf' % self.hostname
         parse = confparser.Parse(conf)
         parse.options()
+        log.append(module='rebuild', line="read config file and parsed options")
         #check if the config has dirs we have in tmp:
         for dirname in self.tracked():
             # we check the dirs in tmp and then get attributes if any
             if hasattr(parse, dirname):
+                log.append(module='rebuild', line="found dirs that have specific config")
                 # now be build the paths and move stuff
-                for file in getattr(parse, dirname):
-                    default_path = "/%s/%s" % (dirname, file)
+                for item in getattr(parse, dirname):
+                    default_path = "/%s/%s" % (dirname, item)
                     shutil.move(default_path, default_path+'.old')
+                    log.append(module='rebuild', line="moving %s to %s" % (default_path, 
+                        default_path+'.old'))
                     replacer = '/tmp/%s/%s/%s' % (self.hostname, 
-                            dirname, file)
+                            dirname, item)
                     shutil.move(replacer, default_path)
+                    log.append(module='rebuild', line="moving %s to %s" % (replacer, default_path))
 
 
     def tracked(self):
         """There needs to be a comparison between the copied files and the
         files that are in the config file. If they are being tracked but
         nothing is specified in the config the whole directory is moved."""
-        ls = os.listdir('/tmp/%s' % self.hostname)
-        return ls
+        list_files = os.listdir('/tmp/%s' % self.hostname)
+        return list_files
 
