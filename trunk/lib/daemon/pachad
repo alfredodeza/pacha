@@ -20,7 +20,7 @@ import os
 import sys
 import time
 from optparse import OptionParser
-from subprocess import call, Popen, PIPE
+from subprocess import Popen, PIPE
 # fix for local imports
 sys.path.append('/opt/pacha')
 from lib import supay, log, hg, confparser
@@ -34,14 +34,18 @@ class Watcher(object):
  
     def report(self):
         """Report if a file changed and the change has not been commited"""
-        log.append(module='pachad', line='watching for changes in %s' % self.path)
+        log.append(module='pachad', 
+                line='watching for changes in %s' % self.path)
         run = Runners(location=self.path)
         revision = run.hg_revision()[0]
-        log.append(module='pachad', line='revision ID is: %s at %s' % (revision, self.path))
+        log.append(module='pachad', 
+                line='revision ID is: %s at %s' % (revision, self.path))
         current_revision = run.hg_revision()[0]
         new_revision = run.hg_revision()[0]
         if current_revision != new_revision:
-            log.append(module='pachad', line='found a new revision: %s at %s' % (new_revision, self.path))
+            log.append(module='pachad', 
+                    line='found a new revision: %s at %s' % (new_revision, 
+                    self.path))
             mercurial = hg.Hg(path=self.path)
             mercurial.push()
         if run.modified() is True:
@@ -64,15 +68,16 @@ class Runners(object):
     def modified(self):
         """Checks if a file has been modified and not commited"""
         out = run_command(std="stdout", cmd="hg st")
-        dir = os.getcwd()
-        for file in out:
-            file_name = file[2:].split('\n')[0] # get a nice file name
-            if file.startswith('M'):
-                log.append(module='pachad', line='found modified file: %s' % file_name)
+        for line in out:
+            file_name = line[2:].split('\n')[0] # get a nice file name
+            if line.startswith('M'):
+                log.append(module='pachad', 
+                        line='found modified file: %s' % file_name)
                 return True
             else:
                 return False
-                log.append(module='pachad', line='no changes with: %s' % file_name)
+                log.append(module='pachad', 
+                        line='no changes with: %s' % file_name)
 
 def run_command(std, cmd):
     """Runs a command via Popen"""
@@ -114,7 +119,8 @@ def main():
                     watch = Watcher(path=repo)
                     watch.report()
                 else:
-                    log.append(module='pachad', type='WARN', line='path %s does not exist' % repo)
+                    log.append(module='pachad', 
+                            type='WARN', line='path %s does not exist' % repo)
                     break
             time.sleep(10)
 
