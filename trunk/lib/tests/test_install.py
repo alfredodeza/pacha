@@ -25,5 +25,15 @@ class TestMain(unittest.TestCase):
         daemon = os.path.isfile('/etc/init.d/pacha')
         self.assertTrue(daemon)
 
+    def test_log(self):
+        """Do we have a log file?"""
+        log = os.path.isfile('/var/log/pacha.log')
+        self.assertTrue(log)
+
+    def test_symlink(self):
+        """A symlink created in /usr/bin/"""
+        link = os.path.islink('/usr/bin/pacha')
+        self.assertTrue(link)
+
 if __name__ == '__main__':
     unittest.main()
