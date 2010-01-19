@@ -36,9 +36,10 @@ class TestHg(unittest.TestCase):
         hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
         hg.initialize()
         hg.hg_add()
+        sleep(1)
         hg.commit()
         # sleep needed to wait for the previous commands to finish
-        sleep(1)
+        sleep(2)
         # we need to run hg st to verify we have actually commited stuff
         out = Popen('hg st /tmp/pacha', shell=True, stdout=PIPE)
         expected = ''
@@ -46,10 +47,19 @@ class TestHg(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_hg_add(self):
-        """test hg_add 3"""
-        # hg = Hg(port, host, user, path)
+        """We create a file and then we add it"""
+        username = getpass.getuser()
+        hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
+        new_file = open('/tmp/pacha/new_file', 'w')
+        new_file.close()
+        hg.hg_add()
+        sleep(1)
+        out = Popen('hg st /tmp/pacha', shell=True, stdout=PIPE)
+        expected = 'A new_file\n'
+        actual = out.stdout.readline()
+        self.assertEqual(expected, actual)
         # self.assertEqual(expected, hg.hg_add())
-        assert True # TODO: implement your test here
+        #assert True # TODO: implement your test here
 
     def test_hgrc(self):
         """test hgrc 4"""
