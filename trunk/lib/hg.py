@@ -31,7 +31,8 @@ class Hg(object):
             port = 22,
             host = None,
             user = None,
-            path = None
+            path = None,
+            test = False
             ):
         self.port = port
         self.host = host
@@ -47,13 +48,15 @@ class Hg(object):
         self.conf = '/opt/pacha/conf/pacha.conf'
         self.parse = confparser.Parse(self.conf)
         self.parse.options()
-        try:
-            self.parse.user
-        except AttributeError:
-            log.append(module='hg', type='ERROR',
-            line='config file not edited - aborting')
-            sys.stderr.write('pacha.conf not edited! - aborting\n')
-            sys.exit(1)
+        if not test:
+            try:
+                self.parse.user
+            except AttributeError:
+                log.append(module='hg', type='ERROR',
+                line='config file not edited - aborting')
+                sys.stderr.write('pacha.conf not edited! - aborting\n')
+                sys.exit(1)
+
     def commit(self):
         """hg commits with a simple timestamp message"""
         timestamp = strftime('%b %d %H:%M:%S')
