@@ -23,11 +23,14 @@ def main():
     log.append(module='uninstall', line="removing pacha dir at /opt/pacha")
     
     try:
-        call('/etc/init.d/pacha stop', shell=True)
-        log.append(module='uninstall', line="stopped daemon")
-        os.remove('/etc/init.d/pacha')
+        if os.path.isfile('/etc/init.d/pacha'):
+            call('/etc/init.d/pacha stop', shell=True)
+            log.append(module='uninstall', line="stopped daemon")
+            os.remove('/etc/init.d/pacha')
         log.append(module='uninstall', line="destroyed pacha daemon symlink")
-        shutil.rmtree(pacha_dir)
+        if os.path.isdir(pacha_dir):
+            shutil.rmtree(pacha_dir)
+            log.append(module='uninstall', line="removed /opt/pacha")
         os.remove('/usr/bin/pacha')
         log.append(module='uninstall', line="destroyed symlink")
         

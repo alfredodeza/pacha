@@ -30,7 +30,6 @@ def main():
     try:
         log.append(module='install', line="Creating pacha dir")
         shutil.copytree(pacha_source, pacha_dir)
-        print "cpopying from %s to %s" % (pacha_source, pacha_dir)
         log.append(module='install', line="Copied files to /opt/pacha")
         os.symlink(absolute_pacha, executable)
         log.append(module='install',
@@ -49,7 +48,7 @@ def main():
     except OSError, e:
         if e.errno == 13:
             sys.stderr.write("You need to run with sudo privileges")
-            sys.exit(0)
+            sys.exit(1)
         else:
             sys.stderr.write("%s" % e)
 

@@ -3,14 +3,12 @@ import sys
 sys.path.append('../')
 
 import os
+from subprocess import call
 import unittest
 import install
 import uninstall
 
 class TestMain(unittest.TestCase):
-   
-    def setUp(self):
-        install.main()
 
     def test_pacha_dir(self):
         """We should have a pacha dir"""
@@ -26,13 +24,6 @@ class TestMain(unittest.TestCase):
         """We should have copied the daemon to init"""
         daemon = os.path.isfile('/etc/init.d/pacha')
         self.assertTrue(daemon)
-
-#    def test_main(self):
-        # self.assertEqual(expected, main())
-#        assert False # TODO: implement your test here
-
-    def tearDown(self):
-        uninstall.main()
 
 if __name__ == '__main__':
     unittest.main()
