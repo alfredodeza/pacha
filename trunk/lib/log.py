@@ -18,10 +18,10 @@ import os
 import sys
 from time import strftime
 
-def append(module='pacha', type='INFO', line=''):
+def append(module='pacha', type='INFO', line='',
+        log_file = '/var/log/pacha.log'):
     """Simple function to write to a log file"""
 
-    log_file = '/var/log/pacha.log'
     try:
         if os.path.isfile(log_file):
             open_log = open(log_file, 'a')
