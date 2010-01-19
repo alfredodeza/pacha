@@ -19,20 +19,14 @@ import shutil
 from subprocess import call
 import log
 
-def main(path):
+def main():
     """Create the directory and copy all the files"""
     pacha_dir = '/opt/pacha'
     absolute_pacha = pacha_dir+'/pacha.py'
     executable = '/usr/bin/pacha'
     daemon = pacha_dir+'/lib/daemon/pacha'
     init = '/etc/init.d/'
-    pacha_source =  os.path.abspath(path)
-    print pacha_source
-#    cwd = os.getcwd()
- #   cwd_abs = sys.path[0]
- #   print "cwd",cwd
-   # cwd_abs = os.path.abspath(cwd)
-   # print "cwd_abs",cwd_abs
+    pacha_source =  sys.path[0]
     try:
         log.append(module='install', line="Creating pacha dir")
         shutil.copytree(pacha_source, pacha_dir)
