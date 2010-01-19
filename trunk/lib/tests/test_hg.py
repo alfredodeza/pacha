@@ -1,9 +1,11 @@
 import sys
 sys.path.append('../')
 import os
+from time import sleep
 import shutil
 import unittest
 import getpass
+from subprocess import Popen, PIPE
 from hg import Hg
 
 def setup():
@@ -17,21 +19,31 @@ def teardown():
 
 class TestHg(unittest.TestCase):
 
-    def test_clone(self):
-        """Clones the test repo to localhost"""
+    #    def test_clone(self):
+    #    """Clones the test repo to localhost"""
+    #    username = getpass.getuser()
+    #    hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
+    #    hg.initialize()
+    #    hg.hg_add()
+    #    hg.commit()
+    #    hg.clone()
+        # self.assertEqual(expected, hg.clone())
+#        assert True # TODO: implement your test here
+
+    def test_commit(self):
+        """Builds a mercurial repo and commits"""
         username = getpass.getuser()
         hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
         hg.initialize()
         hg.hg_add()
         hg.commit()
-        # self.assertEqual(expected, hg.clone())
-        assert True # TODO: implement your test here
-
-    def test_commit(self):
-        """test commit 2"""
-        # hg = Hg(port, host, user, path)
-        # self.assertEqual(expected, hg.commit())
-        assert True # TODO: implement your test here
+        # sleep needed to wait for the previous commands to finish
+        sleep(1)
+        # we need to run hg st to verify we have actually commited stuff
+        out = Popen('hg st /tmp/pacha', shell=True, stdout=PIPE)
+        expected = ''
+        actual = out.stdout.readline()
+        self.assertEqual(expected, actual)
 
     def test_hg_add(self):
         """test hg_add 3"""

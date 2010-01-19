@@ -56,6 +56,11 @@ class Hg(object):
                 line='config file not edited - aborting')
                 sys.stderr.write('pacha.conf not edited! - aborting\n')
                 sys.exit(1)
+        # testing functionality:
+        if test:
+            self.parse.user = user
+            self.parse.path = '/opt/pacha'
+            self.parse.host = host
 
     def commit(self):
         """hg commits with a simple timestamp message"""
