@@ -6,7 +6,6 @@ import os
 from subprocess import call
 import unittest
 import install
-import uninstall
 
 class TestMain(unittest.TestCase):
 

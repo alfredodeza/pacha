@@ -9,14 +9,6 @@ from subprocess import Popen, PIPE
 from hg import Hg
 import host
 
-#def setup():
-#    """Will setup just once for all tests"""
-#    os.mkdir('/tmp/pacha')
-#    open('/tmp/pacha/foo', 'w')
-
-#def teardown():
-#    """Will run last at the end of all tests"""
-#    shutil.rmtree('/tmp/pacha')
 
 class TestHg(unittest.TestCase):
 
