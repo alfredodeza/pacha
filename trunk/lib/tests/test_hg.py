@@ -7,15 +7,16 @@ import unittest
 import getpass
 from subprocess import Popen, PIPE
 from hg import Hg
+import host
 
-def setup():
-    """Will setup just once for all tests"""
-    os.mkdir('/tmp/pacha')
-    open('/tmp/pacha/foo', 'w')
+#def setup():
+#    """Will setup just once for all tests"""
+#    os.mkdir('/tmp/pacha')
+#    open('/tmp/pacha/foo', 'w')
 
-def teardown():
-    """Will run last at the end of all tests"""
-    shutil.rmtree('/tmp/pacha')
+#def teardown():
+#    """Will run last at the end of all tests"""
+#    shutil.rmtree('/tmp/pacha')
 
 class TestHg(unittest.TestCase):
 
@@ -30,6 +31,15 @@ class TestHg(unittest.TestCase):
         # self.assertEqual(expected, hg.clone())
 #        assert True # TODO: implement your test here
 
+    def setUp(self):
+        """Will setup just once for all tests"""
+        os.mkdir('/tmp/pacha')
+        open('/tmp/pacha/foo', 'w')
+
+    def tearDown(self):
+        """Will run last at the end of all tests"""
+        shutil.rmtree('/tmp/pacha')
+
     def test_commit(self):
         """Builds a mercurial repo and commits"""
         username = getpass.getuser()
@@ -39,7 +49,7 @@ class TestHg(unittest.TestCase):
         sleep(1)
         hg.commit()
         # sleep needed to wait for the previous commands to finish
-        sleep(2)
+        sleep(1)
         # we need to run hg st to verify we have actually commited stuff
         out = Popen('hg st /tmp/pacha', shell=True, stdout=PIPE)
         expected = ''
@@ -50,22 +60,29 @@ class TestHg(unittest.TestCase):
         """We create a file and then we add it"""
         username = getpass.getuser()
         hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
-        new_file = open('/tmp/pacha/new_file', 'w')
-        new_file.close()
+        hg.initialize()
         hg.hg_add()
         sleep(1)
         out = Popen('hg st /tmp/pacha', shell=True, stdout=PIPE)
-        expected = 'A new_file\n'
+        expected = 'A foo\n'
         actual = out.stdout.readline()
         self.assertEqual(expected, actual)
-        # self.assertEqual(expected, hg.hg_add())
-        #assert True # TODO: implement your test here
 
     def test_hgrc(self):
-        """test hgrc 4"""
-        # hg = Hg(port, host, user, path)
-        # self.assertEqual(expected, hg.hgrc())
-        assert True # TODO: implement your test here
+        """Add a line for automated push inside .hg"""
+        username = getpass.getuser()
+        config = open('/tmp/pacha/pacha.conf', 'w')
+        config.write('user = %s\n' % username)
+        config.write('host = localhost\n')
+        config.write('path = /opt/pacha/hosts\n')
+        config.close()
+        hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', 
+                test=True, conf='/tmp/pacha/pacha.conf')
+        hg.hgrc()
+        actual = open('/tmp/pacha/.hg/hgrc').readlines()[1]
+        expected = 'default = ssh://%s@localhost//opt/pacha/hosts/%s/pacha' % (
+                username, host.hostname())
+        self.assertEqual(expected, actual)
 
     def test_initialize(self):
         """test initialize 5"""
