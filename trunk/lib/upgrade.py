@@ -14,6 +14,7 @@
 """Upgrades to the next newest version, replacing files."""
 
 from subprocess import call, PIPE
+import shutil
 import log
 
 
@@ -50,6 +51,11 @@ class Replace(object):
         daemon_location = "/etc/init.d/pacha"
         daemon_destination = "/tmp/pacha_daemon"
         daemon_clone = "/tmp/upgrade/lib/daemon/pacha"
+        shutil.move(daemon_location, daemon_destination)
+        log.append(module='upgrade', type='INFO', line="moved daemon to tmp")
+        # new daemon goes into place
+        shutil.move(daemon_clone, daemon_destination)
+        log.append(module='upgrade', type='INFO', line="moved new daemon to init.d")
 
 
     def pacha(self):
