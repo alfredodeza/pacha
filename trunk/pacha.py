@@ -1,19 +1,29 @@
 #!/usr/bin/env python
 #
-# Copyright 2009 Alfredo Deza
+# Copyright 2009-2010 Alfredo Deza
 #
+# This program is free software: you can redistribute it and/or modify it 
+# under the terms of the GNU General Public License version 3,
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but 
+# WITHOUT ANY WARRANTY; without even the implied warranties of 
+# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR 
+# PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Create controller for package installation
-# Create controller for Bash/SH commands
+
 from subprocess import call
 import os
 import sys
 from optparse import OptionParser
-from lib import install, uninstall, hg, host, rebuild
+from lib import install, uninstall, hg, host, rebuild, upgrade
     
 def main():
     """All command line options happen here"""
-    parser = OptionParser()
+    parser = OptionParser(version='0.0.0')
     parser.add_option('--install', action="store_true",
         help="Installs pacha to /opt/ and creates the symlinks")
 
@@ -28,6 +38,9 @@ def main():
 
     parser.add_option('--rebuild', action="store_true",
             help="Rebuilds all tracked files")
+
+    parser.add_option('--upgrade', action="store_true",
+            help="Upgrades to a newer version")
 
     options, arguments = parser.parse_args()
 
@@ -76,6 +89,9 @@ when rebuilding."""
 
         except KeyboardInterrupt:
             sys.exit(1)
+
+    if options.upgrade:
+        upgrade.main()
 
 if __name__ == '__main__':
     main()
