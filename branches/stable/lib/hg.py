@@ -103,10 +103,6 @@ class Hg(object):
                 hgrc.write(ssh_line)
                 hgrc.close()
                 log.append(module='hg', line="wrote hgrc in %s" % self.path)
-                self.initialize()
-                self.hg_add()
-                self.commit()
-                self.hgrc()
 
             except Exception, e:
                 log.append(module='hg', type='ERROR', line=e)
