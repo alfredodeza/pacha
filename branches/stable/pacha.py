@@ -77,7 +77,7 @@ when rebuilding."""
         mercurial.clone()
         # add the path to .repos
         repos = open('/opt/pacha/conf/.repos', 'a')
-        repos.write(path)
+        repos.write(path+'\n')
         repos.close()
 
     if options.rebuild:
