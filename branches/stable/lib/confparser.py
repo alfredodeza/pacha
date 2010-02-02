@@ -37,9 +37,12 @@ class Parse(object):
     def __init__(self,
                  config,
                  new_value = None):
-        self.config = open(config)
-        self.txt = open(config, 'a')
-        self.new_value = new_value
+        try:
+            self.config = open(config)
+            self.txt = open(config, 'a')
+            self.new_value = new_value
+        except IOError, e:
+            print e
         
     def options(self):
         """Return a dictionary of values found in the config file"""
