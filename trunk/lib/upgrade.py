@@ -96,11 +96,5 @@ def main():
         print "Could not complete upgrade:"
         print e
 
-    finally:
-        #always try to cleanup
-        upgrade.cleanup()
-
-
-
 
 
