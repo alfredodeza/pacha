@@ -34,7 +34,7 @@ class Replace(object):
         """Grab the latest version from code.google.com"""
         command = "hg clone %s /tmp/upgrade" % self.stable
         log.append(module='upgrade', type='INFO', line="checking out pacha stable")
-        call(command, shell=True)
+        call(command, shell=True, stdout=PIPE)
         log.append(module='upgrade', type='INFO', line="finished cloning for upgrade")
     
     def lib(self):
@@ -50,7 +50,7 @@ class Replace(object):
 
 
     def daemon(self):
-        """updates the daemon file"""
+        """updates the init.d file"""
         # move daemon
         daemon_location = "/etc/init.d/pacha"
         daemon_clone = "/tmp/upgrade/branches/stable/lib/daemon/pacha"
@@ -72,23 +72,34 @@ class Replace(object):
         shutil.move(pacha_clone, pacha_location)
         log.append(module='upgrade', type='INFO', line="moved new pacha.py to /opt/pacha")
 
-
     def cleanup(self):
         """All files should be cleaned even if something fails"""
         # remove upgrade dir
         shutil.rmtree("/tmp/upgrade")
+        log.append(module='upgrade', type='INFO', line="removing the tmp files in /tmp/upgrade")
 
 
 
 def main():
     """does the upgrade step by step"""
-    # grab the latest
-    upgrade = Replace()
-    upgrade.get()
-    upgrade.lib()
-    upgrade.daemon()
-    upgrade.pacha()
-    upgrade.cleanup()
+    try:
+        # grab the latest
+        upgrade = Replace()
+        upgrade.get()
+        # replace lib, daemon and pacha files
+        upgrade.lib()
+        upgrade.daemon()
+        upgrade.pacha()
+        # cleanup
+        upgrade.cleanup()
+    except OSError, e:
+        print "Could not complete upgrade:"
+        print e
+
+    finally:
+        #always try to cleanup
+        upgrade.cleanup()
+
 
 
 
