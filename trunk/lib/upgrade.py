@@ -14,7 +14,9 @@
 """Upgrades to the next newest version, replacing files."""
 
 from subprocess import call, PIPE
+from time import strftime
 import shutil
+import os
 import log
 
 
@@ -23,25 +25,27 @@ class Replace(object):
 
     def __init__(self):
         self.stable = "https://pacha.googlecode.com/hg/branches/stable"
-        self.tmp = "/tmp/upgrade"
+        self.tmp = "/tmp/upgrade/branches/stable"
+        self.daemon_dest = "/tmp/daemon"+strftime("%H%M%S")
+        self.lib_dest = "/tmp/lib"+strftime("%H%M%S")
+        self.pacha_dest = "/tmp/pacha"+strftime("%H%M%S")
 
     def get(self):
         """Grab the latest version from code.google.com"""
-        command = "hg clone %s %s" % (self.stable, self.tmp)
+        command = "hg clone %s /tmp/upgrade" % self.stable
         log.append(module='upgrade', type='INFO', line="checking out pacha stable")
-        call(command, shell=True, stdout=PIPE)
+        call(command, shell=True)
         log.append(module='upgrade', type='INFO', line="finished cloning for upgrade")
-
+    
     def lib(self):
         """Replaces all lib and test files"""
         # first move lib
         lib_location = "/opt/pacha/lib"
-        lib_destination = "/tmp/lib"
-        lib_clone = "/tmp/upgrade/lib"
-        shutil.move(lib_location, lib_destination)
+        lib_clone = "/tmp/upgrade/branches/stable/lib"
+        shutil.move(lib_location, self.lib_dest)
         log.append(module='upgrade', type='INFO', line="moved lib to tmp")
         # now we move the new lib into place
-        shutil.move(lib_clone, lib_destination)
+        shutil.copytree(lib_clone, lib_location)
         log.append(module='upgrade', type='INFO', line="moved new lib into /opt/pacha")
 
 
@@ -49,22 +53,43 @@ class Replace(object):
         """updates the daemon file"""
         # move daemon
         daemon_location = "/etc/init.d/pacha"
-        daemon_destination = "/tmp/pacha_daemon"
-        daemon_clone = "/tmp/upgrade/lib/daemon/pacha"
-        shutil.move(daemon_location, daemon_destination)
+        daemon_clone = "/tmp/upgrade/branches/stable/lib/daemon/pacha"
+        shutil.move(daemon_location, self.daemon_dest)
         log.append(module='upgrade', type='INFO', line="moved daemon to tmp")
         # new daemon goes into place
-        shutil.move(daemon_clone, daemon_destination)
+        shutil.move(daemon_clone, daemon_location)
         log.append(module='upgrade', type='INFO', line="moved new daemon to init.d")
 
 
     def pacha(self):
         """updates pacha.py"""
+        # move pacha.py out
+        pacha_location = "/opt/pacha/pacha.py"
+        pacha_clone = "/tmp/upgrade/branches/stable/pacha.py"
+        shutil.move(pacha_location, self.pacha_dest)
+        log.append(module='upgrade', type='INFO', line="moved pacha.py to tmp")
+        # new pacha.py into place
+        shutil.move(pacha_clone, pacha_location)
+        log.append(module='upgrade', type='INFO', line="moved new pacha.py to /opt/pacha")
+
+
+    def cleanup(self):
+        """All files should be cleaned even if something fails"""
+        # remove upgrade dir
+        shutil.rmtree("/tmp/upgrade")
+
 
 
 def main():
     """does the upgrade step by step"""
     # grab the latest
-    get()
+    upgrade = Replace()
+    upgrade.get()
+    upgrade.lib()
+    upgrade.daemon()
+    upgrade.pacha()
+    upgrade.cleanup()
+
+
 
 
