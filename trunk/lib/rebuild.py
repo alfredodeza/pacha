@@ -65,7 +65,7 @@ class Rebuild(object):
                 call(command, shell=True)
         except AttributeError, e:
             log.append(module='rebuild', type='ERROR', line="%s" % e)
-            sys.stderr.write(e)
+            sys.stderr.write("No packages specified for installation in config")
             sys.exit(1)
 
     def specific_tracking(self):
