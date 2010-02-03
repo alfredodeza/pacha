@@ -77,7 +77,7 @@ class Hg(object):
         """should only be used when --watch is called"""
         command = "hg add"
         os.chdir(self.path)
-        Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+        call(command, shell=True)
         log.append(module='hg', line='added files to repo %s' % self.path)
 
     def push(self):
