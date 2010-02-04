@@ -46,6 +46,10 @@ def main():
         sys.stderr.write(" * Pacha needs sudo privileges to run *\n")
         sys.exit(1)
 
+    # now check for mercurial:
+    if os.path.isfile('/usr/bin/hg') == False:
+        sys.stderr.write(" * Pacha needs Mercurial installed to run *\n")
+
     else:
         options, arguments = parser.parse_args()
 
