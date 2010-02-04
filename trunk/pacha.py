@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from subprocess import call
 import os
 import sys
 from optparse import OptionParser
@@ -85,7 +84,7 @@ when rebuilding."""
             run = rebuild.Rebuild()
             run.retrieve_files()
             run.install()
-            run.specific_tracking()
+            run.replace_manager()
 
         except KeyboardInterrupt:
             sys.exit(1)

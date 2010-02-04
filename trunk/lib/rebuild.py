@@ -14,8 +14,9 @@
 
 import os
 import sys
-from subprocess import call, Popen, PIPE
+from subprocess import call
 import shutil
+from time import strftime
 import confparser, log
 
 
@@ -47,16 +48,15 @@ class Rebuild(object):
         """scp all the files we need to /tmp/pacha"""
         command = "scp -r %s@%s:/opt/pacha/hosts/%s /tmp/" % (self.server_user,
                 self.server, self.hostname)
-        run = Popen(command, shell=True, stdout=PIPE)
-        for line_out in run.stdout.readlines():
-            log.append(module='rebuild', line=line_out.strip('\n')[0])
+        call(command, shell=True)
 
     def update(self):
         """Do a simple update to apt so it won't complain about unreachable
         repositories"""
         cmd = "sudo apt-get update"
-        Popen(cmd, shell=True)
-        log.append(module='rebuild', line="updating repositories via apt-get update")
+        call(cmd, shell=True)
+        log.append(module='rebuild', 
+                line="updated repositories via apt-get update")
 
     def install(self):
         """Reads the config and install via apt-get any packages that have to 
@@ -74,50 +74,74 @@ class Rebuild(object):
                 call(command, shell=True)
         except AttributeError, e:
             log.append(module='rebuild', type='ERROR', line="%s" % e)
-            sys.stderr.write("No packages specified for installation in config\n")
-            sys.exit(1)
+            sys.stderr.write("""No packages specified for installation 
+in config\n""")
 
-    def specific_tracking(self):
-        """You can specify specific files to be rebuilt to avoid replacing
-        whole directories. Mercurial can't keep track of single files."""
+    def replace_manager(self):
+        """Depending on the configuration file, you may or may not have
+        specific files you want to override. This method does a cross
+        check between what directories Pacha has kept track and if they
+        have a corresponding match in the config file."""
+        # we parse the conf file to get specific tracking:
         conf = '/tmp/%s/conf/pacha.conf' % self.hostname
         parse = confparser.Parse(conf)
         parse.options()
         log.append(module='rebuild', line="read config file and parsed options")
         #check if the config has dirs we have in tmp:
         for dirname in self.tracked():
+            log.append(module='rebuild', line = "dirname in self.tracked: %s" % dirname)
+            self.default_replace(dirname)
             # we check the dirs in tmp and then get attributes if any
-            if hasattr(parse, dirname):
-                log.append(module='rebuild', 
-                        line="found dirs that have specific config")
-                # now be build the paths and move stuff
-                for item in getattr(parse, dirname):
-                    default_path = "/%s/%s" % (dirname, item)
-                    shutil.move(default_path, default_path+'.old')
-                    log.append(module='rebuild', 
-                            line="moving %s to %s" % (default_path, 
-                            default_path+'.old'))
-                    replacer = '/tmp/%s/%s/%s' % (self.hostname, 
-                            dirname, item)
-                    shutil.move(replacer, default_path)
-                    log.append(module='rebuild', 
-                            line="moving %s to %s" % (replacer, default_path))
+            # TO BE IMPLEMENTED
+            #if hasattr(parse, dirname):
+            #    log.append(module='rebuild', 
+            #            line="found dirs that have specific config")
+                #we found some, so lets send it to a method that deals with it
+            #    for item in getattr(parse, dirname):
+            #        self.specific_tracking(dirname, item)
+            # anything else just gets sent to a method that deals with it
+            #else:
+            #    self.default_replace(dirname)
 
-    def default_replace(self):
+
+    def specific_tracking(self, dirname, item):
+        """You can specify specific files to be rebuilt to avoid replacing
+        whole directories. Mercurial can't keep track of single files."""
+        ##
+        # BUGGY / NOT YET IMPLEMENTED
+        ##
+        # now be build the paths and move stuff
+        default_path = "/%s/%s" % (dirname, item)
+        log.append(module='rebuild', line = 'default path: /%s/%s' % (dirname, item))
+        shutil.move(default_path, '/tmp/%s.%s' % (item, strftime('%H%M%S')))
+        log.append(module='rebuild', line="moving %s to %s" % (default_path, 
+                default_path+'.old'))
+        replacer = '/tmp/%s/%s/%s' % (self.hostname, dirname, item)
+        shutil.move(replacer, default_path)
+        log.append(module='rebuild', 
+                line="ST moving %s to %s" % (replacer, default_path))
+
+    def default_replace(self, dirname):
         """Usually you will replace the configs you were backing up. Here
         all directories get pushed if not specified in the config"""
         repos_path = self.repos()
+        log.append(module='rebuild', line='repos path: %s' % repos_path)
         tmp_dir = '/tmp/%s/' % self.hostname
+        log.append(module='rebuild', line='tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
         for path in repos_path:
             base = os.path.basename(path)
+            log.append(module='rebuild', line= 'DR base dir: %s' % base)
             for dirname in self.tracked():
-                if dirname == base: # we have a winer
-                    shutil.move(path, path+'.old') # get it out of the way
+                if dirname == base: # we have a winner
+                    log.append(module='rebuild',
+                    line='DR found path with matching dir: %s %s' % (dirname, 
+                        base))
+                    shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
+                    log.append(module='rebuild', line='moving %s' % path)
                     shutil.move(tmp_dir+dirname, path)
-
-
-
+                    log.append(module='rebuild',
+                            line='moving %s to %s' % (tmp_dir+dirname, path))
 
     def tracked(self):
         """There needs to be a comparison between the copied files and the
@@ -130,7 +154,7 @@ class Rebuild(object):
         """Returns a list of all repo paths Pacha has been tracking"""
         location = '/tmp/%s/conf/.repos' % self.hostname
         repos_list = []
-        if os.exists(location):
+        if os.path.exists(location):
             for line in open(location).readlines():
                 repos_list.append(line.split('\n')[0])
         return repos_list
