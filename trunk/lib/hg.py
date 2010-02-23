@@ -78,6 +78,9 @@ class Hg(object):
 
     def hg_add(self):
         """ """
+        repo = hg.repository(ui.ui(), self.path)
+        commands.add(ui.ui(), repo=repo)
+        log.append(module='hg', line='added files to repo %s' % self.path)
 
 #    def hg_add(self):
 #        """should only be used when --watch is called"""

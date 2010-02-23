@@ -42,10 +42,7 @@ class TestHg(unittest.TestCase):
         hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
         hg.initialize()
         hg.hg_add()
-        #sleep(1)
         hg.commit()
-        # sleep needed to wait for the previous commands to finish
-        sleep(1)
         # we need to run hg st to verify we have actually commited stuff
         out = Popen('hg st /tmp/pacha', shell=True, stdout=PIPE)
         expected = ''
@@ -58,7 +55,6 @@ class TestHg(unittest.TestCase):
         hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
         hg.initialize()
         hg.hg_add()
-        sleep(1)
         out = Popen('hg st /tmp/pacha', shell=True, stdout=PIPE)
         expected = 'A foo\n'
         actual = out.stdout.readline()
