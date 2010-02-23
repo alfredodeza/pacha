@@ -82,12 +82,6 @@ class Hg(object):
         commands.add(ui.ui(), repo=repo)
         log.append(module='hg', line='added files to repo %s' % self.path)
 
-#    def hg_add(self):
-#        """should only be used when --watch is called"""
-#        command = "hg add"
-#        call(command, shell=True)
-#        log.append(module='hg', line='added files to repo %s' % self.path)
-
     def push(self):
         """Pushes the repository to the centralized Pacha Master server"""
         command = "hg push"
@@ -148,14 +142,6 @@ class Hg(object):
         """Creates a mercurial repository"""
         commands.init(ui.ui(), dest=self.path)
         log.append(module='hg', line='created hg repo at %s' % self.path)
-
-#    def initialize(self):
-#        """Creates a mercurial repository"""
-#        command = "hg init"
-#        call(command, shell=True)
-#        log.append(module='hg', line='created hg repo at %s' % self.path)
-
-# does not need all the __init__ info for the Hg class
 
 def update():
     """Updates a mercurial repository pluging in directly into Mercurial
