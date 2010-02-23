@@ -12,16 +12,16 @@ import host
 
 class TestHg(unittest.TestCase):
 
-    #    def test_clone(self):
-    #    """Clones the test repo to localhost"""
-    #    username = getpass.getuser()
-    #    hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
-    #    hg.initialize()
-    #    hg.hg_add()
-    #    hg.commit()
-    #    hg.clone()
-        # self.assertEqual(expected, hg.clone())
-#        assert True # TODO: implement your test here
+    def test_clone(self):
+        """Clones the test repo to localhost"""
+        username = getpass.getuser()
+        hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
+        hg.initialize()
+        hg.hg_add()
+        hg.commit()
+        hg.clone()
+        result = os.path.isdir('/tmp/remote_pacha')
+        self.assertTrue(result)
 
     def setUp(self):
         """Will setup just once for all tests"""
@@ -31,6 +31,10 @@ class TestHg(unittest.TestCase):
     def tearDown(self):
         """Will run last at the end of all tests"""
         shutil.rmtree('/tmp/pacha')
+        try:
+            shutil.rmtree('/tmp/remote_pacha')
+        except OSError:
+            pass # nevermind if you could not delte this guy
 
     def test_commit(self):
         """Builds a mercurial repo and commits"""
@@ -38,7 +42,7 @@ class TestHg(unittest.TestCase):
         hg = Hg(port=22, host='localhost', user=username, path='/tmp/pacha', test=True)
         hg.initialize()
         hg.hg_add()
-        sleep(1)
+        #sleep(1)
         hg.commit()
         # sleep needed to wait for the previous commands to finish
         sleep(1)
