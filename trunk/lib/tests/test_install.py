@@ -1,7 +1,7 @@
 # only way to import stuff from where ever we are
 import sys
-sys.path.append('../')
-
+if '../' not in sys.path:
+    sys.path.append('../')
 import os
 from subprocess import call
 import unittest
