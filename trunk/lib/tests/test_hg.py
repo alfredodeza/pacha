@@ -96,16 +96,18 @@ class TestHg(unittest.TestCase):
         expected = os.path.isdir('/tmp/test_pacha/.hg')
         self.assertTrue(expected) 
 
-#    def test_push(self):
-#        """Push local changes to remote server"""
-#        hg = Hg(port=22, host='localhost', user=self.username,
-#                path='/tmp/pacha', test=True)
-#        hg.initialize()
-#        hg.hg_add()
-#        hg.commit()
-#        hg.push()
-#        expected = os.path.isdir('/tmp/remote_pacha')
-#        self.assertTrue(True)
+    def test_push(self):
+        """Push local changes to remote server"""
+        hg = Hg(port=22, host='localhost', user=self.username,
+                path='/tmp/test_pacha', 
+		test=True, conf='/tmp/test_pacha/pacha.conf')
+        hg.initialize()
+        hg.hg_add()
+        hg.commit()
+	hg.clone()
+        hg.push()
+        expected = os.path.isdir('/tmp/remote_pacha')
+        self.assertTrue(expected)
 
 
     def test_validate_true(self):
