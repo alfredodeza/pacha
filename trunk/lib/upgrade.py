@@ -80,6 +80,16 @@ class Replace(object):
 
 
 
+def is_number(number):
+    """Determines if any part of a string is a valid number or not"""
+    try:
+        float(number)
+        return True
+    except ValueError:
+        return False
+
+
+
 def main():
     """does the upgrade step by step"""
     try:

@@ -97,15 +97,10 @@ class Hg(object):
         """An option to write the default path in hgrc for pushing
         via hg"""
         if self.validate():
-            #parse = confparser.Parse(self.conf)
-            #parse.options() # get all the options in the config file
-            #log.append(module='hg', line="parsed options from config file")
             machine = hostname()
             try:
                 hgrc = open(self.path+'/.hg/hgrc', 'w')
                 hgrc.write('[paths]\n')
-                #ssh_line = "default = ssh://%s@%s/%s/%s/%s" % (parse.user, 
-                #        parse.host, parse.path, machine, self.dir)
                 ssh_line = "default = ssh://%s@%s%s" % (self.parse.user,
                         self.parse.host, self.dest_path)
                 hgrc.write(ssh_line)
