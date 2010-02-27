@@ -85,7 +85,10 @@ class Hg(object):
         log.append(module='hg', line='added files to repo %s' % self.path)
 
     def push(self):
-        """Pushes the repository to the centralized Pacha Master server"""
+        """Pushes the repository to the centralized Pacha Master server
+        The Mercurial API is broken here, it does not recognize 'default'
+        or 'default-push' in .hg/hgrc so we need to call it via 
+        subprocess.call"""
         command = "hg push"
         call(command, shell=True, stdout=PIPE, stderr=PIPE)
         log.append(module='hg', line='push %s to central pacha' % self.path)
