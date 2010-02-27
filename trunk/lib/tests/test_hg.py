@@ -15,28 +15,9 @@ class TestHg(unittest.TestCase):
 
     username = getpass.getuser()
 
-    def test_clone(self):
-        """Clones the test repo to localhost"""
-        os.mkdir('/tmp/remote_pacha')
-        os.mkdir('/tmp/remote_pacha/hosts/')
-	os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
-
-        hg = Hg(port=22, host='localhost', user=self.username, 
-		path='/tmp/test_pacha', 
-            	test=True, conf='/tmp/test_pacha/pacha.conf')
-	
-        hg.initialize()
-        hg.hg_add()
-        hg.commit()
-        hg.clone()
-        result = os.path.isdir('/tmp/remote_pacha/hosts/%s/test_pacha' % host.hostname())
-        self.assertTrue(result)
-
     def setUp(self):
         """Will setup just once for all tests"""
         os.mkdir('/tmp/test_pacha')
-        new_file = open('/tmp/test_pacha/foo', 'w')
-        new_file.close()
         config = open('/tmp/test_pacha/pacha.conf', 'w')
         config.write('user = %s\n' % self.username)
         config.write('host = localhost\n')
@@ -51,12 +32,28 @@ class TestHg(unittest.TestCase):
         except OSError:
             pass # nevermind if you could not delte this guy
 
+    def test_clone(self):
+        """Clones the test repo to localhost"""
+        os.mkdir('/tmp/remote_pacha')
+        os.mkdir('/tmp/remote_pacha/hosts/')
+        os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
+        hg = Hg(port=22, host='localhost', user=self.username, 
+		path='/tmp/test_pacha', 
+            	test=True, conf='/tmp/test_pacha/pacha.conf')
+	
+        hg.initialize()
+        hg.hg_add()
+        hg.commit()
+        hg.clone()
+        result = os.path.isdir('/tmp/remote_pacha/hosts/%s/test_pacha' % host.hostname())
+        self.assertTrue(result)
+
     def test_commit(self):
         """Builds a mercurial repo and commits"""
         hg = Hg(port=22, host='localhost', user=self.username, 
 		path='/tmp/test_pacha', test=True,
 		conf='/tmp/test_pacha/pacha.conf')
-	hg.initialize()
+    	hg.initialize()
         hg.hg_add()
         hg.commit()
         # we need to run hg st to verify we have actually commited stuff
@@ -73,7 +70,7 @@ class TestHg(unittest.TestCase):
         hg.initialize()
         hg.hg_add()
         out = Popen('hg st /tmp/test_pacha', shell=True, stdout=PIPE)
-        expected = 'A foo\n'
+        expected = 'A pacha.conf\n'
         actual = out.stdout.readline()
         self.assertEqual(expected, actual)
 
@@ -98,16 +95,27 @@ class TestHg(unittest.TestCase):
 
     def test_push(self):
         """Push local changes to remote server"""
-        hg = Hg(port=22, host='localhost', user=self.username,
+        os.mkdir('/tmp/remote_pacha')
+        os.mkdir('/tmp/remote_pacha/hosts/')
+        os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
+        mercurial = Hg(port=22, host='localhost', user=self.username,
                 path='/tmp/test_pacha', 
-		test=True, conf='/tmp/test_pacha/pacha.conf')
-        hg.initialize()
-        hg.hg_add()
-        hg.commit()
-	hg.clone()
-        hg.push()
-        expected = os.path.isdir('/tmp/remote_pacha')
-        self.assertTrue(expected)
+		        test=True, conf='/tmp/test_pacha/pacha.conf')
+        mercurial.hgrc()
+        mercurial.hg_add()
+        mercurial.commit()
+        mercurial.clone()
+        new_file = open('/tmp/test_pacha/foo', 'w')
+        new_file.write('new line')
+        new_file.close()
+        mercurial.hg_add()
+        mercurial.commit()
+        mercurial.push()
+        update(hosts_path = '/tmp/remote_pacha/hosts')
+        new_line = open('/tmp/remote_pacha/hosts/%s/test_pacha/foo' % host.hostname())
+        actual = new_line.readlines()[0]
+        expected = 'new line'
+        self.assertEqual(actual, expected)
 
 
     def test_validate_true(self):
@@ -129,19 +137,27 @@ class TestHg(unittest.TestCase):
 
     def test_update(self):
         """Update a working hg repository"""
-        os.mkdir('/tmp/test_pacha/hosts')
-        os.mkdir('/tmp/test_pacha/hosts/foo')
-        os.mkdir('/tmp/test_pacha/hosts/foo/one')
+        os.mkdir('/tmp/remote_pacha')
+        os.mkdir('/tmp/remote_pacha/hosts')
+        os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
         hg = Hg(port=22, host='localhost', user=self.username,
-                path='/tmp/test_pacha/hosts/foo/one', test=True,
+                path='/tmp/test_pacha', test=True,
 		conf='/tmp/test_pacha/pacha.conf')
-        empty = open('/tmp/test_pacha/hosts/foo/one/empty', 'w')
-        hg.initialize()
+        hg.hgrc()
         hg.hg_add()
         hg.commit()
-        #out = "0 files updated, 0 files merged, 0 files removed, 0 files unresolved"
-        expected = update(hosts_path='/tmp/test_pacha/hosts')
-        self.assertFalse(expected)
+        hg.clone()
+        new_line = open('/tmp/test_pacha/foo', 'w')
+        new_line.write('new line')
+        new_line.close()
+        hg.hg_add()
+        hg.commit()
+        hg.push()
+        update(hosts_path='/tmp/remote_pacha/hosts')
+        get_line = open('/tmp/remote_pacha/hosts/%s/test_pacha/foo' % host.hostname())
+        actual = get_line.readlines()[0]
+        expected = 'new line'
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()

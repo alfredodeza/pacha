@@ -15,7 +15,7 @@
 """SSH connections and file transfers with limited options like non
 standard ports. This is a simple wrapper to suit Pacha."""
 
-from subprocess import Popen, PIPE
+from subprocess import call, Popen, PIPE
 import os
 import sys
 from time import strftime
@@ -55,8 +55,6 @@ class Hg(object):
                 hostname(), self.dir)
         if not test:
             try:
-#                self.dest_path = '/%s/%s/%s' % (self.parse.path, 
-#                        host.hostname(), self.dir)
                 self.parse.user
             except AttributeError:
                 log.append(module='hg', type='ERROR',
@@ -66,10 +64,8 @@ class Hg(object):
         # testing functionality:
         if test:
             self.parse.user = user
-#            self.parse.path = '/opt/pacha/hosts'
             self.parse.path = '/tmp/remote_pacha'
             self.parse.host = host
-#            self.dest_path = '/tmp/remote_pacha/hosts/%s/%s' % 
 
     def commit(self):
         """hg commit action, adding a message with the correct timestamp
@@ -91,8 +87,8 @@ class Hg(object):
     def push(self):
         """Pushes the repository to the centralized Pacha Master server"""
         command = "hg push"
-        Popen(command, shell=True)
-        log.append(module='hg', line='push to central pacha: %s' % self.path)
+        call(command, shell=True, stdout=PIPE, stderr=PIPE)
+        log.append(module='hg', line='push %s to central pacha' % self.path)
 
     def hgrc(self):
         """An option to write the default path in hgrc for pushing
@@ -112,6 +108,7 @@ class Hg(object):
                 hgrc.write(ssh_line)
                 hgrc.close()
                 log.append(module='hg', line="wrote hgrc in %s" % self.path)
+                log.append(module='hg', line="default is %s" % ssh_line)
 
             except Exception, error:
                 log.append(module='hg', type='ERROR', line=error)
@@ -129,7 +126,6 @@ class Hg(object):
         source = self.path
         dest = 'ssh://%s@%s%s' % (self.parse.user, self.parse.host,
             self.dest_path)
-        print self.dest_path
         commands.clone(ui.ui(), source, dest)
         log.append(module='CLONE', line='cloning %s' % dest )
         # TODO: need to add trusted USERS in the global .hgrc 
@@ -162,8 +158,12 @@ def update(hosts_path = '/opt/pacha/hosts'):
         if os.path.isdir(sub_dir):
             for dir in os.listdir(os.path.join(hosts_path, dirs)):
                 directory = os.path.join(sub_dir, dir)
-                repo = hg.repository(ui.ui(), directory)
-                commands.update(ui.ui(), repo)
-                log.append(module='hg', type='INFO', 
-                        line='updating host %s directory: %s' % (dirs, dir))
-
+                if os.path.isdir(directory):
+                    repo = hg.repository(ui.ui(), directory)
+                    commands.update(ui.ui(), repo)
+                    log.append(module='hg.update', type='INFO', 
+                        line='updating host %s directory: %s' % (dirs, 
+                            directory))
+                else:
+                    log.append(module='hg.update', type='ERROR',
+                            line = '%s is not a directory' % directory)
