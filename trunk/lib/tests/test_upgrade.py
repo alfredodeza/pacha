@@ -4,7 +4,7 @@ if '/opt/pacha/lib' not in sys.path:
 import unittest
 import upgrade
 
-class TestHost(unittest.TestCase):
+class TestUpgrade(unittest.TestCase):
     
     def test_is_number_true(self):
         """Pass a number and return True"""
@@ -17,6 +17,13 @@ class TestHost(unittest.TestCase):
         string = "foo"
         expected = upgrade.is_number(string)
         self.assertFalse(expected)
+
+    def test_url_filename(self):
+        """Pass a full url and return the filename"""
+        url = 'http://pacha.googlecode.com/files/pacha-0.0.3.tar.gz'
+        actual = upgrade.url_filename(url)
+        expected = 'pacha-0.0.3.tar.gz'
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()

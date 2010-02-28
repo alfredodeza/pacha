@@ -17,6 +17,7 @@ from subprocess import call, PIPE
 from time import strftime
 import shutil
 import os
+import urllib
 import log
 
 
@@ -88,7 +89,10 @@ def is_number(number):
     except ValueError:
         return False
 
-
+def url_filename(url):
+    """Return the filename from a url"""
+    file = url.split('/')[-1]
+    return file
 
 def main():
     """does the upgrade step by step"""
