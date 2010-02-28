@@ -2,6 +2,7 @@ import sys
 if '/opt/pacha/lib' not in sys.path:
     sys.path.append('/opt/pacha/lib')
 import unittest
+from subprocess import Popen, PIPE
 import upgrade
 
 class TestUpgrade(unittest.TestCase):
@@ -24,6 +25,29 @@ class TestUpgrade(unittest.TestCase):
         actual = upgrade.url_filename(url)
         expected = 'pacha-0.0.3.tar.gz'
         self.assertEqual(actual, expected)
+
+    def test_url_check_true(self):
+        """Validate a working url by returning True"""
+        url = 'http://www.google.com'
+        expected = upgrade.url_check(url)
+        self.assertTrue(expected)
+
+    def test_url_check_false(self):
+        """Return False for a non working URL"""
+        url = 'http://a_non_working_url.return.false'
+        expected = upgrade.url_check(url)
+        self.assertFalse(expected)
+
+    def test_current_version(self):
+        """Verify the current Pacha version"""
+        command = "pacha --version"
+        get_version = Popen(command, shell=True, stdout=PIPE)
+        # this return is a mouthful...
+        expected = get_version.stdout.readlines()[0].split('\n')[0]
+        actual = upgrade.current_version()
+        self.assertEqual(actual, expected)
+
+
 
 if __name__ == '__main__':
     unittest.main()

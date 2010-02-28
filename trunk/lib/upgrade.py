@@ -13,7 +13,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Upgrades to the next newest version, replacing files."""
 
-from subprocess import call, PIPE
+from subprocess import call,Popen, PIPE
 from time import strftime
 import shutil
 import os
@@ -79,7 +79,20 @@ class Replace(object):
         shutil.rmtree("/tmp/upgrade")
         log.append(module='upgrade', type='INFO', line="removing the tmp files in /tmp/upgrade")
 
+def current_version():
+    """Return the current Pacha version"""
+    command = "pacha --version"
+    get_version = Popen(command, shell=True, stdout=PIPE)
+    # this return is a mouthful...
+    return get_version.stdout.readlines()[0].split('\n')[0]
 
+def url_check(url):
+    """Validate a url, returning False is it is not available"""
+    try:
+        address = urllib.urlopen(url)
+        return True
+    except IOError:
+        return False
 
 def is_number(number):
     """Determines if any part of a string is a valid number or not"""
@@ -106,9 +119,9 @@ def main():
         upgrade.pacha()
         # cleanup
         upgrade.cleanup()
-    except OSError, e:
+    except OSError, error:
         print "Could not complete upgrade:"
-        print e
+        print error
 
 
 
