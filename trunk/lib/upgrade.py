@@ -79,6 +79,15 @@ class Replace(object):
         shutil.rmtree("/tmp/upgrade")
         log.append(module='upgrade', type='INFO', line="removing the tmp files in /tmp/upgrade")
 
+def download_link(url='http://code.google.com/p/pacha'):
+    """Return a list with the available download links"""
+    source = urllib.urlopen(url)
+    links = []
+    for line in source:
+        if 'files/pacha-' in line:
+            links.append(line.split('"')[1])
+    return links
+
 def current_version():
     """Return the current Pacha version"""
     command = "pacha --version"

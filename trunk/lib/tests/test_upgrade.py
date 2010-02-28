@@ -47,6 +47,20 @@ class TestUpgrade(unittest.TestCase):
         actual = upgrade.current_version()
         self.assertEqual(actual, expected)
 
+    def test_download_link_list(self):
+        """Open a url and get a list"""
+        url = 'http://code.google.com/p/pacha'
+        actual = type(upgrade.download_link(url)) is list
+        self.assertTrue(actual)
+
+    def test_download_link(self):
+        """Pass an html file object and return a valid download link"""
+        html = open('/tmp/index.html', 'w')
+        html.write("""<a href="http://pacha.googlecode.com/files/pacha-0.0.3.tar.gz">pacha-0.0.3.tar.gz</a>""")
+        html.close()
+        expected = 'http://pacha.googlecode.com/files/pacha-0.0.3.tar.gz'
+        actual = upgrade.download_link('/tmp/index.html')[0]
+        self.assertEqual(actual, expected)
 
 
 if __name__ == '__main__':
