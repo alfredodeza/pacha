@@ -79,42 +79,51 @@ class Replace(object):
         shutil.rmtree("/tmp/upgrade")
         log.append(module='upgrade', type='INFO', line="removing the tmp files in /tmp/upgrade")
 
-def download_link(url='http://code.google.com/p/pacha'):
-    """Return a list with the available download links"""
-    source = urllib.urlopen(url)
-    links = []
-    for line in source:
-        if 'files/pacha-' in line:
-            links.append(line.split('"')[1])
-    return links
+class Upgrade(object):
+    """Checks the download links available in the project page and decides
+    which one is the best option. A few checks are in place to verify
+    the latest version is downloaded"""
 
-def current_version():
-    """Return the current Pacha version"""
-    command = "pacha --version"
-    get_version = Popen(command, shell=True, stdout=PIPE)
-    # this return is a mouthful...
-    return get_version.stdout.readlines()[0].split('\n')[0]
+    def __init__(self,
+            url = 'http://code.google.com/p/pacha'):
+        self.url = url
 
-def url_check(url):
-    """Validate a url, returning False is it is not available"""
-    try:
-        address = urllib.urlopen(url)
-        return True
-    except IOError:
-        return False
+    def download_link(self):
+        """Return a list with the available download links"""
+        source = urllib.urlopen(self.url)
+        links = []
+        for line in source:
+            if 'files/pacha-' in line:
+                links.append(line.split('"')[1])
+        return links
 
-def is_number(number):
-    """Determines if any part of a string is a valid number or not"""
-    try:
-        float(number)
-        return True
-    except ValueError:
-        return False
+    def current_version(self):
+        """Return the current Pacha version"""
+        command = "pacha --version"
+        get_version = Popen(command, shell=True, stdout=PIPE)
+        # this return is a mouthful...
+        return get_version.stdout.readlines()[0].split('\n')[0]
 
-def url_filename(url):
-    """Return the filename from a url"""
-    file = url.split('/')[-1]
-    return file
+    def url_check(self):
+        """Validate a url, returning False is it is not available"""
+        try:
+            address = urllib.urlopen(self.url)
+            return True
+        except IOError:
+            return False
+
+    def is_number(self, number):
+        """Determines if any part of a string is a valid number or not"""
+        try:
+            float(number)
+            return True
+        except ValueError:
+            return False
+
+    def url_filename(self):
+        """Return the filename from a url"""
+        file = self.url.split('/')[-1]
+        return file
 
 def main():
     """does the upgrade step by step"""
