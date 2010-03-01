@@ -25,7 +25,7 @@ class TestUpgrade(unittest.TestCase):
         """Pass a full url and return the filename"""
         url = 'http://pacha.googlecode.com/files/pacha-0.0.3.tar.gz'
         up = upgrade.Upgrade(url)
-        actual = up.url_filename()
+        actual = up.url_filename(url)
         expected = 'pacha-0.0.3.tar.gz'
         self.assertEqual(actual, expected)
 
