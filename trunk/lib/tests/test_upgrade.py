@@ -3,9 +3,28 @@ if '/opt/pacha/lib' not in sys.path:
     sys.path.append('/opt/pacha/lib')
 import unittest
 from subprocess import Popen, PIPE
+import os
+import shutil
 import upgrade
 
 class TestUpgrade(unittest.TestCase):
+
+    def tearDown(self):
+        """Remove some croft"""
+        try:
+            shutil.rmtree('/tmp/pacha')
+        except OSError:
+            pass # maybe file was not downloaded
+
+    def test_get(self):
+        """Download a Pacha tar.gz file"""
+        up = upgrade.Upgrade()
+        link = up.download_link()
+        tar_file = '/tmp/%s' % up.url_filename(link)
+        up.get()
+        expected = os.path.isfile(tar_file)
+        self.assertTrue(expected)
+
     
     def test_is_number_true(self):
         """Pass a number and return True"""
