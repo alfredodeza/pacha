@@ -19,10 +19,10 @@ from subprocess import call, Popen, PIPE
 import os
 import sys
 from time import strftime
+from mercurial import commands, ui, hg
 import log
 import confparser
-import host
-import log
+from host import hostname
 
 class Hg(object):
     """Does local commits and pushes to a central Pacha Master location"""
@@ -38,10 +38,12 @@ class Hg(object):
         self.port = port
         self.host = host
         self.user = user
+        
         if os.path.exists(path):
             self.path = os.path.normpath(path)
             self.dir = os.path.basename(path)
             self.hg_dir = self.path+'/.hg'
+            os.chdir(self.path)
         else:
             log.append(module='hg', type='ERROR', 
                     line='%s does not exist' % path)
@@ -49,63 +51,66 @@ class Hg(object):
         self.conf = conf
         self.parse = confparser.Parse(self.conf)
         self.parse.options()
+        self.dest_path = '/%s/%s/%s' % (self.parse.path,
+                hostname(), self.dir)
         if not test:
             try:
                 self.parse.user
-            except AttributeError:
+                self.parse.host
+            except AttributeError, error:
                 log.append(module='hg', type='ERROR',
                 line='config file not edited - aborting')
-                sys.stderr.write('pacha.conf not edited! - aborting\n')
+                sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
                 sys.exit(1)
         # testing functionality:
         if test:
             self.parse.user = user
-            self.parse.path = '/opt/pacha'
+            self.parse.path = '/tmp/remote_pacha'
             self.parse.host = host
 
     def commit(self):
-        """hg commits with a simple timestamp message"""
+        """hg commit action, adding a message with the correct timestamp
+        and information from pacha."""
         timestamp = strftime('%b %d %H:%M:%S')
         message = "pacha auto-commit: %s" % timestamp
-        # mercurial bug:
-        os.chdir(self.path)
-        command = 'hg ci -m "%s"' % message
-        Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+        repo = hg.repository(ui.ui(), self.path)
+        commands.commit(ui.ui(), repo=repo, message=message)
         log.append(module='hg', line='doing commit at %s' % self.path)
 
     def hg_add(self):
-        """should only be used when --watch is called"""
-        command = "hg add"
-        os.chdir(self.path)
-        call(command, shell=True)
+        """Adds all files to Mercurial when the --watch options is passed
+        This only happens one time. All consequent files are not auto added
+        to the watch list."""
+        repo = hg.repository(ui.ui(), self.path)
+        commands.add(ui.ui(), repo=repo)
         log.append(module='hg', line='added files to repo %s' % self.path)
 
     def push(self):
-        """Pushes the repository to the centralized Pacha Master server"""
+        """Pushes the repository to the centralized Pacha Master server
+        The Mercurial API is broken here, it does not recognize 'default'
+        or 'default-push' in .hg/hgrc so we need to call it via 
+        subprocess.call"""
         command = "hg push"
-        os.chdir(self.path)
-        Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
-        log.append(module='hg', line='push to central pacha: %s' % self.path)
+        call(command, shell=True, stdout=PIPE, stderr=PIPE)
+        log.append(module='hg', line='push %s to central pacha' % self.path)
 
     def hgrc(self):
         """An option to write the default path in hgrc for pushing
         via hg"""
         if self.validate():
-            parse = confparser.Parse(self.conf)
-            parse.options() # get all the options in the config file
-            log.append(module='hg', line="parsed options from config file")
-            machine = host.hostname()
+            machine = hostname()
             try:
                 hgrc = open(self.path+'/.hg/hgrc', 'w')
                 hgrc.write('[paths]\n')
-                ssh_line = "default = ssh://%s@%s/%s/%s/%s" % (parse.user, 
-                        parse.host, parse.path, machine, self.dir)
+                ssh_line = "default = ssh://%s@%s%s" % (self.parse.user,
+                        self.parse.host, self.dest_path)
                 hgrc.write(ssh_line)
                 hgrc.close()
                 log.append(module='hg', line="wrote hgrc in %s" % self.path)
+                log.append(module='hg', line="default is %s" % ssh_line)
 
-            except Exception, e:
-                log.append(module='hg', type='ERROR', line=e)
+            except Exception, error:
+                log.append(module='hg', type='ERROR', line=error)
 
         else:
             self.initialize()
@@ -114,14 +119,14 @@ class Hg(object):
             self.hgrc()
 
     def clone(self):
-        """Clones a given repository to the remote Pacha server"""
-        # needs to be called when --watch is passed, runs just one time
-        machine = host.hostname()
-        command = "hg clone %s ssh://%s@%s/%s/%s/%s " % (self.path,
-                self.parse.user, self.parse.host, self.parse.path, 
-                machine, self.dir)
-        Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
-        log.append(module='hg', line='%s' % command)
+        """Clones a given repository to the remote Pacha server
+        needs to be called when --watch is passed, runs just one time
+        """
+        source = self.path
+        dest = 'ssh://%s@%s%s' % (self.parse.user, self.parse.host,
+            self.dest_path)
+        commands.clone(ui.ui(), source, dest)
+        log.append(module='CLONE', line='cloning %s' % dest )
         # TODO: need to add trusted USERS in the global .hgrc 
         
 
@@ -139,8 +144,29 @@ class Hg(object):
 
     def initialize(self):
         """Creates a mercurial repository"""
-        # Change directory (hg bug)
-        os.chdir(self.path)
-        command = "hg init"
-        call(command, shell=True)
+        commands.init(ui.ui(), dest=self.path)
         log.append(module='hg', line='created hg repo at %s' % self.path)
+
+def update(hosts_path = '/opt/pacha/hosts'):
+    """Updates a mercurial repository pluging in directly into Mercurial
+    This update() function will be used as a trial to later plug
+    all of Pacha into Mercurial, instead of doing subprocess calls"""
+    
+    for dirs in os.listdir(hosts_path):
+        sub_dir = os.path.join(hosts_path, dirs)
+        if os.path.isdir(sub_dir):
+            for dir in os.listdir(os.path.join(hosts_path, dirs)):
+                directory = os.path.join(sub_dir, dir)
+                if os.path.isdir(directory):
+                    u = ui.ui()
+                    repo = hg.repository(u, directory)
+                    repo.ui.pushbuffer()
+                    commands.update(ui.ui(), repo)
+                    log.append(module='hg.update', type='INFO', 
+                        line='updating host %s directory: %s' % (dirs, 
+                            directory))
+                    log.append(module='hg.update', type='INFO',
+                            line=repo.ui.popbuffer().split('\n')[0])
+                else:
+                    log.append(module='hg.update', type='ERROR',
+                            line = '%s is not a directory' % directory)

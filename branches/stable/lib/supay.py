@@ -103,28 +103,33 @@ class Daemon(object):
             os.dup2(se.fileno(), sys.stderr.fileno())
             
 
-    def stop(self):
+    def stop(self, verbose=True):
         """
         Stops the running process with the
         corresponding pid.
         """
+        self.verbose = verbose
         try:
             pidfile = open(self.pid, "r")
             pid = pidfile.readline()
-            print "\nStopping the %s daemon." % self.name
-            print "With pid number %s" % pid
+            if self.verbose:
+                print "\nStopping the %s daemon." % self.name
+                print "With pid number %s" % pid
             os.kill(int(pid), SIGTERM)
             os.remove(self.pid)
 
         except OSError, e:
-            print "Could not kill %s process.\n" % self.name
-            print e
+            if self.verbose:
+                print "Could not kill %s process.\n" % self.name
+                print e
             if e.errno == 13: # catch a 'no such process'
                 os.remove(self.pid)
-                print "Removed defunct PID file. Try starting the daemon now."
+                if self.verbose:
+                    print "Removed defunct PID file. Try starting the daemon now."
             
         except IOError:
-            print "\nPID file not found. Process may not be running.\n"
+            if self.verbose:
+                print "\nPID file not found. Process may not be running.\n"
             
     def spawn_child(self):
         """Overlooks the PID information lock to spawn child processes.

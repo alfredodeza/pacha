@@ -22,7 +22,7 @@ from lib import install, uninstall, hg, host, rebuild, upgrade
     
 def main():
     """All command line options happen here"""
-    parser = OptionParser(version='0.0.2')
+    parser = OptionParser(version='0.0.4')
     parser.add_option('--install', action="store_true",
         help="Installs pacha to /opt/ and creates the symlinks")
 
