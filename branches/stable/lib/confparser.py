@@ -84,12 +84,7 @@ class Parse(object):
         values = []
         for line in lines:
             values.append(line.split('\n')[0])
-        if len(values) > 0:
-            log.append(module='confparser.text_read',
-                type='WARN', line='no lines found')
-            return False
-        else:
-            return values
+        return values
 
     def text_append(self):
         """Appends a value to a newline in a text file"""
