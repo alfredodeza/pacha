@@ -114,15 +114,27 @@ def main():
             try:
                 repos = confparser.Parse(config='/opt/pacha/conf/.repos')
                 log.append(module='pachad', line='reading .repos config')
-    
+                pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
+                log.append(module='pachad', line='reading pacha.conf')
+                pacha_conf.options()
+                try:
+                    master = pacha_conf.master
+                    log.append(module='pachad.main', type='INFO',
+                            line='machine set to master')
+                    if master == 'True':
+                        hg.update()
+                except AttributeError, error:
+                    log.append(module='pachad.main', type='INFO',
+                            line='server not master: %s' % error)
+                log.append(module='pachad.main', line='looping .repos')
                 for repo in repos.text_read():
                     if os.path.exists(repo): # catches a path no longer there...
                         watch = Watcher(path=repo)
                         watch.report()
                     else:
                         log.append(module='pachad', 
-                                type='WARN', line='path %s does not exist' % repo)
-                        break
+                         type='WARN', line='path %s does not exist' % repo)
+                    break
                 time.sleep(10)
             except Exception, error:
                 log.append(module='pachad', type='ERROR', 

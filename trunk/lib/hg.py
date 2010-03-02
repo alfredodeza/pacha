@@ -56,10 +56,11 @@ class Hg(object):
         if not test:
             try:
                 self.parse.user
-            except AttributeError:
+                self.parse.host
+            except AttributeError, error:
                 log.append(module='hg', type='ERROR',
                 line='config file not edited - aborting')
-                sys.stderr.write('pacha.conf not edited! - aborting\n')
+                sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
                 sys.exit(1)
         # testing functionality:
         if test:
@@ -157,11 +158,15 @@ def update(hosts_path = '/opt/pacha/hosts'):
             for dir in os.listdir(os.path.join(hosts_path, dirs)):
                 directory = os.path.join(sub_dir, dir)
                 if os.path.isdir(directory):
-                    repo = hg.repository(ui.ui(), directory)
+                    u = ui.ui()
+                    repo = hg.repository(u, directory)
+                    repo.ui.pushbuffer()
                     commands.update(ui.ui(), repo)
                     log.append(module='hg.update', type='INFO', 
                         line='updating host %s directory: %s' % (dirs, 
                             directory))
+                    log.append(module='hg.update', type='INFO',
+                            line=repo.ui.popbuffer().split('\n')[0])
                 else:
                     log.append(module='hg.update', type='ERROR',
                             line = '%s is not a directory' % directory)
