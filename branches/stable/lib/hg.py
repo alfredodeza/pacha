@@ -73,8 +73,12 @@ class Hg(object):
         and information from pacha."""
         timestamp = strftime('%b %d %H:%M:%S')
         message = "pacha auto-commit: %s" % timestamp
+        stdout = open('/var/log/pacha.log', 'a')
+        sys.stdout = stdout
+        sys.stderr = stdout
         repo = hg.repository(ui.ui(), self.path)
-        commands.commit(ui.ui(), repo=repo, message=message)
+        commands.commit(ui.ui(), repo=repo, message=message,
+                logfile=None, addremove=None, user=None, date=None)
         log.append(module='hg', line='doing commit at %s' % self.path)
 
     def hg_add(self):
