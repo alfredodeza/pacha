@@ -38,6 +38,7 @@ class Upgrade(object):
         link = self.download_link()[0]
         tar_file = self.url_filename(link)
         dest = '/tmp/%s' % tar_file
+        print "Downloading latest Pacha version from: %s" % link
         urllib.urlretrieve(link, dest)
         log.append(module='upgrade.get', type='INFO', 
                 line="downloaded %s" % link)
@@ -46,6 +47,7 @@ class Upgrade(object):
     def uncompress(self, file):
         """Given a tar.gz file we uncompress it and return a path"""
         tar_file = tarfile.open(file)
+        print "Extracting from tar.gz: %s" % file
         tar_file.extractall('/tmp/upgrade')
         log.append(module='upgrade.uncompress', type='INFO', 
                 line="uncompressed %s" % file)
@@ -59,6 +61,7 @@ class Upgrade(object):
         log.append(module='upgrade', type='INFO', line="moved lib to tmp")
         # now we move the new lib into place
         shutil.copytree(lib_clone, lib_location)
+        print "Upgraded lib"
         log.append(module='upgrade.lib', type='INFO', line="moved new lib into /opt/pacha")
 
     def daemon(self):
@@ -71,6 +74,7 @@ class Upgrade(object):
                 line="moved daemon to tmp")
         # new daemon goes into place
         shutil.move(daemon_clone, daemon_location)
+        print "Upgraded the Pacha daemon"
         log.append(module='upgrade.daemon', type='INFO', 
                 line="moved new daemon to init.d")
 
@@ -84,6 +88,7 @@ class Upgrade(object):
                 line="moved pacha.py to tmp")
         # new pacha.py into place
         shutil.move(pacha_clone, pacha_location)
+        "Upgraded /usr/bin/pacha"
         log.append(module='upgrade.pacha', type='INFO', 
                 line="moved new pacha.py to /opt/pacha")
 
@@ -91,6 +96,7 @@ class Upgrade(object):
         """After all these downloads and uncmpressions, lets clean up!"""
         try:
             shutil.rmtree('/tmp/pacha')
+            print "cleaned up tmp files"
             log.append(module='upgrade.cleanup', type='INFO', 
                     line="removing /tmp/pacha")
         except OSError, error:
@@ -148,6 +154,8 @@ def main():
         up.daemon()
         up.pacha()
         up.cleanup()
+        print "\nUpgrade complete, check /var/log/pacha.log for information"
+        print "run sudo pacha --version to verify your version has changed\n"
     except OSError, error:
         print "Could not complete upgrade:"
         print error
