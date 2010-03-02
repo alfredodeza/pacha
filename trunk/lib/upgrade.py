@@ -96,11 +96,13 @@ class Upgrade(object):
         """After all these downloads and uncmpressions, lets clean up!"""
         try:
             shutil.rmtree('/tmp/pacha')
+            shutil.rmtree('/tmp/upgrade')
+            os.remove('/tmp/pacha')
             print "cleaned up tmp files"
             log.append(module='upgrade.cleanup', type='INFO', 
                     line="removing /tmp/pacha")
-        except OSError, error:
-            pass
+        except Exception, error:
+            pass # we are not worried if it could not actually delete 
             log.append(module='upgrade.cleanup', type='ERROR', line="%s" % error)
 
     def download_link(self):
@@ -148,6 +150,7 @@ def main():
     """does the upgrade step by step"""
     try:
         up = Upgrade()
+        up.cleanup() # make sure nothing is there before the update
         up.get()
         # replace lib, daemon and pacha files
         up.lib()
