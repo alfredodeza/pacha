@@ -44,6 +44,9 @@ def main():
             line="copied pacha daemon file to init.d")
         call('/etc/init.d/pacha start', shell=True)
         log.append(module='install', line="started daemon")
+        call('update-rc.d pacha defaults', shell=True)
+        log.append(module='install', line="run system update-rc.d for pacha in init script")
+
 
     except OSError, e:
         if e.errno == 13:

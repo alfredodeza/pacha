@@ -37,7 +37,7 @@ class Rebuild(object):
     replaced
     6. The config will say what files need to be replaced and copied from /tmp/
     to final location.
-    7. A reboot it is strongly suggested, and printed."""
+    7. A reboot is strongly suggested, and printed."""
 
     def __init__(self):
         self.server = raw_input("pacha server (IP or FQDN): ")
@@ -46,6 +46,7 @@ class Rebuild(object):
 
     def retrieve_files(self):
         """scp all the files we need to /tmp/pacha"""
+        # this could probably be much better with a Mercurial Clone command
         command = "scp -r %s@%s:/opt/pacha/hosts/%s /tmp/" % (self.server_user,
                 self.server, self.hostname)
         call(command, shell=True)
@@ -72,8 +73,8 @@ class Rebuild(object):
                 log.append(module='rebuild', line="installing %s" % package)
                 command = "sudo apt-get -y install %s" % package
                 call(command, shell=True)
-        except AttributeError, e:
-            log.append(module='rebuild', type='ERROR', line="%s" % e)
+        except AttributeError, error:
+            log.append(module='rebuild', type='ERROR', line="%s" % error)
             sys.stderr.write("""No packages specified for installation 
 in config\n""")
 
