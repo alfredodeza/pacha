@@ -30,16 +30,19 @@ def main():
             help="Destroys the symlinks and all pacha installed files")
 
     parser.add_option('--add-host',
-            help="Creates structure for saving a host configs")
+            help="""Creates structure for saving host configs
+ only meant for Pacha server""")
 
     parser.add_option('--watch', action="store_true",
-           help="Provide a path for Pacha to watch")
+           help="Provide a path for Pacha to watch and keep track of")  
 
     parser.add_option('--rebuild', action="store_true",
-            help="Rebuilds all tracked files")
+            help="""Prompts some questions and then rebuilds the
+ given host with all tracked files""")
 
     parser.add_option('--upgrade', action="store_true",
-            help="Upgrades to a newer version")
+            help="""Upgrades to a newer version by pulling the latest
+ .tar.gz file.""")
 
     # Check for sudo privileges before annything else:
     if getpass.getuser() != 'root':
