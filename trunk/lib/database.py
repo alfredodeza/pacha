@@ -18,48 +18,33 @@ class Worker(object):
             self.c = self.conn.cursor()
         else:
             self.conn = sqlite3.connect(self.db)
-            table_1 = 'CREATE TABLE repos(id integer primary key, path TEXT, file TEXT, permissions TEXT)'
-            table_2 = 'CREATE TABLE users(id integer primary key, user TEXT, key TEXT)'
+            table = 'CREATE TABLE repos(id integer primary key, path TEXT, permissions TEXT)'
             self.c = self.conn.cursor()
-            self.c.execute(table_1)
-            self.c.execute(table_2)
+            self.c.execute(table)
 
-    def insert_host(self, host=None, user=None, port=None):
-        """Puts a new host in the database"""
-        values = (host, user, port)
-        command = "INSERT INTO hosts(host, user, port) VALUES(?,?,?)"
+    def insert(self, host=None, user=None, port=None):
+        """Puts a new repo in the database"""
+        values = (path, permissions)
+        command = "INSERT INTO repos(path, permission) VALUES(?,?)"
         self.c.execute(command, values)
         self.conn.commit()
         self.conn.close()
 
-    def insert_user(self, user=None, key=None):
-        """Puts a new user/key in the database"""
-        values = (user, key)
-        command = "INSERT INTO users(user, key) VALUES(?,?)"
-        self.c.execute(command, values)
-        self.conn.commit()
-        self.conn.close()
-
-    def remove(self, host):
-        """Removes a host from the database"""
-        values = (host,)
-        command = "DELETE FROM hosts WHERE host = (?)"
+    def remove(self, ):
+        """Removes a repo from the database"""
+        values = (path,)
+        command = "DELETE FROM repos WHERE path = (?)"
         self.c.execute(command, values)
         self.conn.commit()
 
-    def get_hosts(self):
+    def get_repos(self):
         """Gets all the hosts"""
-        command = "SELECT * FROM hosts"
+        command = "SELECT * FROM repos"
         return self.c.execute(command)
 
-    def get_host(self, host):
-        """Gets attributes for a specific host"""
-        values = (host,)
-        command = "SELECT * FROM hosts WHERE host = (?)"
+    def get_repo(self, host):
+        """Gets attributes for a specific repo"""
+        values = (path,)
+        command = "SELECT * FROM repos WHERE path = (?)"
         return self.c.execute(command, values)
-
-    def get_users(self):
-        """Gets all the users"""
-        command = "SELECT * FROM users"
-        return self.c.execute(command)
 
