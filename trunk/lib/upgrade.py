@@ -147,6 +147,10 @@ class Upgrade(object):
         log.append(module='upgrade.url_filename', type='INFO', 
                 line="file name to download: %s" % file)
 
+    def repos_check(self, repos_file = '/opt/pacha/conf/.repos'):
+        """Return True if there is a .repos file"""
+        os.path.isfile(repos_file)
+
 def main():
     """does the upgrade step by step"""
     try:

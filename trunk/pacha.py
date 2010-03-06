@@ -18,7 +18,7 @@ import getpass
 import os
 import sys
 from optparse import OptionParser
-from lib import install, uninstall, hg, host, rebuild, upgrade
+from lib import install, uninstall, hg, host, rebuild, upgrade, database
     
 def main():
     """All command line options happen here"""
@@ -86,10 +86,12 @@ when rebuilding."""
             mercurial.hgrc()
             # we do a first time clone:
             mercurial.clone()
-            # add the path to .repos
-            repos = open('/opt/pacha/conf/.repos', 'a')
-            repos.write(path+'\n')
-            repos.close()
+            # add the path to repos table in database
+            #repos = open('/opt/pacha/conf/.repos', 'a')
+            #repos.write(path+'\n')
+            #repos.close()
+            db = database.Worker()
+            db.insert(path=path)
 
         if options.rebuild:
             try:
