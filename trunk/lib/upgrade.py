@@ -28,8 +28,10 @@ class Upgrade(object):
     the latest version is downloaded"""
 
     def __init__(self,
-            url = 'http://code.google.com/p/pacha'):
+            url = 'http://code.google.com/p/pacha',
+            repo_file = '/opt/pacha/conf/.repos'):
         self.url = url
+        self.repo_file = repo_file
         self.daemon_dest = "/tmp/daemon"+strftime("%H%M%S")
         self.lib_dest = "/tmp/lib"+strftime("%H%M%S")
         self.pacha_dest = "/tmp/pacha"+strftime("%H%M%S")
@@ -147,9 +149,22 @@ class Upgrade(object):
         log.append(module='upgrade.url_filename', type='INFO', 
                 line="file name to download: %s" % file)
 
-    def repos_check(self, repos_file = '/opt/pacha/conf/.repos'):
+    def repos_check(self):
         """Return True if there is a .repos file"""
-        os.path.isfile(repos_file)
+        os.path.isfile(self.repo_file)
+
+    def migrate_db(self):
+        """Migrate every path in .repos to database"""
+        repos = confparser.Parse('/opt/pacha/conf/.repos')
+        db = database.Worker()
+        for repo in repos.text_read():
+            db.insert(path=repo)
+
+    def remove_repo_file(self):
+        """If a .repos to db happens, remove .repos"""
+        if self.repos_check():
+            os.remove(self.repo_file)
+
 
 def main():
     """does the upgrade step by step"""
@@ -161,6 +176,9 @@ def main():
         up.lib()
         up.daemon()
         up.pacha()
+        if up.repos_check():
+            up.migrate_db()
+            up.remove_repo_file()
         up.cleanup()
         print "\nUpgrade complete, check /var/log/pacha.log for information"
         print "run sudo pacha --version to verify your version has changed\n"
