@@ -22,10 +22,10 @@ class Worker(object):
             self.c = self.conn.cursor()
             self.c.execute(table)
 
-    def insert(self, host=None, user=None, port=None):
+    def insert(self, path=None, permissions=None):
         """Puts a new repo in the database"""
         values = (path, permissions)
-        command = "INSERT INTO repos(path, permission) VALUES(?,?)"
+        command = "INSERT INTO repos(path, permissions) VALUES(?,?)"
         self.c.execute(command, values)
         self.conn.commit()
         self.conn.close()

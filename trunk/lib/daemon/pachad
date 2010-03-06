@@ -23,7 +23,7 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 # fix for local imports
 sys.path.append('/opt/pacha')
-from lib import supay, log, hg, confparser
+from lib import supay, log, hg, confparser, database
     
 class Watcher(object):
     """Handles all the Reports to display"""
@@ -54,7 +54,7 @@ class Watcher(object):
             mercurial.push()
             
 class Runners(object):
-    """Handles everything related to Mercurial"""
+    """Handles everything related to Mercurial calls"""
  
     def __init__(self, location=None):
         self.location = location
@@ -109,11 +109,12 @@ def main():
         daemon = supay.Daemon(name='pachad', log=False)
         daemon.start()
         log.append(module='pachad', line='Daemon started')
-        
+        db = database.Worker()
         while True:
             try:
-                repos = confparser.Parse(config='/opt/pacha/conf/.repos')
-                log.append(module='pachad', line='reading .repos config')
+                #repos = confparser.Parse(config='/opt/pacha/conf/.repos')
+                repos = db.get_repos()
+                log.append(module='pachad', line='reading repos from database')
                 pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
                 log.append(module='pachad', line='reading pacha.conf')
                 pacha_conf.options()
@@ -127,13 +128,14 @@ def main():
                     log.append(module='pachad.main', type='INFO',
                             line='server not master: %s' % error)
                 log.append(module='pachad.main', line='looping .repos')
-                for repo in repos.text_read():
-                    if os.path.exists(repo): # catches a path no longer there...
-                        watch = Watcher(path=repo)
+                #for repo in repos.text_read():
+                for repo in repos:
+                    if os.path.exists(repo[1]): # catches a path no longer there...
+                        watch = Watcher(path=repo[1])
                         watch.report()
                     else:
                         log.append(module='pachad', 
-                         type='WARN', line='path %s does not exist' % repo)
+                         type='WARN', line='path %s does not exist' % repo[1])
                     break
                 time.sleep(10)
             except Exception, error:
