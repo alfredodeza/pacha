@@ -18,6 +18,7 @@ from time import strftime
 import shutil
 import os
 import urllib
+import urllib2
 import tarfile
 import log
 
@@ -126,9 +127,9 @@ class Upgrade(object):
     def url_check(self):
         """Validate a url, returning False is it is not available"""
         try:
-            address = urllib.urlopen(self.url)
+            address = urllib2.urlopen(self.url)
             return True
-        except IOError:
+        except:
             return False
 
     def is_number(self, number):
