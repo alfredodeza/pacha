@@ -21,6 +21,8 @@ import urllib
 import urllib2
 import tarfile
 import log
+import confparser
+import database
 
 class Upgrade(object):
     """Checks the download links available in the project page and decides
@@ -151,7 +153,10 @@ class Upgrade(object):
 
     def repos_check(self):
         """Return True if there is a .repos file"""
-        os.path.isfile(self.repo_file)
+        if os.path.isfile(self.repo_file):
+            return True
+        else:
+            return False
 
     def migrate_db(self):
         """Migrate every path in .repos to database"""
