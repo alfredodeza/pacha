@@ -87,9 +87,6 @@ when rebuilding."""
             # we do a first time clone:
             mercurial.clone()
             # add the path to repos table in database
-            #repos = open('/opt/pacha/conf/.repos', 'a')
-            #repos.write(path+'\n')
-            #repos.close()
             db = database.Worker()
             db.insert(path=path)
 

@@ -112,7 +112,6 @@ def main():
         db = database.Worker()
         while True:
             try:
-                #repos = confparser.Parse(config='/opt/pacha/conf/.repos')
                 repos = db.get_repos()
                 log.append(module='pachad', line='reading repos from database')
                 pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
@@ -128,7 +127,6 @@ def main():
                     log.append(module='pachad.main', type='INFO',
                             line='server not master: %s' % error)
                 log.append(module='pachad.main', line='looping .repos')
-                #for repo in repos.text_read():
                 for repo in repos:
                     if os.path.exists(repo[1]): # catches a path no longer there...
                         watch = Watcher(path=repo[1])

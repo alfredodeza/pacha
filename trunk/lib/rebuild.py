@@ -153,9 +153,8 @@ in config\n""")
 
     def repos(self):
         """Returns a list of all repo paths Pacha has been tracking"""
-        location = '/tmp/%s/conf/.repos' % self.hostname
+        db = database.Worker(db='/tmp/%s/db/pacha.db' % self.hostname)
         repos_list = []
-        if os.path.exists(location):
-            for line in open(location).readlines():
-                repos_list.append(line.split('\n')[0])
+        for repo in db.get_repos():
+            repos_list.append(repo[1])
         return repos_list
