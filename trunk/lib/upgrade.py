@@ -97,6 +97,19 @@ class Upgrade(object):
         log.append(module='upgrade.pacha', type='INFO', 
                 line="moved new pacha.py to /opt/pacha")
 
+    def db(self):
+        """Moves DB in if not there"""
+        # first check if db folder is there
+        if self.check_db():
+            pass # if it is there we do not need anything
+        else:
+            db_location = "/opt/pacha/"
+            db_clone = "/tmp/upgrade/pacha/db"
+            shutil.move(lib_location, self.lib_dest)
+            log.append(module='upgrade.db', type='INFO', 
+                    line="moved db to /opt/pacha/db")
+            print "Upgraded to use a database"
+
     def cleanup(self):
         """After all these downloads and uncmpressions, lets clean up!"""
         try:
@@ -170,6 +183,12 @@ class Upgrade(object):
         if self.repos_check():
             os.remove(self.repo_file)
 
+    def check_db(self):
+        """Verify that the DB folder is *not* installed"""
+        if os.path.isdir('/opt/pacha/db'):
+            return True
+        else:
+            return False
 
 def main():
     """does the upgrade step by step"""
