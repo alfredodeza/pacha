@@ -1,6 +1,6 @@
 import sys
-if '/opt/pacha/lib' not in sys.path:
-    sys.path.append('/opt/pacha/lib')
+if '../' not in sys.path:
+    sys.path.append('../')
 import unittest
 from subprocess import Popen, PIPE
 import os
@@ -13,6 +13,8 @@ class TestUpgrade(unittest.TestCase):
         """Remove some croft"""
         try:
             shutil.rmtree('/tmp/pacha')
+            shutil.rmtree('/tmp/upgrade')
+            os.remove('/tmp/pacha')
         except OSError:
             pass # maybe file was not downloaded
 
@@ -55,12 +57,12 @@ class TestUpgrade(unittest.TestCase):
         expected = up.url_check()
         self.assertTrue(expected)
 
-    def test_url_check_false(self):
-        """Return False for a non working URL"""
-        url = 'http://a_non_working_url.return.false'
-        up = upgrade.Upgrade(url)
-        expected = up.url_check()
-        self.assertFalse(expected)
+#    def test_url_check_false(self):
+#        """Return False for a non working URL"""
+#        url = 'http://a_non_working_url.return.false'
+#        up = upgrade.Upgrade(url)
+#        expected = up.url_check()
+#        self.assertFalse(expected)
 
     def test_current_version(self):
         """Verify the current Pacha version"""
@@ -88,6 +90,13 @@ class TestUpgrade(unittest.TestCase):
         expected = 'http://pacha.googlecode.com/files/pacha-0.0.3.tar.gz'
         actual = up.download_link()[0]
         self.assertEqual(actual, expected)
+
+    def test_repos_check_true(self):
+        """Return True if there is a .repos file"""
+        open('/tmp/.repos', 'w')
+        up = upgrade.Upgrade(repo_file = '/tmp/.repos')
+        actual = up.repos_check()
+        self.assertTrue(actual)
 
 
 if __name__ == '__main__':
