@@ -98,6 +98,19 @@ class TestUpgrade(unittest.TestCase):
         actual = up.repos_check()
         self.assertTrue(actual)
 
+    def test_repos_check_false(self):
+        """Return FALSE if there is not .repos file"""
+        up = upgrade.Upgrade(repo_file = '/tmp/aNONexistentrepos')
+        actual = up.repos_check()
+        self.assertFalse(actual)
+
+    def test_remove_repo_file(self):
+        """Remove the lingering .repos file"""
+        open('/tmp/.repos', 'w')
+        up = upgrade.Upgrade(repo_file = '/tmp/.repos')
+        up.remove_repo_file()
+        actual = os.path.isfile('/tmp/.repos')
+        self.assertFalse(actual)
 
 if __name__ == '__main__':
     unittest.main()
