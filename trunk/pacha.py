@@ -22,7 +22,10 @@ from lib import install, uninstall, hg, host, rebuild, upgrade, database
     
 def main():
     """All command line options happen here"""
-    parser = OptionParser(version='0.0.4')
+    parser = OptionParser(description="""For more detailed option 
+descriptions please visit:
+http://code.google.com/p/pacha/wiki/Options"""
+    ,version='0.0.5')
     parser.add_option('--install', action="store_true",
         help="Installs pacha to /opt/ and creates the symlinks")
 
@@ -35,6 +38,12 @@ def main():
 
     parser.add_option('--watch', action="store_true",
            help="Provide a path for Pacha to watch and keep track of")  
+
+    parser.add_option('--watch-single', action="store_true",
+           help="Provide a single file for Pacha to watch in a given\
+ directory. Everything else in the directory will be ignored.\
+ Also used to add more individual files to track within the same\
+ directory (e.g. like tracking .vimrc in $HOME)") 
 
     parser.add_option('--rebuild', action="store_true",
             help="""Prompts some questions and then rebuilds the
