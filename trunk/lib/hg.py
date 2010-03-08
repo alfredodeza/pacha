@@ -133,7 +133,6 @@ class Hg(object):
         log.append(module='CLONE', line='cloning %s' % dest )
         # TODO: need to add trusted USERS in the global .hgrc 
         
-
     def validate(self):
         """Validates a working HG path"""
         log.append(module='hg', line="validating repository at %s" % self.path)
@@ -150,6 +149,12 @@ class Hg(object):
         """Creates a mercurial repository"""
         commands.init(ui.ui(), dest=self.path)
         log.append(module='hg', line='created hg repo at %s' % self.path)
+
+    def hgignore(self):
+        """Writes an hgignore to ignore all files"""
+        ignore = open(self.path+'/.hgignore', 'w')
+        ignore.write("syntax: glob\n*\n")
+        ignore.close
 
 def update(hosts_path = '/opt/pacha/hosts'):
     """Updates a mercurial repository pluging in directly into Mercurial

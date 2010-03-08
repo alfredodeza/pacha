@@ -39,7 +39,7 @@ http://code.google.com/p/pacha/wiki/Options"""
     parser.add_option('--watch', action="store_true",
            help="Provide a path for Pacha to watch and keep track of")  
 
-    parser.add_option('--watch-single', action="store_true",
+    parser.add_option('--watch-single', action='store_true',
            help="Provide a single file for Pacha to watch in a given\
  directory. Everything else in the directory will be ignored.\
  Also used to add more individual files to track within the same\
@@ -98,6 +98,14 @@ when rebuilding."""
             # add the path to repos table in database
             db = database.Worker()
             db.insert(path=path)
+
+        if options.watch_single:
+            if len(sys.argv) is 2: #no path
+                path = os.getcwd()
+            if len(sys.argv) >=3: #with path
+                path = sys.argv[2]
+            mercurial = hg.Hg(path=path)
+            mercurial.hgignore()
 
         if options.rebuild:
             try:
