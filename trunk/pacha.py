@@ -39,7 +39,7 @@ http://code.google.com/p/pacha/wiki/Options"""
     parser.add_option('--watch', action="store_true",
            help="Provide a path for Pacha to watch and keep track of")  
 
-    parser.add_option('--watch-single', action='store_true',
+    parser.add_option('--watch-single',
            help="Provide a single file for Pacha to watch in a given\
  directory. Everything else in the directory will be ignored.\
  Also used to add more individual files to track within the same\
@@ -111,12 +111,26 @@ when rebuilding."""
             db.insert(path=path)
 
         if options.watch_single:
-            if len(sys.argv) is 2: #no path
-                path = os.getcwd()
-            if len(sys.argv) >=3: #with path
-                path = sys.argv[2]
-            mercurial = hg.Hg(path=path)
-            mercurial.hgignore()
+            if os.path.isfile(options.watch_single):
+                # can't pass a single file to hg.Hg so 
+                # convert it to file path without the file here
+
+                # get the abs_path and add '.hgignore' and make
+                # sure it does not exist, if it does not exist
+                # pass it on to:
+                mercurial = hg.Hg(path=options.watch_single)
+
+                # then ignore that path here
+                mercurial.hgignore()
+                # else! do NOT do hgignore because the file is already
+                # there
+                # now insert the whole path into the database to 
+                # check for it here
+
+                #
+            else:
+                print "You have provided a wrong or non-existent path\
+ to a file"
 
         if options.rebuild and options.server and options.user\
                 and options.host:
