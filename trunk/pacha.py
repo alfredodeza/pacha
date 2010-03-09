@@ -17,7 +17,7 @@
 import getpass
 import os
 import sys
-from optparse import OptionParser
+from optparse import OptionParser, OptionGroup
 from lib import install, uninstall, hg, host, rebuild, upgrade, database
     
 def main():
@@ -45,20 +45,27 @@ http://code.google.com/p/pacha/wiki/Options"""
  Also used to add more individual files to track within the same\
  directory (e.g. like tracking .vimrc in $HOME)") 
 
-    parser.add_option('--rebuild', action="store_true",
-            help="""Combined with other options it rebuilds the
- given host with all tracked files""")
+    group = OptionGroup(parser, "Rebuilding Options", "When rebuilding\
+ a host, you will need to pass a few required options to Pacha so it can\
+ connecto to a remote host via SSH and copy the needed files.")
+    
 
-    parser.add_option('--host',
+    group.add_option('--rebuild', action="store_true",
+            help="""Combined with other options it rebuilds the
+ given host with all tracked files. Doesn't take any arguments.""")
+
+    group.add_option('--host',
             help="""Prompts some questions and then rebuilds the
  given host with all tracked files""")
 
-    parser.add_option('--server', 
+    group.add_option('--server', 
             help="""The server to connect to pull the files from""")
 
-    parser.add_option('--user',
+    group.add_option('--user',
             help="""User that authenticates to the Pacha server when 
  rebuilding""")
+
+    parser.add_option_group(group)
 
     parser.add_option('--upgrade', action="store_true",
             help="""Upgrades to a newer version by pulling the latest

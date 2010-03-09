@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#
 # Copyright 2009-2010 Alfredo Deza
 # Pacha Daemon
 
@@ -7,8 +9,8 @@ import time
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 # fix for local imports
-sys.path.append('/opt/pacha')
-from lib import supay, log, hg, confparser, database
+sys.path.append('/opt/pacha/lib')
+import supay, log, hg, confparser, database
     
 class Watcher(object):
     """Handles all the Reports to display"""
@@ -74,6 +76,13 @@ def run_command(std, cmd):
         out = run.stdout.readlines()
     return out
 
+def check_path(file_path):
+    """We need to always return a path that ends with a directory """ 
+     if os.path.isdir(file_path):
+         return file_path
+     else:
+         return os.path.dirname(file_path)
+
 
 def main():
     """All command line options happen here"""
@@ -113,12 +122,15 @@ def main():
                             line='server not master: %s' % error)
                 log.append(module='pachad.main', line='looping .repos')
                 for repo in repos:
-                    if os.path.exists(repo[1]): # catches a path no longer there...
-                        watch = Watcher(path=repo[1])
+                    # need to get an abspath from 'repo' and then pass it on
+                    # else the daemon will error out
+                    repo_path = check_path(repo[1])
+                    if os.path.exists(repo_path): # catches a path no longer there...
+                        watch = Watcher(path=repo_path)
                         watch.report()
                     else:
                         log.append(module='pachad', 
-                         type='WARN', line='path %s does not exist' % repo[1])
+                         type='WARN', line='path %s does not exist' % repo_path)
                     break
                 time.sleep(10)
             except Exception, error:
