@@ -39,10 +39,14 @@ class Rebuild(object):
     to final location.
     7. A reboot is strongly suggested, and printed."""
 
-    def __init__(self):
-        self.server = raw_input("pacha server (IP or FQDN): ")
-        self.server_user = raw_input("pacha server username: ")
-        self.hostname = raw_input("machine to rebuild (hostname): ")
+    def __init__(self,
+            server = None,
+            server_user = None,
+            hostname = None,
+            ):
+        self.server = server
+        self.server_user = server_user
+        self.hostname = hostname
 
     def retrieve_files(self):
         """scp all the files we need to /tmp/pacha"""

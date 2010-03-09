@@ -46,8 +46,19 @@ http://code.google.com/p/pacha/wiki/Options"""
  directory (e.g. like tracking .vimrc in $HOME)") 
 
     parser.add_option('--rebuild', action="store_true",
+            help="""Combined with other options it rebuilds the
+ given host with all tracked files""")
+
+    parser.add_option('--host',
             help="""Prompts some questions and then rebuilds the
  given host with all tracked files""")
+
+    parser.add_option('--server', 
+            help="""The server to connect to pull the files from""")
+
+    parser.add_option('--user',
+            help="""User that authenticates to the Pacha server when 
+ rebuilding""")
 
     parser.add_option('--upgrade', action="store_true",
             help="""Upgrades to a newer version by pulling the latest
@@ -107,16 +118,21 @@ when rebuilding."""
             mercurial = hg.Hg(path=path)
             mercurial.hgignore()
 
-        if options.rebuild:
-            try:
-                run = rebuild.Rebuild()
-                run.retrieve_files()
-                run.install()
-                run.replace_manager()
+        if options.rebuild and options.server and options.user\
+                and options.host:
+            print "Server: %s" % options.server
+            print "User: %s" % options.user
+            print "Host to rebuild: %s" % options.host
 
-            except KeyboardInterrupt:
-                sys.exit(1)
-
+#            try:
+#                run = rebuild.Rebuild()
+#                run.retrieve_files()
+#                run.install()
+#                run.replace_manager()
+#
+#            except KeyboardInterrupt:
+#                sys.exit(1)
+#
         if options.upgrade:
             upgrade.main()
 
