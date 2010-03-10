@@ -2,20 +2,50 @@ import sys
 if '../' not in sys.path:
     sys.path.append('../')
 import os
+from time import sleep
 import unittest
 import database
 
-class TestAppend(unittest.TestCase):
-
-    def test_create_database(self):
-        """Check if the db file was created"""
-        db = database.Worker('/tmp/testdatabase.db')
-        expected = os.path.isfile('/tmp/testdatabase.db')
-        self.assertTrue(expected)
+class TestWorker(unittest.TestCase):
 
     def tearDown(self):
-        """Delete the database file that was created for the test"""
-        os.remove('/tmp/testdatabase.db')
+        """Remove all the files that the database may have created"""
+        try:
+            os.remove('/tmp/pacha.db')
+        except:
+            pass # do not care if you could not remove that file
+
+    def test_init(self):
+        """Check if the db file was created"""
+        database.Worker(db='/tmp/pacha.db')
+        db = os.path.isfile('/tmp/pacha.db')
+        self.assertTrue(db)
+
+    def test_insert_path(self):
+        """Do a simple insert of a path into db"""
+        db = database.Worker(db='/tmp/pacha.db')
+        db.insert('/tmp/foo')
+        # create the connection again:
+        db = database.Worker(db='/tmp/pacha.db')
+        for i in db.get_repo('/tmp/foo'):
+            actual = i[1]
+        expected = u'/tmp/foo'
+        self.assertEqual(actual, expected)
+
+    def test_remove(self):
+        """Remove a record from the db"""
+        db = database.Worker(db='/tmp/pacha.db')
+        db.insert('/tmp/foo')
+        db = database.Worker(db='/tmp/pacha.db')
+        db.insert('/tmp/fooo')
+        db = database.Worker(db='/tmp/pacha.db')
+        db.remove('/tmp/foo')
+        db = database.Worker(db='/tmp/pacha.db')
+        for i in db.get_repos():
+            actual = i[1]
+        expected = u'/tmp/fooo'
+        self.assertEqual(actual, expected)
+
 
 if __name__ == '__main__':
     unittest.main()

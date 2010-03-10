@@ -63,12 +63,12 @@ class TestUpgrade(unittest.TestCase):
 #        up = upgrade.Upgrade(url)
 #        expected = up.url_check()
 #        self.assertFalse(expected)
-
+#
     def test_current_version(self):
         """Verify the current Pacha version"""
         up = upgrade.Upgrade()
         command = "pacha --version"
-        get_version = Popen(command, shell=True, stdout=PIPE)
+        get_version = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         # this return is a mouthful...
         expected = get_version.stdout.readlines()[0].split('\n')[0]
         actual = up.current_version()

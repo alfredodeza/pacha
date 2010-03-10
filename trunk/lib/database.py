@@ -31,7 +31,7 @@ class Worker(object):
         self.conn.commit()
         self.conn.close()
 
-    def remove(self, ):
+    def remove(self, path):
         """Removes a repo from the database"""
         values = (path,)
         command = "DELETE FROM repos WHERE path = (?)"
@@ -45,7 +45,7 @@ class Worker(object):
 
     def get_repo(self, host):
         """Gets attributes for a specific repo"""
-        values = (path,)
+        values = (host,)
         command = "SELECT * FROM repos WHERE path = (?)"
         return self.c.execute(command, values)
 

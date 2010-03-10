@@ -137,7 +137,7 @@ class Upgrade(object):
     def current_version(self):
         """Return the current Pacha version"""
         command = "pacha --version"
-        get_version = Popen(command, shell=True, stdout=PIPE)
+        get_version = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         # this return is a mouthful...
         return get_version.stdout.readlines()[0].split('\n')[0]
 
