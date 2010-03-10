@@ -140,7 +140,7 @@ class Hg(object):
             log.append(module='CLONE', line='cloning %s' % dest )
         except Exception, error:
             print "Could not clone this repository: %s" % error
-            pirint "Have you added this host in the Pacha server?"
+            print """Have you added this host in the Pacha server?"""
         # TODO: need to add trusted USERS in the global .hgrc 
         
     def validate(self):
