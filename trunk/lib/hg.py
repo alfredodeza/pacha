@@ -81,13 +81,18 @@ class Hg(object):
                 logfile=None, addremove=None, user=None, date=None)
         log.append(module='hg', line='doing commit at %s' % self.path)
 
-    def hg_add(self):
+    def hg_add(self, single=None):
         """Adds all files to Mercurial when the --watch options is passed
         This only happens one time. All consequent files are not auto added
         to the watch list."""
         repo = hg.repository(ui.ui(), self.path)
-        commands.add(ui.ui(), repo=repo)
-        log.append(module='hg', line='added files to repo %s' % self.path)
+        if single is None:
+            commands.add(ui.ui(), repo=repo)
+            log.append(module='hg', line='added files to repo %s' % single)
+
+        else:
+            commands.add(ui.ui(), repo, single) 
+            log.append(module='hg', line='added files to repo %s' % self.path)
 
     def push(self):
         """Pushes the repository to the centralized Pacha Master server

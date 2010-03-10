@@ -96,17 +96,6 @@ in config\n""")
         for dirname in self.tracked():
             log.append(module='rebuild', line = "dirname in self.tracked: %s" % dirname)
             self.default_replace(dirname)
-            # we check the dirs in tmp and then get attributes if any
-            # TO BE IMPLEMENTED
-            #if hasattr(parse, dirname):
-            #    log.append(module='rebuild', 
-            #            line="found dirs that have specific config")
-                #we found some, so lets send it to a method that deals with it
-            #    for item in getattr(parse, dirname):
-            #        self.specific_tracking(dirname, item)
-            # anything else just gets sent to a method that deals with it
-            #else:
-            #    self.default_replace(dirname)
 
 
     def specific_tracking(self, dirname, item):
@@ -154,6 +143,7 @@ in config\n""")
         nothing is specified in the config the whole directory is moved."""
         list_files = os.listdir('/tmp/%s' % self.hostname)
         return list_files
+        # THIS IS NO LONGER THE CASE !!! REMOVE THIS
 
     def repos(self):
         """Returns a list of all repo paths Pacha has been tracking"""

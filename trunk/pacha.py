@@ -58,10 +58,10 @@ http://code.google.com/p/pacha/wiki/Options"""
             help="""Prompts some questions and then rebuilds the
  given host with all tracked files""")
 
-    group.add_option('--server', 
+    group.add_option('--ssh-server', 
             help="""The server to connect to pull the files from""")
 
-    group.add_option('--user',
+    group.add_option('--ssh-user',
             help="""User that authenticates to the Pacha server when 
  rebuilding""")
 
@@ -121,30 +121,53 @@ when rebuilding."""
             if os.path.isfile(options.watch_single):
                 # can't pass a single file to hg.Hg so 
                 # convert it to file path without the file here
+                # whatever we receive (either a full path or a single
+                # file name we convert it to an absolute path:
+                abspath = os.path.abspath(options.watch_single)
+                # now we need only the directory name:
+                dirname = os.path.dirname(abspath)
 
                 # get the abs_path and add '.hgignore' and make
-                # sure it does not exist, if it does not exist
-                # pass it on to:
-                mercurial = hg.Hg(path=options.watch_single)
+                # sure it does not exist, 
+                hgignore = dirname+'/.hgignore'
+                if os.path.isfile(hgignore): # make sure we arent overwriting
+                    # so this means we are already watching unique files here
+                    # so let's add the new guy and commit it
+                    mercurial = hg.Hg(path=dirname)
+                    mercurial.hg_add(abspath)
+                    mercurial.commit()
 
-                # then ignore that path here
-                mercurial.hgignore()
+                #if it does not exist then this should be the first 
+                # time this is being run here right?
+                # pass it on to:
+                else:
+                    mercurial = hg.Hg(path=dirname)
+                    # then ignore that path here
+                    mercurial.hgignore()
+                    mercurial.initialize()
+                    mercurial.hg_add(single=abspath )
+                    mercurial.commit()
+                    mercurial.clone()
+                    #at the end of everything we put the hgrc method in
+                    mercurial.hgrc()
                 # else! do NOT do hgignore because the file is already
                 # there
                 # now insert the whole path into the database to 
                 # check for it here
+                db = database.Worker()
+                db.insert(path=abspath)
 
-                #
             else:
                 print "You have provided a wrong or non-existent path\
  to a file"
 
-        if options.rebuild and options.server and options.user\
+        if options.rebuild and options.ssh_server and options.ssh_user\
                 and options.host:
-            print "Server: %s" % options.server
-            print "User: %s" % options.user
-            print "Host to rebuild: %s" % options.host
+            print "SSH Server: \t\t%s" % options.ssh_server
+            print "SSH User: \t\t%s" % options.ssh_user
+            print "Host to rebuild: \t%s" % options.host
 
+# NEEDS VERIFICATION AFTER METHOD MOD
 #            try:
 #                run = rebuild.Rebuild()
 #                run.retrieve_files()
