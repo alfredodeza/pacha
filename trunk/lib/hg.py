@@ -134,9 +134,13 @@ class Hg(object):
         source = self.path
         dest = 'ssh://%s@%s%s' % (self.parse.user, self.parse.host,
             self.dest_path)
-        commands.clone(ui.ui(), source, dest, pull=False, uncompressed=False, rev=False,
+        try:
+            commands.clone(ui.ui(), source, dest, pull=False, uncompressed=False, rev=False,
                  noupdate=False)
-        log.append(module='CLONE', line='cloning %s' % dest )
+            log.append(module='CLONE', line='cloning %s' % dest )
+        except Exception, error:
+            print "Could not clone this repository: %s" % error
+            pirint "Have you added this host in the Pacha server?"
         # TODO: need to add trusted USERS in the global .hgrc 
         
     def validate(self):

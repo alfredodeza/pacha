@@ -120,7 +120,7 @@ def main():
                 except AttributeError, error:
                     log.append(module='pachad.main', type='INFO',
                             line='server not master: %s' % error)
-                log.append(module='pachad.main', line='looping .repos')
+                log.append(module='pachad.main', line='looping over repos in db')
                 for repo in repos:
                     # need to get an abspath from 'repo' and then pass it on
                     # else the daemon will error out
@@ -131,7 +131,6 @@ def main():
                     else:
                         log.append(module='pachad', 
                          type='WARN', line='path %s does not exist' % repo_path)
-                    break
                 time.sleep(10)
             except Exception, error:
                 log.append(module='pachad', type='ERROR', 
