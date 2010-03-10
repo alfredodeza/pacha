@@ -78,10 +78,10 @@ def run_command(std, cmd):
 
 def check_path(file_path):
     """We need to always return a path that ends with a directory """ 
-     if os.path.isdir(file_path):
-         return file_path
-     else:
-         return os.path.dirname(file_path)
+    if os.path.isdir(file_path):
+        return file_path
+    else:
+        return os.path.dirname(file_path)
 
 
 def main():

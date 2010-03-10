@@ -129,12 +129,13 @@ class Hg(object):
 
     def clone(self):
         """Clones a given repository to the remote Pacha server
-        needs to be called when --watch is passed, runs just one time
+        needs to be ouralled when --watch is passed, runs just one time
         """
         source = self.path
         dest = 'ssh://%s@%s%s' % (self.parse.user, self.parse.host,
             self.dest_path)
-        commands.clone(ui.ui(), source, dest)
+        commands.clone(ui.ui(), source, dest, pull=False, uncompressed=False, rev=False,
+                 noupdate=False)
         log.append(module='CLONE', line='cloning %s' % dest )
         # TODO: need to add trusted USERS in the global .hgrc 
         
