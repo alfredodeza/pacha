@@ -115,7 +115,7 @@ when rebuilding."""
             mercurial.clone()
             # add the path to repos table in database
             db = database.Worker()
-            db.insert(path=path)
+            db.insert(path=path, type='dir')
 
         if options.watch_single:
             if os.path.isfile(options.watch_single):
@@ -154,7 +154,7 @@ when rebuilding."""
                 # it is a duplicate so no double checking
                 # before inserting
                 db = database.Worker()
-                db.insert(path=abspath)
+                db.insert(path=abspath, type='single')
 
             else:
                 print "You have provided a wrong or non-existent path\
