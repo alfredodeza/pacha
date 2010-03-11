@@ -92,15 +92,14 @@ in config\n""")
         parse = confparser.Parse(conf)
         parse.options()
         log.append(module='rebuild', line="read config file and parsed options")
-        #check if the config has dirs we have in tmp:
         for dirname in self.tracked():
             log.append(module='rebuild', line = "dirname in self.tracked: %s" % dirname)
             self.default_replace(dirname)
 
 
     def specific_tracking(self, dirname, item):
-        """You can specify specific files to be rebuilt to avoid replacing
-        whole directories. Mercurial can't keep track of single files."""
+        """You can have specific files to be rebuilt to avoid replacing
+        whole directories."""
         ##
         # BUGGY / NOT YET IMPLEMENTED
         ##
@@ -131,11 +130,12 @@ in config\n""")
                     log.append(module='rebuild',
                     line='DR found path with matching dir: %s %s' % (dirname, 
                         base))
-                    shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
-                    log.append(module='rebuild', line='moving %s' % path)
+                    if os.path.exists(path):
+                        shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
+                        log.append(module='rebuild', line='moving %s' % path)
                     shutil.move(tmp_dir+dirname, path)
                     log.append(module='rebuild',
-                            line='moving %s to %s' % (tmp_dir+dirname, path))
+                        line='moving %s to %s' % (tmp_dir+dirname, path))
 
     def tracked(self):
         """There needs to be a comparison between the copied files and the

@@ -166,16 +166,17 @@ when rebuilding."""
             print "SSH User: \t\t%s" % options.ssh_user
             print "Host to rebuild: \t%s" % options.host
 
-# NEEDS VERIFICATION AFTER METHOD MOD
-#            try:
-#                run = rebuild.Rebuild()
-#                run.retrieve_files()
-#                run.install()
-#                run.replace_manager()
-#
-#            except KeyboardInterrupt:
-#                sys.exit(1)
-#
+            try:
+                run = rebuild.Rebuild(options.ssh_server,
+                        options.ssh_user,
+                        options.host)
+                run.retrieve_files()
+                run.install()
+                run.replace_manager()
+
+            except KeyboardInterrupt:
+                sys.exit(1)
+
         if options.upgrade:
             upgrade.main()
 
