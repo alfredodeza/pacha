@@ -143,7 +143,6 @@ in config\n""")
         nothing is specified in the config the whole directory is moved."""
         list_files = os.listdir('/tmp/%s' % self.hostname)
         return list_files
-        # THIS IS NO LONGER THE CASE !!! REMOVE THIS
 
     def repos(self):
         """Returns a list of all repo paths Pacha has been tracking"""
