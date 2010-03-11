@@ -122,11 +122,10 @@ when rebuilding."""
                 # can't pass a single file to hg.Hg so 
                 # convert it to file path without the file here
                 # whatever we receive (either a full path or a single
-                # file name we convert it to an absolute path:
+                # file name 
                 abspath = os.path.abspath(options.watch_single)
                 # now we need only the directory name:
                 dirname = os.path.dirname(abspath)
-
                 # get the abs_path and add '.hgignore' and make
                 # sure it does not exist, 
                 hgignore = dirname+'/.hgignore'
@@ -142,18 +141,18 @@ when rebuilding."""
                 # pass it on to:
                 else:
                     mercurial = hg.Hg(path=dirname)
-                    # then ignore that path here
+                    # then ignore everythin withn the path
                     mercurial.hgignore()
                     mercurial.initialize()
-                    mercurial.hg_add(single=abspath )
+                    mercurial.hg_add(single=abspath)
                     mercurial.commit()
                     mercurial.clone()
                     #at the end of everything we put the hgrc method in
                     mercurial.hgrc()
-                # else! do NOT do hgignore because the file is already
-                # there
                 # now insert the whole path into the database to 
-                # check for it here
+                # check for it here. DB can figure out if
+                # it is a duplicate so no double checking
+                # before inserting
                 db = database.Worker()
                 db.insert(path=abspath)
 
