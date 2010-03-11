@@ -18,15 +18,16 @@ class Worker(object):
             self.c = self.conn.cursor()
         else:
             self.conn = sqlite3.connect(self.db)
-            table = 'CREATE TABLE repos(id integer primary key, path TEXT, permissions TEXT)'
+            table = """CREATE TABLE repos(id integer primary key, path TEXT, 
+ permissions TEXT, type TEXT)"""
             self.c = self.conn.cursor()
             self.c.execute(table)
 
-    def insert(self, path=None, permissions=None):
+    def insert(self, path=None, permissions=None, type=None):
         """Puts a new repo in the database and checks if the record
         is not already there"""
-        values = (path, permissions, path)
-        command = 'INSERT INTO repos(path, permissions) select ?,? WHERE NOT EXISTS(SELECT 1 FROM repos WHERE path=?)'
+        values = (path, permissions, type, path)
+        command = 'INSERT INTO repos(path, permissions, type) select ?,?,? WHERE NOT EXISTS(SELECT 1 FROM repos WHERE path=?)'
         self.c.execute(command, values)
         self.conn.commit()
         self.conn.close()
