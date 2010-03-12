@@ -112,37 +112,27 @@ in config\n""")
         log.append(module='rebuild.single_tracking',
                 line='single repos path: %s' % repos_path)
         tmp_dir = '/tmp/%s/' % self.hostname
-        log.append(module='rebuild.single_tracking', line='tmp_dir: %s' % tmp_dir)
+        log.append(module='rebuild.single_tracking', 
+                line='tmp_dir: /tmp/%s' % self.hostname)
         # get list of directories in tmp and do a double loop
         for path in repos_path:
-            base = os.path.basename(path[1])
-            log.append(module='rebuild', line= 'DR base dir: %s' % base)
-            for dirname in self.tracked():
-                if dirname == base: # we have a winner
-                    log.append(module='rebuild',
-                    line='DR found path with matching dir: %s %s' % (dirname, 
+            base = os.path.basename(path[1]) #gets us the file name
+            dir_path = os.path.dirname(path[1])
+            directory = os.path.basename(dir_path) # finally a dir name from the path
+            tmp_subdir = tmp_dir+directory
+            log.append(module='rebuild.single_tracking', line= 'base file: %s' % base)
+            for file in os.listdir(tmp_subdir): 
+                if file == base: # we have a winner
+                    log.append(module='rebuild.single_tracking',
+                    line='found path with matching file: %s %s' % (path[1], 
                         base))
-                    if os.path.exists(path):
-                        shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
+                    if os.path.exists(path[1]):
+                        shutil.move(path[1],'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
                         log.append(module='rebuild', line='moving %s' % path)
                     shutil.move(tmp_dir+dirname, path)
                     log.append(module='rebuild',
                         line='moving %s to %s' % (tmp_dir+dirname, path))
 
-       
-        ##
-        # BUGGY / NOT YET IMPLEMENTED
-        ##
-        # now be build the paths and move stuff
-        default_path = "/%s/%s" % (dirname, item)
-        log.append(module='rebuild', line = 'default path: /%s/%s' % (dirname, item))
-        shutil.move(default_path, '/tmp/%s.%s' % (item, strftime('%H%M%S')))
-        log.append(module='rebuild', line="moving %s to %s" % (default_path, 
-                default_path+'.old'))
-        replacer = '/tmp/%s/%s/%s' % (self.hostname, dirname, item)
-        shutil.move(replacer, default_path)
-        log.append(module='rebuild', 
-                line="ST moving %s to %s" % (replacer, default_path))
 
     def default_replace(self, dirname):
         """Usually you will replace the configs you were backing up. Here
