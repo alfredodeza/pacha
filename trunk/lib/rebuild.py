@@ -128,11 +128,11 @@ in config\n""")
                         base))
                     if os.path.exists(path[1]):
                         shutil.move(path[1],'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
-                        log.append(module='rebuild', line='moving %s' % path)
-                    shutil.move(tmp_dir+dirname, path)
-                    log.append(module='rebuild',
-                        line='moving %s to %s' % (tmp_dir+dirname, path))
-
+                        log.append(module='rebuild.single_tracking', 
+                                line='moving %s to /tmp' % path)
+                    shutil.move(tmp_subdir+/+file, path[1])
+                    log.append(module='rebuild.single_tracking',
+                        line='moving %s to %s' % (tmp_subdir+/+dirname, path[1]))
 
     def default_replace(self, dirname):
         """Usually you will replace the configs you were backing up. Here
