@@ -51,8 +51,14 @@ class Hg(object):
         self.conf = conf
         self.parse = confparser.Parse(self.conf)
         self.parse.options()
-        self.dest_path = '/%s/%s/%s' % (self.parse.path,
-                hostname(), self.dir)
+        try:
+            self.dest_path = '/%s/%s/%s' % (self.parse.path,
+                    hostname(), self.dir)
+        except AttributeError, error:
+            log.append(module='hg.init', type='ERROR',
+                    line='config file not edited - aborting')
+            sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
+            sys.exit(1)
         if not test:
             try:
                 self.parse.user
