@@ -55,8 +55,7 @@ http://code.google.com/p/pacha/wiki/Options"""
  given host with all tracked files. Doesn't take any arguments.""")
 
     group.add_option('--host',
-            help="""Prompts some questions and then rebuilds the
- given host with all tracked files""")
+            help="""Indicates the name of the host you want to rebuild""")
 
     group.add_option('--ssh-server', 
             help="""The server to connect to pull the files from""")
