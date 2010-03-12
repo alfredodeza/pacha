@@ -94,11 +94,11 @@ in config\n""")
             for path in db.get_repos():
                 for dirname in self.tracked():
                     if path[3] == 'dir': # if this is a dir then do default replace
-                        log.append(module='rebuild', 
+                        log.append(module='rebuild.replace_manager', 
                                 line = "dirname in self.tracked: %s" % dirname)
                         self.default_replace(dirname)
                     if path[3] == 'single': # a single file tracking
-                        log.append(module='rebuild.raplce_manager',
+                        log.append(module='rebuild.replace_manager',
                                 line='single file in self.tracked: %s' % dirname)
                         self.single_tracking(path[1])
         else:
@@ -116,23 +116,23 @@ in config\n""")
                 line='tmp_dir: /tmp/%s' % self.hostname)
         # get list of directories in tmp and do a double loop
         for path in repos_path:
-            base = os.path.basename(path[1]) #gets us the file name
-            dir_path = os.path.dirname(path[1])
+            base = os.path.basename(path) #gets us the file name
+            dir_path = os.path.dirname(path)
             directory = os.path.basename(dir_path) # finally a dir name from the path
             tmp_subdir = tmp_dir+directory
             log.append(module='rebuild.single_tracking', line= 'base file: %s' % base)
             for file in os.listdir(tmp_subdir): 
                 if file == base: # we have a winner
                     log.append(module='rebuild.single_tracking',
-                    line='found path with matching file: %s %s' % (path[1], 
+                    line='found path with matching file: %s %s' % (path, 
                         base))
-                    if os.path.exists(path[1]):
-                        shutil.move(path[1],'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
+                    if os.path.exists(path):
+                        shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
                         log.append(module='rebuild.single_tracking', 
                                 line='moving %s to /tmp' % path)
-                    shutil.move(tmp_subdir+'/'+file, path[1])
+                    shutil.move(tmp_subdir+'/'+file, path)
                     log.append(module='rebuild.single_tracking',
-                        line='moving %s to %s' % (tmp_subdir+'/'+dirname, path[1]))
+                        line='moving %s to %s' % (tmp_subdir+'/'+dirname, path))
 
     def default_replace(self, dirname):
         """Usually you will replace the configs you were backing up. Here
@@ -143,19 +143,19 @@ in config\n""")
         log.append(module='rebuild', line='tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
         for path in repos_path:
-            base = os.path.basename(path[1])
+            base = os.path.basename(path)
             log.append(module='rebuild', line= 'DR base dir: %s' % base)
             for dirname in self.tracked():
                 if dirname == base: # we have a winner
                     log.append(module='rebuild',
                     line='DR found path with matching dir: %s %s' % (dirname, 
                         base))
-                    if os.path.exists(path[1]):
-                        shutil.move(path[1],'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
-                        log.append(module='rebuild', line='moving %s' % path[1])
-                    shutil.move(tmp_dir+dirname, path[1])
+                    if os.path.exists(path):
+                        shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
+                        log.append(module='rebuild', line='moving %s' % path)
+                    shutil.move(tmp_dir+dirname, path)
                     log.append(module='rebuild',
-                        line='moving %s to %s' % (tmp_dir+dirname, path[1]))
+                        line='moving %s to %s' % (tmp_dir+dirname, path))
 
     def tracked(self):
         """There needs to be a comparison between the copied files and the
