@@ -86,11 +86,6 @@ in config\n""")
         """Depending on the database information for each path, you may or may not have
         specific files you want to override. This manager method dispatches correctly
         after verifying if you were tracking a single file or a directory"""
-        # we do not need this anymore:
-#        conf = '/tmp/%s/conf/pacha.conf' % self.hostname
-#        parse = confparser.Parse(conf)
-#        parse.options()
-#        log.append(module='rebuild', line="read config file and parsed options")
         
         db_location = '/tmp/%s/db/pacha.db' % self.hostname
         if os.path.exists(db_location):
@@ -117,10 +112,10 @@ in config\n""")
         log.append(module='rebuild.single_tracking',
                 line='single repos path: %s' % repos_path)
         tmp_dir = '/tmp/%s/' % self.hostname
-        log.append(module='rebuild', line='tmp_dir: %s' % tmp_dir)
+        log.append(module='rebuild.single_tracking', line='tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
         for path in repos_path:
-            base = os.path.basename(path)
+            base = os.path.basename(path[1])
             log.append(module='rebuild', line= 'DR base dir: %s' % base)
             for dirname in self.tracked():
                 if dirname == base: # we have a winner
@@ -158,19 +153,19 @@ in config\n""")
         log.append(module='rebuild', line='tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
         for path in repos_path:
-            base = os.path.basename(path)
+            base = os.path.basename(path[1])
             log.append(module='rebuild', line= 'DR base dir: %s' % base)
             for dirname in self.tracked():
                 if dirname == base: # we have a winner
                     log.append(module='rebuild',
                     line='DR found path with matching dir: %s %s' % (dirname, 
                         base))
-                    if os.path.exists(path):
-                        shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
-                        log.append(module='rebuild', line='moving %s' % path)
-                    shutil.move(tmp_dir+dirname, path)
+                    if os.path.exists(path[1]):
+                        shutil.move(path[1],'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
+                        log.append(module='rebuild', line='moving %s' % path[1])
+                    shutil.move(tmp_dir+dirname, path[1])
                     log.append(module='rebuild',
-                        line='moving %s to %s' % (tmp_dir+dirname, path))
+                        line='moving %s to %s' % (tmp_dir+dirname, path[1]))
 
     def tracked(self):
         """There needs to be a comparison between the copied files and the
