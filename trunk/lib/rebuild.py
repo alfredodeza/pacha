@@ -96,7 +96,7 @@ in config\n""")
                     if path[3] == 'dir': # if this is a dir then do default replace
                         log.append(module='rebuild.replace_manager', 
                                 line = "dirname in self.tracked: %s" % dirname)
-                        self.default_replace(dirname)
+                        self.default_replace(dirname, path[1])
                     if path[3] == 'single': # a single file tracking
                         log.append(module='rebuild.replace_manager',
                                 line='single file in self.tracked: %s' % dirname)
@@ -108,54 +108,54 @@ in config\n""")
     def single_tracking(self, path):
         """You can have specific files to be rebuilt to avoid replacing
         whole directories."""
-        repos_path = self.repos()
+        #repos_path = self.repos()
         log.append(module='rebuild.single_tracking',
-                line='single repos path: %s' % repos_path)
+                line='single repo path: %s' % path)
         tmp_dir = '/tmp/%s/' % self.hostname
         log.append(module='rebuild.single_tracking', 
                 line='tmp_dir: /tmp/%s' % self.hostname)
         # get list of directories in tmp and do a double loop
-        for path in repos_path:
-            base = os.path.basename(path) #gets us the file name
-            dir_path = os.path.dirname(path)
-            directory = os.path.basename(dir_path) # finally a dir name from the path
-            tmp_subdir = tmp_dir+directory
-            log.append(module='rebuild.single_tracking', line= 'base file: %s' % base)
-            for file in os.listdir(tmp_subdir): 
-                if file == base: # we have a winner
-                    log.append(module='rebuild.single_tracking',
-                    line='found path with matching file: %s %s' % (path, 
-                        base))
-                    if os.path.exists(path):
-                        shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
-                        log.append(module='rebuild.single_tracking', 
-                                line='moving %s to /tmp' % path)
-                    shutil.move(tmp_subdir+'/'+file, path)
-                    log.append(module='rebuild.single_tracking',
-                        line='moving %s to %s' % (tmp_subdir+'/'+dirname, path))
+        #for path in repos_path:
+        base = os.path.basename(path) #gets us the file name
+        dir_path = os.path.dirname(path)
+        directory = os.path.basename(dir_path) # finally a dir name from the path
+        tmp_subdir = tmp_dir+directory
+        log.append(module='rebuild.single_tracking', line= 'base file: %s' % base)
+        for file in os.listdir(tmp_subdir): 
+            if file == base: # we have a winner
+                log.append(module='rebuild.single_tracking',
+                line='found path with matching file: %s %s' % (path, 
+                    base))
+                if os.path.exists(path):
+                    shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%s'))) # get it out of the way
+                    log.append(module='rebuild.single_tracking', 
+                            line='moving %s to /tmp' % path)
+                shutil.copyfile(tmp_subdir+'/'+file, path)
+                log.append(module='rebuild.single_tracking',
+                    line='moving %s to %s' % (tmp_subdir+'/'+file, path))
 
-    def default_replace(self, dirname):
+    def default_replace(self, dirname, path):
         """Usually you will replace the configs you were backing up. Here
         all directories get pushed if not specified in the DB"""
-        repos_path = self.repos()
-        log.append(module='rebuild', line='repos path: %s' % repos_path)
+        #repos_path = self.repos()
+        log.append(module='rebuild', line='repos path: %s' % path)
         tmp_dir = '/tmp/%s/' % self.hostname
         log.append(module='rebuild', line='tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
-        for path in repos_path:
-            base = os.path.basename(path)
-            log.append(module='rebuild', line= 'DR base dir: %s' % base)
-            for dirname in self.tracked():
-                if dirname == base: # we have a winner
-                    log.append(module='rebuild',
-                    line='DR found path with matching dir: %s %s' % (dirname, 
-                        base))
-                    if os.path.exists(path):
-                        shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%S'))) # get it out of the way
-                        log.append(module='rebuild', line='moving %s' % path)
-                    shutil.move(tmp_dir+dirname, path)
-                    log.append(module='rebuild',
-                        line='moving %s to %s' % (tmp_dir+dirname, path))
+        #for path in repos_path:
+        base = os.path.basename(path)
+        log.append(module='rebuild', line= 'DR base dir: %s' % base)
+        #for dirname in self.tracked():
+        if dirname == base: # we have a winner
+            log.append(module='rebuild',
+            line='DR found path with matching dir: %s %s' % (dirname, 
+                base))
+            if os.path.exists(path):
+                shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%s'))) # get it out of the way
+                log.append(module='rebuild', line='moving %s' % path)
+            shutil.copytree(tmp_dir+dirname, path)
+            log.append(module='rebuild',
+                line='moving %s to %s' % (tmp_dir+dirname, path))
 
     def tracked(self):
         """There needs to be a comparison between the copied files and the
