@@ -17,7 +17,7 @@ import sys
 from subprocess import call
 import shutil
 from time import strftime
-import confparser, log
+import confparser, log, database
 
 
 class Rebuild(object):
@@ -83,23 +83,38 @@ class Rebuild(object):
 in config\n""")
 
     def replace_manager(self):
-        """Depending on the configuration file, you may or may not have
-        specific files you want to override. This method does a cross
-        check between what directories Pacha has kept track and if they
-        have a corresponding match in the config file."""
-        # we parse the conf file to get specific tracking:
-        conf = '/tmp/%s/conf/pacha.conf' % self.hostname
-        parse = confparser.Parse(conf)
-        parse.options()
-        log.append(module='rebuild', line="read config file and parsed options")
-        for dirname in self.tracked():
-            log.append(module='rebuild', line = "dirname in self.tracked: %s" % dirname)
-            self.default_replace(dirname)
+        """Depending on the database information for each path, you may or may not have
+        specific files you want to override. This manager method dispatches correctly
+        after verifying if you were tracking a single file or a directory"""
+        # we do not need this anymore:
+#        conf = '/tmp/%s/conf/pacha.conf' % self.hostname
+#        parse = confparser.Parse(conf)
+#        parse.options()
+#        log.append(module='rebuild', line="read config file and parsed options")
+        
+        db_location = '/tmp/%s/db/pacha.db' % self.hostname
+        if os.path.exists(db_location):
+            # connect to the DB:
+            db = database.Worker(db=db_location)
+            for path in db.get_repos():
+                for dirname in self.tracked():
+                    if path[3] == 'dir': # if this is a dir then do default replace
+                        log.append(module='rebuild', 
+                                line = "dirname in self.tracked: %s" % dirname)
+                        self.default_replace(dirname)
+                    if path[3] == 'single': # a single file tracking
+                        log.append(module='rebuild.raplce_manager',
+                                line='single file in self.tracked: %s' % dirname)
+                        self.single_tracking(path[1])
+        else:
+            print "Could not find DB at /tmp/%s/db/pacha.db" % self.hostname
+            sys.exit(1)
 
-
-    def specific_tracking(self, dirname, item):
+    def single_tracking(self, path):
         """You can have specific files to be rebuilt to avoid replacing
         whole directories."""
+        filename = os.path.basename(path)
+        
         ##
         # BUGGY / NOT YET IMPLEMENTED
         ##
@@ -116,7 +131,7 @@ in config\n""")
 
     def default_replace(self, dirname):
         """Usually you will replace the configs you were backing up. Here
-        all directories get pushed if not specified in the config"""
+        all directories get pushed if not specified in the DB"""
         repos_path = self.repos()
         log.append(module='rebuild', line='repos path: %s' % repos_path)
         tmp_dir = '/tmp/%s/' % self.hostname
