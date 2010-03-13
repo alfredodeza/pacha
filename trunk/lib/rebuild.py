@@ -1,16 +1,4 @@
 # Copyright 2009-2010 Alfredo Deza
-#
-# This program is free software: you can redistribute it and/or modify it 
-# under the terms of the GNU General Public License version 3,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but 
-# WITHOUT ANY WARRANTY; without even the implied warranties of 
-# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR 
-# PURPOSE.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
@@ -68,7 +56,7 @@ Check your settings and run --rebuild again."""
         repositories"""
         cmd = "sudo apt-get update"
         call(cmd, shell=True)
-        log.append(module='rebuild', 
+        log.append(module='rebuild.update', 
                 line="updated repositories via apt-get update")
 
     def install(self):
@@ -82,11 +70,11 @@ Check your settings and run --rebuild again."""
         try:
             packages = parse.packages
             for package in packages:
-                log.append(module='rebuild', line="installing %s" % package)
+                log.append(module='rebuild.install', line="installing %s" % package)
                 command = "sudo apt-get -y install %s" % package
                 call(command, shell=True)
         except AttributeError, error:
-            log.append(module='rebuild', type='ERROR', line="%s" % error)
+            log.append(module='rebuild.install', type='ERROR', line="%s" % error)
             sys.stderr.write("""No packages specified for installation 
 in config\n""")
 
@@ -146,23 +134,23 @@ in config\n""")
         """Usually you will replace the configs you were backing up. Here
         all directories get pushed if not specified in the DB"""
         #repos_path = self.repos()
-        log.append(module='rebuild', line='repos path: %s' % path)
+        log.append(module='rebuild.default_replace', line='repos path: %s' % path)
         tmp_dir = '/tmp/%s/' % self.hostname
         log.append(module='rebuild', line='tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
         #for path in repos_path:
         base = os.path.basename(path)
-        log.append(module='rebuild', line= 'DR base dir: %s' % base)
+        log.append(module='rebuild.default_replace', line= 'base dir: %s' % base)
         #for dirname in self.tracked():
         if dirname == base: # we have a winner
-            log.append(module='rebuild',
+            log.append(module='rebuild.default_replace',
             line='DR found path with matching dir: %s %s' % (dirname, 
                 base))
             if os.path.exists(path):
                 shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%s'))) # get it out of the way
-                log.append(module='rebuild', line='moving %s' % path)
+                log.append(module='rebuild.default_replace', line='moving %s' % path)
             shutil.copytree(tmp_dir+dirname, path)
-            log.append(module='rebuild',
+            log.append(module='rebuild.default_replace',
                 line='moving %s to %s' % (tmp_dir+dirname, path))
 
     def tracked(self):
@@ -174,8 +162,16 @@ in config\n""")
 
     def repos(self):
         """Returns a list of all repo paths Pacha has been tracking"""
-        db = database.Worker(db='/tmp/%s/db/pacha.db' % self.hostname)
-        repos_list = []
-        for repo in db.get_repos():
-            repos_list.append(repo[1])
-        return repos_list
+        db_file = '/tmp/%s/db/pacha.db' % self.hostname
+        if os.path.exists(db_file):
+            db = database.Worker(db_file)
+            repos_list = []
+            for repo in db.get_repos():
+                repos_list.append(repo[1])
+            return repos_list
+        else:
+            print "Aborting the --rebuild operation"
+            print "The Pacha database from host %s could not be found." % self.hostname
+            print """Make sure that the db directory is being tracked at /opt/pacha/hosts/%s/
+in the Pacha server"""  % self.hostname
+            sys.exit(1)
