@@ -54,6 +54,14 @@ class Rebuild(object):
         command = "scp -r %s@%s:/opt/pacha/hosts/%s /tmp/" % (self.server_user,
                 self.server, self.hostname)
         call(command, shell=True)
+        # if for some reason the above failed let me know:
+        host_copy = '/tmp/%s' % self.hostname
+        if os.path.isdir(host_copy):
+            pass # we are good
+        else:
+            print """Pacha was not able to retrieve the files from the SSH server provided.
+Check your settings and run --rebuild again."""
+            sys.exit(1)
 
     def update(self):
         """Do a simple update to apt so it won't complain about unreachable
