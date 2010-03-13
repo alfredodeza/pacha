@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 #
-#
 # Copyright (c) 2009-2010 Alfredo Deza <alfredodeza [at] gmail [dot] com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -55,8 +54,7 @@ http://code.google.com/p/pacha/wiki/Options"""
 
     group = OptionGroup(parser, "Rebuilding Options", "When rebuilding\
  a host, you will need to pass a few required options to Pacha so it can\
- connecto to a remote host via SSH and copy the needed files.")
-    
+ connect to a remote host via SSH and copy the needed files.")
 
     group.add_option('--rebuild', action="store_true",
             help="""Combined with other options it rebuilds the
@@ -99,6 +97,7 @@ http://code.google.com/p/pacha/wiki/Options"""
             print " * Pacha finished installing."
             print """ * Remember to edit pacha.conf and run:
 pacha --watch /opt/pacha/conf
+pacha --watch /opt/pacha/db
  * This will keep track of all host specific configurations that will be needed
 when rebuilding."""
 
@@ -137,18 +136,17 @@ when rebuilding."""
                 # sure it does not exist, 
                 hgignore = dirname+'/.hgignore'
                 if os.path.isfile(hgignore): # make sure we arent overwriting
-                    # so this means we are already watching unique files here
+                    # we are already watching unique files here
                     # so let's add the new guy and commit it
                     mercurial = hg.Hg(path=dirname)
                     mercurial.hg_add(abspath)
                     mercurial.commit()
 
-                #if it does not exist then this should be the first 
-                # time this is being run here right?
-                # pass it on to:
+                # if it does not exist then this should be the first 
+                # time this is being run here 
                 else:
                     mercurial = hg.Hg(path=dirname)
-                    # then ignore everythin withn the path
+                    # then ignore everything within the path
                     mercurial.hgignore()
                     mercurial.initialize()
                     mercurial.hg_add(single=abspath)
@@ -172,8 +170,11 @@ when rebuilding."""
             print "SSH Server: \t\t%s" % options.ssh_server
             print "SSH User: \t\t%s" % options.ssh_user
             print "Host to rebuild: \t%s" % options.host
-
+            
             try:
+                confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
+
+            #try:
                 run = rebuild.Rebuild(options.ssh_server,
                         options.ssh_user,
                         options.host)
@@ -182,6 +183,7 @@ when rebuilding."""
                 run.replace_manager()
 
             except KeyboardInterrupt:
+                print "\nExiting nicely from Pacha"
                 sys.exit(1)
 
         if options.upgrade:
