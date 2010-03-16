@@ -1,25 +1,14 @@
-# Copyright 2009-2010 Alfredo Deza
-#
-# This program is free software: you can redistribute it and/or modify it 
-# under the terms of the GNU General Public License version 3,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but 
-# WITHOUT ANY WARRANTY; without even the implied warranties of 
-# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR 
-# PURPOSE.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Handles all logging for Pacha. Not using Python's logging module
-knowlingly."""
+knowlingly. Because it is absolutely HORRIBLE."""
 
 import os
 import sys
 from time import strftime
 
-def append(module='pacha', type='INFO', line='',
-        log_file = '/var/log/pacha.log'):
+def append(module='pacha', 
+        type='INFO', 
+        line='',
+        log_file = '/opt/pacha/log/pacha.log'):
     """Simple function to write to a log file"""
 
     try:
