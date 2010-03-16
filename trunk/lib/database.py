@@ -35,7 +35,7 @@ class Worker(object):
     def update_rev(self, path, revision):
         """Inserts a path with a revision and keeps updating this 
         for a comparison """
-        values = (path, revision)
+        values = (revision, path)
         command = 'UPDATE repos SET revision=? WHERE path=?'
         self.c.execute(command, values)
         self.conn.commit()
