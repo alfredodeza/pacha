@@ -33,9 +33,12 @@ class Worker(object):
         self.conn.close()
 
     def update_rev(self, path, revision):
-        """Inserts a path with a revision and keeps updating this for a comparison """
+        """Inserts a path with a revision and keeps updating this 
+        for a comparison """
         values = (path, revision)
         command = 'UPDATE repos SET revision=? WHERE path=?'
+        self.c.execute(command, values)
+        self.conn.commit()
 
     def remove(self, path):
         """Removes a repo from the database"""
