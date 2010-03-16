@@ -39,6 +39,25 @@ class Watcher(object):
             mercurial = hg.Hg(path=self.path)
             mercurial.commit()
             mercurial.push()
+
+    def revision(self):
+        """Conect to the database for revision comparison
+        and insert a revision hash from Mercurial if it 
+        does not exist"""
+
+        db = database.Worker()
+        for repo in db.get.repo(self.path):
+            if repo[4] == None:  #a path without a revision so insert one
+                revision = run.hg_revision()[0]
+                db.update_rev(self.path, revision)
+            else: # we have a hash there so:
+                revision = run.hg_revision[0]
+                if repo[4] != revision:
+                    mercurial = hg.Hg(path=self.path)
+                    mercurial.push()
+                    db.update_rev(self.path, revision) #updates the new revision into DB
+
+
             
 class Runners(object):
     """Handles everything related to Mercurial calls"""
