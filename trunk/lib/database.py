@@ -35,7 +35,7 @@ class Worker(object):
     def update_rev(self, path, revision):
         """Inserts a path with a revision and keeps updating this for a comparison """
         values = (path, revision)
-        command = 'UPDATE repos SET path=? WHERE revision=?'
+        command = 'UPDATE repos SET revision=? WHERE path=?'
 
     def remove(self, path):
         """Removes a repo from the database"""
