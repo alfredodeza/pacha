@@ -27,7 +27,7 @@ class TestMain(unittest.TestCase):
 
     def test_log(self):
         """Do we have a log file?"""
-        log = os.path.isfile('/var/log/pacha.log')
+        log = os.path.isfile('/opt/pacha/log/pacha.log')
         self.assertTrue(log)
 
     def test_symlink(self):

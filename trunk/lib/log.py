@@ -26,6 +26,16 @@ def append(module='pacha',
         sys.stderr.write("Permission denied to write log file ")
         sys.exit(1)
 
-
+def rotate():
+    """In charge of rotating the Pacha log, compressing 
+    and deleting old log files"""
+    # get size of pacha.log
+    # set max size of pacha.log
+    # if size > max_size then compress
+    # compress to tar.gz
+    # check how many tar.gz are there
+    # if more than 5, then delete the oldest one
+    # rename all the log files pacha.log.+1.tar.gz
+    # be done
 
 
