@@ -118,8 +118,10 @@ def main():
                     if master == 'True':
                         hg.update()
                 except AttributeError, error:
-                    log.append(module='pachad.main', type='INFO',
-                            line='server not master: %s' % error)
+                    # it is ok if this setting is not ON
+                    # but annoying if you see this INFO all over
+                    # your log files, so nothing to see here
+                    pass
                 log.append(module='pachad.main', line='looping over repos in db')
                 for repo in repos:
                     # need to get an abspath from 'repo' and then pass it on
