@@ -6,6 +6,7 @@
 import os
 import sys
 import time
+from getpass import getuser
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 # fix for local imports
@@ -108,6 +109,24 @@ def check_path(file_path):
         return file_path
     else:
         return os.path.dirname(file_path)
+
+def hg_user():
+    """In charge of checking if you have a username set in either 
+    $HOME/.hgrc or in /etc/mercurial/hgrc"""
+    user_hgrc = '/home/%s/.hgrc' % getuser()
+    global_hgrc = '/etc/mercurial/hgrc'
+    result = False
+    if os.path.isfile(global_hgrc):
+        for line in open(global_hgrc):
+            if 'username' in line:
+                result = True
+    if not result: # nothing found in global so look into home
+        if os.path.isfile(user_hhrc):
+            for line in open(user_hgrc):
+                if 'username' in line:
+                    result =True
+    return result
+
 
 
 def main():
