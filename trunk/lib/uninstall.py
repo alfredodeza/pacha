@@ -20,7 +20,7 @@ from subprocess import call
 
 def main():
     pacha_dir = '/opt/pacha'
-    print "Removing pacha dir at /opt/pacha")
+    print "Removing pacha dir at /opt/pacha"
     
     try:
         if os.path.isfile('/etc/init.d/pacha'):
