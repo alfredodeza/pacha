@@ -23,18 +23,18 @@ class Watcher(object):
         """Report if a file changed and the change has not been commited"""
         log.append(module='pachad', 
                 line='watching for changes in %s' % self.path)
-        run = Runners(location=self.path)
-        revision = run.hg_revision()[0]
-        log.append(module='pachad', 
-                line='revision ID is: %s at %s' % (revision, self.path))
-        current_revision = run.hg_revision()[0]
-        new_revision = run.hg_revision()[0]
-        if current_revision != new_revision:
-            log.append(module='pachad', 
-                    line='found a new revision: %s at %s' % (new_revision, 
-                    self.path))
-            mercurial = hg.Hg(path=self.path)
-            mercurial.push()
+        #run = Runners(location=self.path)
+        #revision = run.hg_revision()[0]
+        #log.append(module='pachad', 
+        #        line='revision ID is: %s at %s' % (revision, self.path))
+        #current_revision = run.hg_revision()[0]
+        #new_revision = run.hg_revision()[0]
+        #if current_revision != new_revision:
+        #    log.append(module='pachad', 
+        #            line='found a new revision: %s at %s' % (new_revision, 
+        #            self.path))
+        #    mercurial = hg.Hg(path=self.path)
+        #    mercurial.push()
         if run.modified() is True:
             mercurial = hg.Hg(path=self.path)
             mercurial.commit()
@@ -45,20 +45,27 @@ class Watcher(object):
         and insert a revision hash from Mercurial if it 
         does not exist"""
 
+        run = Runners(location=self.path)
         db = database.Worker()
         for repo in db.get.repo(self.path):
             if repo[4] == None:  #a path without a revision so insert one
+                log.append(module='pachad.Watcher.revision',
+                        line='No revision recorded in DB - so adding it')
                 revision = run.hg_revision()[0]
                 db.update_rev(self.path, revision)
+                log.append(module='pachad.Watcher.revision',
+                        line='added revision %s for path %s' % (revision,
+                            self.path))
             else: # we have a hash there so:
                 revision = run.hg_revision[0]
                 if repo[4] != revision:
+                    log.append(module='pachad.Watcher.revision',
+                            line='found a new revision: %s at %s' % (repo[4],
+                            self.path))
                     mercurial = hg.Hg(path=self.path)
                     mercurial.push()
                     db.update_rev(self.path, revision) #updates the new revision into DB
 
-
-            
 class Runners(object):
     """Handles everything related to Mercurial calls"""
  
