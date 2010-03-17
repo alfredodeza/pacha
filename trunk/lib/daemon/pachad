@@ -151,41 +151,52 @@ def main():
         db = database.Worker()
         while True:
             try:
-                repos = db.get_repos()
-                log.append(module='pachad', line='reading repos from database')
-                pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
-                log.append(module='pachad', line='reading pacha.conf')
-                pacha_conf.options()
-                try:
-                    master = pacha_conf.master
-                    log.append(module='pachad.main', type='INFO',
-                            line='machine set to master')
-                    if master == 'True':
-                        hg.update()
-                except AttributeError, error:
-                    # it is ok if this setting is not ON
-                    # but annoying if you see this INFO all over
-                    # your log files, so nothing to see here
-                    pass
-                log.append(module='pachad.main', line='looping over repos in db')
-                for repo in repos:
-                    # need to get an abspath from 'repo' and then pass it on
-                    # else the daemon will error out
-                    repo_path = check_path(repo[1])
-                    if os.path.exists(repo_path): # catches a path no longer there...
-                        watch = Watcher(path=repo_path)
-                        watch.report()
-                        watch.revision_compare()
-                    else:
-                        log.append(module='pachad', 
-                         type='WARN', line='path %s does not exist' % repo_path)
-                time.sleep(10)
-            except Exception, error:
-                log.append(module='pachad', type='ERROR', 
+                if not hg_user():
+                    print """
+Pacha searched for a Mercurial username in the $HOME directory
+and /etc/mercurial/hgrc but could not find one.
+Mercurial needs a username provided:
+But no username was supplied (see "hg help config")
+      [ui]
+      username = Firstname Lastname <firstname.lastname@example.net>
+      verbose = True
+"""
+                else:
+                    repos = db.get_repos()
+                    log.append(module='pachad', line='reading repos from database')
+                    pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
+                    log.append(module='pachad', line='reading pacha.conf')
+                    pacha_conf.options()
+                    try:
+                        master = pacha_conf.master
+                        log.append(module='pachad.main', type='INFO',
+                                line='machine set to master')
+                        if master == 'True':
+                            hg.update()
+                    except AttributeError, error:
+                        # it is ok if this setting is not ON
+                        # but annoying if you see this INFO all over
+                        # your log files, so nothing to see here
+                        pass
+                    log.append(module='pachad.main', line='looping over repos in db')
+                    for repo in repos:
+                        # need to get an abspath from 'repo' and then pass it on
+                        # else the daemon will error out
+                        repo_path = check_path(repo[1])
+                        if os.path.exists(repo_path): # catches a path no longer there...
+                            watch = Watcher(path=repo_path)
+                            watch.report()
+                            watch.revision_compare()
+                        else:
+                            log.append(module='pachad', 
+                             type='WARN', line='path %s does not exist' % repo_path)
+                    time.sleep(10)
+                except Exception, error:
+                    log.append(module='pachad', type='ERROR', 
                         line='Fatal Exception - daemon killed')
-                log.append(module='pachad', type='ERROR',
+                    log.append(module='pachad', type='ERROR',
                         line='%s' % error)
-                sys.exit(1)
+                    sys.exit(1)
 
     if options.stop:
         daemon = supay.Daemon(name='pachad', log=False)
