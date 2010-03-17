@@ -23,7 +23,7 @@ class Watcher(object):
         """Report if a file changed and the change has not been commited"""
         log.append(module='pachad', 
                 line='watching for changes in %s' % self.path)
-        #run = Runners(location=self.path)
+        run = Runners(location=self.path)
         #revision = run.hg_revision()[0]
         #log.append(module='pachad', 
         #        line='revision ID is: %s at %s' % (revision, self.path))
