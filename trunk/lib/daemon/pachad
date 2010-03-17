@@ -133,9 +133,6 @@ def main():
 
         while True:
             try:
-                log.append(module='pachad.main', type='ERROR',
-                        line='No hgrc found with username')
-                sys.exit(1)
                 repos = db.get_repos()
                 log.append(module='pachad', line='reading repos from database')
                 pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
