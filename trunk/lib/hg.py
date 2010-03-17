@@ -2,6 +2,7 @@
 other commands."""
 
 from subprocess import call, Popen, PIPE
+from getpass import getuser
 import os
 import sys
 from time import strftime
