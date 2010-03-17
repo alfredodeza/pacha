@@ -207,21 +207,14 @@ def hg_user():
     global_hgrc = '/etc/mercurial/hgrc'
     result = False
     if os.path.isfile(global_hgrc):
-        log.append(module='pachad', line='found global hgrc')
         for line in open(global_hgrc):
             if 'username' in line:
-                log.append(module='pachad', line='username found in global hgrc')
                 result = True
-                log.append(module='pachad', line='result is now true')
     if result is False: # nothing found in global so look into home
-        log.append(module='pachad', line='result should be false if we are running')
         if os.path.isfile(user_hgrc):
-            log.append(module='pachad', line='user hgrc found')
             for line in open(user_hgrc):
                 if 'username' in line:
-                    log.append(module='pachad', line='username found in user hgrc')
                     result =True
-                    log.append(module='pachad', line='result should be true')
     return result
 
 
