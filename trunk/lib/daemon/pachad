@@ -58,7 +58,7 @@ class Watcher(object):
                         line='added revision %s for path %s' % (revision,
                             self.path))
             else: # we have a hash there so:
-                revision = run.hg_revision[0]
+                revision = run.hg_revision()[0]
                 if repo[4] != revision:
                     log.append(module='pachad.Watcher.revision_compare',
                             line='found a new revision: %s at %s' % (repo[4],
