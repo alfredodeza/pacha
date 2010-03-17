@@ -113,7 +113,10 @@ def check_path(file_path):
 def hg_user():
     """In charge of checking if you have a username set in either 
     $HOME/.hgrc or in /etc/mercurial/hgrc"""
-    user_hgrc = '/home/%s/.hgrc' % getuser()
+    if 'root' == getuser():
+        user_hgrc = '/root/.hgrc'
+    else:
+        user_hgrc = '/home/%s/.hgrc' % getuser()
     global_hgrc = '/etc/mercurial/hgrc'
     result = False
     if os.path.isfile(global_hgrc):
@@ -121,7 +124,7 @@ def hg_user():
             if 'username' in line:
                 result = True
     if not result: # nothing found in global so look into home
-        if os.path.isfile(user_hhrc):
+        if os.path.isfile(user_hgrc):
             for line in open(user_hgrc):
                 if 'username' in line:
                     result =True
@@ -145,14 +148,8 @@ def main():
         parser.print_help()
 
     if options.start:
-        daemon = supay.Daemon(name='pachad', log=False)
-        daemon.start()
-        log.append(module='pachad', line='Daemon started')
-        db = database.Worker()
-        while True:
-            try:
-                if not hg_user():
-                    print """
+        if not hg_user():
+            print """
 Pacha searched for a Mercurial username in the $HOME directory
 and /etc/mercurial/hgrc but could not find one.
 Mercurial needs a username provided:
@@ -161,7 +158,20 @@ But no username was supplied (see "hg help config")
       username = Firstname Lastname <firstname.lastname@example.net>
       verbose = True
 """
-                else:
+            log.append(module='pachad.main', type='ERROR',
+                line='No hgrc found with username')
+            sys.exit(1)
+        else:
+            daemon = supay.Daemon(name='pachad', log=False)
+            daemon.start()
+            log.append(module='pachad', line='Daemon started')
+            db = database.Worker()
+ 
+            while True:
+                try:
+                    log.append(module='pachad.main', type='ERROR',
+                            line='No hgrc found with username')
+                    sys.exit(1)
                     repos = db.get_repos()
                     log.append(module='pachad', line='reading repos from database')
                     pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
