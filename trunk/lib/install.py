@@ -37,8 +37,8 @@ def main():
     init = '/etc/init.d/'
     pacha_source =  sys.path[0]
     try:
-        log.append(module='install', line="Creating pacha dir")
         shutil.copytree(pacha_source, pacha_dir)
+        log.append(module='install', line="Creating pacha dir")
         log.append(module='install', line="Copied files to /opt/pacha")
         os.symlink(absolute_pacha, executable)
         log.append(module='install',

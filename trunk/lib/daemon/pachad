@@ -49,17 +49,17 @@ class Watcher(object):
         db = database.Worker()
         for repo in db.get.repo(self.path):
             if repo[4] == None:  #a path without a revision so insert one
-                log.append(module='pachad.Watcher.revision',
+                log.append(module='pachad.Watcher.revision_compare',
                         line='No revision recorded in DB - so adding it')
                 revision = run.hg_revision()[0]
                 db.update_rev(self.path, revision)
-                log.append(module='pachad.Watcher.revision',
+                log.append(module='pachad.Watcher.revision_compare',
                         line='added revision %s for path %s' % (revision,
                             self.path))
             else: # we have a hash there so:
                 revision = run.hg_revision[0]
                 if repo[4] != revision:
-                    log.append(module='pachad.Watcher.revision',
+                    log.append(module='pachad.Watcher.revision_compare',
                             line='found a new revision: %s at %s' % (repo[4],
                             self.path))
                     mercurial = hg.Hg(path=self.path)
