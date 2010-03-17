@@ -1,19 +1,5 @@
-# Copyright 2009-2010 Alfredo Deza
-#
-# This program is free software: you can redistribute it and/or modify it 
-# under the terms of the GNU General Public License version 3,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but 
-# WITHOUT ANY WARRANTY; without even the implied warranties of 
-# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR 
-# PURPOSE.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-"""SSH connections and file transfers with limited options like non
-standard ports. This is a simple wrapper to suit Pacha."""
+"""Plugs into Mercurial and matches Pacha's need to commit, push, clone and
+other commands."""
 
 from subprocess import call, Popen, PIPE
 import os
@@ -60,14 +46,28 @@ class Hg(object):
             sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
             sys.exit(1)
         if not test:
-            try:
-                self.parse.user
-                self.parse.host
-            except AttributeError, error:
-                log.append(module='hg', type='ERROR',
-                line='config file not edited - aborting')
-                sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
+            if hg_user() is False:
+                print """
+Pacha searched for a Mercurial username in the $HOME directory
+and /etc/mercurial/hgrc but could not find one.
+Mercurial needs a username provided:
+But no username was supplied (see "hg help config")
+      [ui]
+      username = Firstname Lastname <firstname.lastname@example.net>
+      verbose = True"""
+                log.append(module='hg.init', type='ERROR',
+                        line='No hgrc found with username')
                 sys.exit(1)
+            else:
+
+                try:
+                    self.parse.user
+                    self.parse.host
+                except AttributeError, error:
+                    log.append(module='hg', type='ERROR',
+                    line='config file not edited - aborting')
+                    sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
+                    sys.exit(1)
         # testing functionality:
         if test:
             self.parse.user = user
@@ -195,3 +195,32 @@ def update(hosts_path = '/opt/pacha/hosts'):
                 else:
                     log.append(module='hg.update', type='ERROR',
                             line = '%s is not a directory' % directory)
+
+def hg_user():
+    """In charge of checking if you have a username set in either 
+    $HOME/.hgrc or in /etc/mercurial/hgrc"""
+    if 'root' == getuser():
+        user_hgrc = '/root/.hgrc'
+    else:
+        user_hgrc = '/home/%s/.hgrc' % getuser()
+    global_hgrc = '/etc/mercurial/hgrc'
+    result = False
+    if os.path.isfile(global_hgrc):
+        log.append(module='pachad', line='found global hgrc')
+        for line in open(global_hgrc):
+            if 'username' in line:
+                log.append(module='pachad', line='username found in global hgrc')
+                result = True
+                log.append(module='pachad', line='result is now true')
+    if result is False: # nothing found in global so look into home
+        log.append(module='pachad', line='result should be false if we are running')
+        if os.path.isfile(user_hgrc):
+            log.append(module='pachad', line='user hgrc found')
+            for line in open(user_hgrc):
+                if 'username' in line:
+                    log.append(module='pachad', line='username found in user hgrc')
+                    result =True
+                    log.append(module='pachad', line='result should be true')
+    return result
+
+

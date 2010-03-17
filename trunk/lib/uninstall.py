@@ -20,23 +20,22 @@ from subprocess import call
 
 def main():
     pacha_dir = '/opt/pacha'
-    log.append(module='uninstall', line="removing pacha dir at /opt/pacha")
+    print "Removing pacha dir at /opt/pacha")
     
     try:
         if os.path.isfile('/etc/init.d/pacha'):
             call('/etc/init.d/pacha stop', shell=True)
-            log.append(module='uninstall', line="stopped daemon")
+            print "Stopped daemon")
             os.remove('/etc/init.d/pacha')
-        log.append(module='uninstall', line="destroyed pacha daemon symlink")
+        print "Destroyed pacha daemon symlink")
         if os.path.isdir(pacha_dir):
             shutil.rmtree(pacha_dir)
-            log.append(module='uninstall', line="removed /opt/pacha")
+            print "Removed /opt/pacha")
         os.remove('/usr/bin/pacha')
-        log.append(module='uninstall', line="destroyed symlink")
+        print "Destroyed symlink")
         
     except OSError,e:
-        log.append(module='uninstall', type='ERROR',
-                line=e)
+        print e
        
 if __name__ == '__main__':
     main()
