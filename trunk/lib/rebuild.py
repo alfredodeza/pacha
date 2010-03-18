@@ -61,7 +61,7 @@ Check your settings and run --rebuild again."""
 
     def install(self):
         """Reads the config and install via apt-get any packages that have to 
-        be in form of a list"""
+        be in form of a list or a path"""
         conf = '/tmp/%s/conf/pacha.conf' % self.hostname
         parse = confparser.Parse(conf)
         parse.options()
@@ -69,19 +69,35 @@ Check your settings and run --rebuild again."""
         self.update()
         try:
             packages = parse.packages
-            for package in packages:
-                log.append(module='rebuild.install', line="installing %s" % package)
-                command = "sudo apt-get -y install %s" % package
-                call(command, shell=True)
+            if type(packages) == type(list()): # we have a list 
+                for package in packages:
+                    log.append(module='rebuild.install', line="installing %s" % package)
+                    command = "sudo apt-get -y install %s" % package
+                    call(command, shell=True)
+            else:
+                # we have to be flexible and allow a path or a file name
+                package_file = os.path.basename(package)
+                package_file_path = '/tmp/%s/conf/%s' % (self.hostname, package_file)
+                is os.path.isfile(package_file_path): # is it really there?
+                    txt = open(package_file_path)
+                    for line in txt.readlines():
+                        package = line.split('\n')[0]
+                        log.append(module='rebuild.install', line="installing %s" % package)
+                        command = "sudo apt-get -y install %s" % package
+                        call(command, shell=True)
+                else:
+                    sys.stderr.write("""Could not find a text file 
+with packages in: %s\n""" % package_file_path)
         except AttributeError, error:
             log.append(module='rebuild.install', type='ERROR', line="%s" % error)
             sys.stderr.write("""No packages specified for installation 
 in config\n""")
 
     def replace_manager(self):
-        """Depending on the database information for each path, you may or may not have
-        specific files you want to override. This manager method dispatches correctly
-        after verifying if you were tracking a single file or a directory"""
+        """Depending on the database information for each path, you may or 
+        may not have specific files you want to override. This manager method 
+        dispatches correctly after verifying if you were tracking a single 
+        file or a directory"""
         
         db_location = '/tmp/%s/db/pacha.db' % self.hostname
         if os.path.exists(db_location):
