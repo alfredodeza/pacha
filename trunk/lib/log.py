@@ -44,6 +44,12 @@ class Rotate(object):
     def manager(self):
         """Handles all the logic fromo init to perform
         the actual rotation"""
+        if self.location_verify():
+            # loop in the log directory to get the files:
+            for log_file in os.listdir(self.location):
+                if log_file.endswith('.log'): #catch the log file
+
+
     # get size of pacha.log
     # set max size of pacha.log
     # if size > max_size then compress
@@ -64,8 +70,11 @@ class Rotate(object):
     def get_size(self):
         """Get the total size of an item"""
 
-    def compress(self, item):
+    def compress(self, gz_name, item):
         """Compresses a single item"""
+        tar = tarfile.open(gz_name, 'w:gz')
+        tar.add(item)
+        tar.close()
 
     def rename(self, item):
         """For rotation we need to rename the file"""
