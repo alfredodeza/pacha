@@ -1,5 +1,6 @@
 """Plugs into Mercurial and matches Pacha's need to commit, push, clone and
-other commands."""
+other commands. Some actions are not able to plug in directly to Mercurial,
+but I will make an effort in integrating them as soon as I can."""
 
 from subprocess import call, Popen, PIPE
 from getpass import getuser
