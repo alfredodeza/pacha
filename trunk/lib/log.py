@@ -76,6 +76,10 @@ class Rotate(object):
 
     def item_count(self):
         """Return how many items do we have here"""
+        count = 0
+        for item is os.listdir(self.location):
+            count += 1
+        return count
 
     def get_size(self):
         """Get the total size of an item"""
@@ -95,6 +99,8 @@ class Rotate(object):
         new_name = '%s.%s.tar.gz' % (self.log_name, number)
         return new_name
 
-    def delete(self, item):
-        """After rotation a file need to get deleted"""
+    def remove(self, item):
+        """After rotation a file needs to get deleted"""
+        if os.path.exists(item):
+            os.remove(item)
 
