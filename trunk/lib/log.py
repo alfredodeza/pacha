@@ -34,12 +34,14 @@ class Rotate(object):
             location='/opt/pacha/log',
             max_size=10,
             compress=True,
-            max_items=5):
+            max_items=5,
+            log_name):
  
         self.location = location
         self.max_size = max_size
         self.compress = compress
         self.max_items = max_items  
+        self.log_name = log_name
 
     def manager(self):
         """Handles all the logic fromo init to perform
@@ -63,6 +65,14 @@ class Rotate(object):
     def location_verify(self):
         """Make sure a log file is there, otherwise we end up
         with errors"""
+        if os.path.exists(self.location):
+            for file_name in os.listdir(self.location):
+                if os.path.isfile(file_name):
+                    return True
+                else:
+                    return False
+        else:
+            return False
 
     def item_count(self):
         """Return how many items do we have here"""
@@ -76,8 +86,14 @@ class Rotate(object):
         tar.add(item)
         tar.close()
 
-    def rename(self, item):
-        """For rotation we need to rename the file"""
+    def rename(self, number):
+        """For rotation we need to rename the file to end with a proper
+        number at the end like:
+        file.log.1.tar.gz
+        file.log.2.tar.gz
+        """
+        new_name = '%s.%s.tar.gz' % (self.log_name, number)
+        return new_name
 
     def delete(self, item):
         """After rotation a file need to get deleted"""
