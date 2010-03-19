@@ -1,8 +1,3 @@
-# Author: Alfredo Deza
-# Email: alfredodeza [at] gmail dot com
-# License: MIT
-# Copyright 2009-2010 Alfredo Deza
-#
 """Simple database work. We do not need an ORM to do this for us."""
 import sqlite3
 import os

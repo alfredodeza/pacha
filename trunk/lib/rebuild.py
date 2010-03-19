@@ -1,5 +1,3 @@
-# Copyright 2009-2010 Alfredo Deza
-
 import os
 import sys
 from subprocess import call
