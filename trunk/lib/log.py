@@ -50,26 +50,13 @@ class Rotate(object):
             if self.item_count() == 1: # nothing compressed yet
                 newest = '%s.1.tar.gz' % self.log_name
                 self.compress(newest, self.log_name)
-            # loop in the log directory to get the files:
-            for log_file in os.listdir(self.location):
-                # start with the oldest file possible
-                oldest = '%s.%s.tar.gz' % (self.log_name, max_items)
-                if log_file == oldest:
-                    self.remove(log_file)
-
-
-
-
-
-    # get size of pacha.log
-    # set max size of pacha.log
-    # if size > max_size then compress
-    # compress to tar.gz
-    # check how many tar.gz are there
-    # if more than 5, then delete the oldest one
-    # rename all the log files pacha.log.+1.tar.gz
-    # be done
-
+            else:
+                # loop in the log directory to get the files:
+                for log_file in os.listdir(self.location):
+                    # start with the oldest file possible
+                    oldest = '%s.%s.tar.gz' % (self.log_name, self.max_items)
+                    if log_file == oldest:
+                        self.remove(log_file) # we get rid of it
 
     def location_verify(self):
         """Make sure a log file is there, otherwise we end up
