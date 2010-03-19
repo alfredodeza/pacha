@@ -32,10 +32,10 @@ class Rotate(object):
 
     def __init__(self,
             location='/opt/pacha/log',
-            max_size=10,
+            max_size=10485760, # 10 megabytes in kilobytes
             compress=True,
             max_items=5,
-            log_name):
+            log_name='pacha.log'):
  
         self.location = location
         self.max_size = max_size
@@ -47,9 +47,18 @@ class Rotate(object):
         """Handles all the logic fromo init to perform
         the actual rotation"""
         if self.location_verify():
+            if self.item_count() == 1: # nothing compressed yet
+                newest = '%s.1.tar.gz' % self.log_name
+                self.compress(newest, self.log_name)
             # loop in the log directory to get the files:
             for log_file in os.listdir(self.location):
-                if log_file.endswith('.log'): #catch the log file
+                # start with the oldest file possible
+                oldest = '%s.%s.tar.gz' % (self.log_name, max_items)
+                if log_file == oldest:
+                    self.remove(log_file)
+
+
+
 
 
     # get size of pacha.log
@@ -81,8 +90,9 @@ class Rotate(object):
             count += 1
         return count
 
-    def get_size(self):
+    def get_size(self, item):
         """Get the total size of an item"""
+
 
     def compress(self, gz_name, item):
         """Compresses a single item"""
