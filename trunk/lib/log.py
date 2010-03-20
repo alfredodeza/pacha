@@ -34,13 +34,11 @@ class Rotate(object):
     def __init__(self,
             location='/opt/pacha/log',
             max_size=10485760, # 10 megabytes in kilobytes
-            compress=True,
             max_items=5,
             log_name='pacha.log'):
  
         self.location = location
         self.max_size = max_size
-        self.compress = compress
         self.max_items = max_items  
         self.log_name = log_name
         self.log_path = os.path.join(location, log_name)
@@ -67,7 +65,7 @@ class Rotate(object):
                         os.rename(log_file, new_name)
                 # above rotates everything except the uncompressed log:
                 gz_name = '%s.1.tar.gz' % self.log_path
-                self.compress(gz_name, self.log_path)
+                #self.compress(gz_name, self.log_path)
                 # finally remove the log file
                 self.remove(self.log_path)
 
