@@ -57,6 +57,16 @@ class TestRotate(unittest.TestCase):
         actual = rotate.item_count()
         self.assertEqual(actual, expected)
 
+    def test_get_size(self):
+        """Verify the correct size of a file"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        expected = 41
+        actual = rotate.get_size('/tmp/testlog/test.log')
+        self.assertEqual(actual, expected)
+
     def tearDown(self):
         """Delete the log file that was created for the test"""
         shutil.rmtree('/tmp/testlog')
