@@ -44,19 +44,27 @@ class Rotate(object):
         self.log_name = log_name
 
     def manager(self):
-        """Handles all the logic fromo init to perform
+        """Handles all the logic from init to perform
         the actual rotation"""
         if self.location_verify():
             if self.item_count() == 1: # nothing compressed yet
                 newest = '%s.1.tar.gz' % self.log_name
                 self.compress(newest, self.log_name)
             else:
-                # loop in the log directory to get the files:
-                for log_file in os.listdir(self.location):
-                    # start with the oldest file possible
-                    oldest = '%s.%s.tar.gz' % (self.log_name, self.max_items)
-                    if log_file == oldest:
-                        self.remove(log_file) # we get rid of it
+                # start with the oldest file possible
+                oldest = '%s.%s.tar.gz' % (self.log_name, self.max_items)
+                if os.path.isfile(oldest):
+                    self.remove(log_file) # we get rid of it
+                for number in reversed(range(self.item_count())):
+                    norm_num = number + 1 # we do not start numbering at cero
+                    log_file = '%s.%d.tar.gz' % (self.log_name, norm_num)
+                    if os.path.isfile(log_file):
+                        new_number = norm_number + 1 # the actual num rotation
+                        new_name = '%s.%d.tar.gz' % (self.log_name, new_number)
+                        os.rename(log_file, new_name)
+                # above rotates everything except the uncompressed log:
+
+                        
 
     def location_verify(self):
         """Make sure a log file is there, otherwise we end up
