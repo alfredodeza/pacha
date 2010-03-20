@@ -62,7 +62,7 @@ class Rotate(object):
                     norm_num = number + 1 # we do not start numbering at cero
                     log_file = '%s.%d.tar.gz' % (self.log_path, norm_num)
                     if os.path.isfile(log_file):
-                        new_number = norm_number + 1 # the actual num rotation
+                        new_number = norm_num + 1 # the actual num rotation
                         new_name = '%s.%d.tar.gz' % (self.log_path, new_number)
                         os.rename(log_file, new_name)
                 # above rotates everything except the uncompressed log:
@@ -87,7 +87,7 @@ class Rotate(object):
     def item_count(self):
         """Return how many items do we have here"""
         count = 0
-        for item is os.listdir(self.location):
+        for item in os.listdir(self.location):
             count += 1
         return count
 
