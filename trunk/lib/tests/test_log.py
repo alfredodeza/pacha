@@ -83,6 +83,83 @@ class TestRotate(unittest.TestCase):
             gz = False
         self.assertTrue(gz)
 
+    def test_remove(self):
+        """Remove a file"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        rotate.remove('/tmp/testlog/test.log')
+        expected = os.path.isfile('/tmp/testlog/test.log')
+        self.assertFalse(expected)
+
+    def test_manager_first_compress(self):
+        """Verify correct log rotation of 1 item"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        rotate.manager()
+        expected = os.path.isfile('/tmp/testlog/test.log.1.tar.gz')
+        self.assertTrue(expected)
+
+    def test_manager_delete_log(self):
+        """Verify correct log elimination when rotating"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        rotate.manager()
+        expected = os.path.isfile('/tmp/testlog/test.log')
+        self.assertFalse(expected)
+
+    def test_manager_rotate(self):
+        """Verify correct log rotation of 2 items"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        rotate.manager()
+        log.append(module='test', type='INFO', line='running a test',
+                log_file = '/tmp/testlog/test.log')
+        rotate.manager()
+        expected = os.path.isfile('/tmp/testlog/test.log.2.tar.gz')
+        self.assertTrue(expected)
+
+    def test_manager_rotate_max(self):
+        """Verify correct log rotation of max items"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        rotate.manager()
+        log.append(module='test', type='INFO', line='running a test',
+                log_file = '/tmp/testlog/test.log')
+        rotate.manager()
+        log.append(module='test', type='INFO', line='running a test',
+                log_file = '/tmp/testlog/test.log')
+        rotate.manager()
+        expected_1 = os.path.isfile('/tmp/testlog/test.log.2.tar.gz')
+        expected_2 = os.path.isfile('/tmp/testlog/test.log.1.tar.gz')
+
+        self.assertTrue(expected_1, expected_2)
+
+    def test_manager_rotate_max(self):
+        """Verify max log files when max items is reached"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        rotate.manager()
+        log.append(module='test', type='INFO', line='running a test',
+                log_file = '/tmp/testlog/test.log')
+        rotate.manager()
+        log.append(module='test', type='INFO', line='running a test',
+                log_file = '/tmp/testlog/test.log')
+        rotate.manager()
+        actual = rotate.item_count()
+        expected = 3
+        self.assertEqual(actual, expected)
 
     def tearDown(self):
         """Delete the log file that was created for the test"""
