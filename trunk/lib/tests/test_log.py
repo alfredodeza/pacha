@@ -2,6 +2,7 @@ import sys
 if '../' not in sys.path:
     sys.path.append('../')
 import os
+import tarfile
 import shutil
 import unittest
 import log
@@ -66,6 +67,22 @@ class TestRotate(unittest.TestCase):
         expected = 41
         actual = rotate.get_size('/tmp/testlog/test.log')
         self.assertEqual(actual, expected)
+
+    def test_compress(self):
+        """Compress a given file"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        rotate.compress('/tmp/testlog/log.tar.gz',
+                '/tmp/testlog/test.log')
+        try:
+            tarfile.open('/tmp/testlog/log.tar.gz', 'r:gz')
+            gz = True
+        except ReadError:
+            gz = False
+        self.assertTrue(gz)
+
 
     def tearDown(self):
         """Delete the log file that was created for the test"""
