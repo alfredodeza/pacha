@@ -72,13 +72,8 @@ class Rotate(object):
     def location_verify(self):
         """Make sure a log file is there, otherwise we end up
         with errors"""
-        if os.path.exists(self.location):
-            for file_name in os.listdir(self.location):
-                file_name_path = os.path.join(self.location, file_name)
-                if os.path.isfile(file_name_path):
-                    return True
-                else:
-                    return False
+        if os.path.isfile(self.log_path):
+            return True
         else:
             return False
 

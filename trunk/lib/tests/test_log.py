@@ -2,6 +2,7 @@ import sys
 if '../' not in sys.path:
     sys.path.append('../')
 import os
+import shutil
 import unittest
 import log
 
@@ -29,6 +30,37 @@ class TestAppend(unittest.TestCase):
     def tearDown(self):
         """Delete the log file that was created for the test"""
         os.remove('/tmp/test.log')
+
+class TestRotate(unittest.TestCase):
+
+    def setUp(self):
+        """call the append function before testing to add some lines"""
+        os.mkdir('/tmp/testlog')
+        log.append(module='test', type='INFO', line='running a test',
+                log_file = '/tmp/testlog/test.log')
+        
+    def test_location_verify(self):
+        """Verify the location verifier"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        self.assertTrue(rotate.location_verify())
+
+    def test_item_count(self):
+        """Return the total number of files"""
+        rotate = log.Rotate(location='/tmp/testlog',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        expected = 1
+        actual = rotate.item_count()
+        self.assertEqual(actual, expected)
+
+    def tearDown(self):
+        """Delete the log file that was created for the test"""
+        shutil.rmtree('/tmp/testlog')
+
 
 if __name__ == '__main__':
     unittest.main()
