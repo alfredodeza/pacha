@@ -55,7 +55,7 @@ class Rotate(object):
                 # start with the oldest file possible
                 oldest = '%s.%s.tar.gz' % (self.log_path, self.max_items)
                 if os.path.isfile(oldest):
-                    self.remove(log_file) # we get rid of it
+                    self.remove(oldest) # we get rid of it
                 for number in reversed(range(self.item_count())):
                     norm_num = number + 1 # we do not start numbering at cero
                     log_file = '%s.%d.tar.gz' % (self.log_path, norm_num)
@@ -65,7 +65,7 @@ class Rotate(object):
                         os.rename(log_file, new_name)
                 # above rotates everything except the uncompressed log:
                 gz_name = '%s.1.tar.gz' % self.log_path
-                #self.compress(gz_name, self.log_path)
+                self.compress(gz_name, self.log_path)
                 # finally remove the log file
                 self.remove(self.log_path)
 
