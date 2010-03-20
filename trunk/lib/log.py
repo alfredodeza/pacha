@@ -63,8 +63,10 @@ class Rotate(object):
                         new_name = '%s.%d.tar.gz' % (self.log_name, new_number)
                         os.rename(log_file, new_name)
                 # above rotates everything except the uncompressed log:
-
-                        
+                gz_name = '%s.1.tar.gz' % self.log_name
+                self.compress(gz_name, self.log_name)
+                # finally remove the log file
+                self.remove(self.log_name)
 
     def location_verify(self):
         """Make sure a log file is there, otherwise we end up
@@ -87,22 +89,14 @@ class Rotate(object):
 
     def get_size(self, item):
         """Get the total size of an item"""
-
+        size = os.path.getsize(item)
+        return size
 
     def compress(self, gz_name, item):
         """Compresses a single item"""
         tar = tarfile.open(gz_name, 'w:gz')
         tar.add(item)
         tar.close()
-
-    def rename(self, number):
-        """For rotation we need to rename the file to end with a proper
-        number at the end like:
-        file.log.1.tar.gz
-        file.log.2.tar.gz
-        """
-        new_name = '%s.%s.tar.gz' % (self.log_name, number)
-        return new_name
 
     def remove(self, item):
         """After rotation a file needs to get deleted"""
