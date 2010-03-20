@@ -3,6 +3,7 @@ knowlingly. Because it is absolutely HORRIBLE."""
 
 import os
 import sys
+import tarfile
 from time import strftime
 
 def append(module='pacha', 
@@ -42,38 +43,41 @@ class Rotate(object):
         self.compress = compress
         self.max_items = max_items  
         self.log_name = log_name
+        self.log_path = os.path.join(location, log_name)
 
     def manager(self):
         """Handles all the logic from init to perform
         the actual rotation"""
         if self.location_verify():
             if self.item_count() == 1: # nothing compressed yet
-                newest = '%s.1.tar.gz' % self.log_name
-                self.compress(newest, self.log_name)
+                newest = '%s.1.tar.gz' % self.log_path
+                self.compress(newest, self.log_path)
+                self.remove(self.log_path)
             else:
                 # start with the oldest file possible
-                oldest = '%s.%s.tar.gz' % (self.log_name, self.max_items)
+                oldest = '%s.%s.tar.gz' % (self.log_path, self.max_items)
                 if os.path.isfile(oldest):
                     self.remove(log_file) # we get rid of it
                 for number in reversed(range(self.item_count())):
                     norm_num = number + 1 # we do not start numbering at cero
-                    log_file = '%s.%d.tar.gz' % (self.log_name, norm_num)
+                    log_file = '%s.%d.tar.gz' % (self.log_path, norm_num)
                     if os.path.isfile(log_file):
                         new_number = norm_number + 1 # the actual num rotation
-                        new_name = '%s.%d.tar.gz' % (self.log_name, new_number)
+                        new_name = '%s.%d.tar.gz' % (self.log_path, new_number)
                         os.rename(log_file, new_name)
                 # above rotates everything except the uncompressed log:
-                gz_name = '%s.1.tar.gz' % self.log_name
-                self.compress(gz_name, self.log_name)
+                gz_name = '%s.1.tar.gz' % self.log_path
+                self.compress(gz_name, self.log_path)
                 # finally remove the log file
-                self.remove(self.log_name)
+                self.remove(self.log_path)
 
     def location_verify(self):
         """Make sure a log file is there, otherwise we end up
         with errors"""
         if os.path.exists(self.location):
             for file_name in os.listdir(self.location):
-                if os.path.isfile(file_name):
+                file_name_path = os.path.join(self.location, file_name)
+                if os.path.isfile(file_name_path):
                     return True
                 else:
                     return False
