@@ -25,17 +25,6 @@ class Watcher(object):
         log.append(module='pachad', 
                 line='watching for changes in %s' % self.path)
         run = Runners(location=self.path)
-        #revision = run.hg_revision()[0]
-        #log.append(module='pachad', 
-        #        line='revision ID is: %s at %s' % (revision, self.path))
-        #current_revision = run.hg_revision()[0]
-        #new_revision = run.hg_revision()[0]
-        #if current_revision != new_revision:
-        #    log.append(module='pachad', 
-        #            line='found a new revision: %s at %s' % (new_revision, 
-        #            self.path))
-        #    mercurial = hg.Hg(path=self.path)
-        #    mercurial.push()
         if run.modified() is True:
             mercurial = hg.Hg(path=self.path)
             mercurial.commit()
