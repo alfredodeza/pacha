@@ -54,7 +54,7 @@ class Watcher(object):
                             self.path))
                     mercurial = hg.Hg(path=self.path)
                     mercurial.push()
-                    db.update_rev(self.path, revision) #updates the new revision into DB
+                    db.update_rev(self.path, revision) 
 
 class Runners(object):
     """Handles everything related to Mercurial calls"""
@@ -120,6 +120,7 @@ def main():
         log.append(module='pachad', line='Daemon started')
         db = database.Worker()
 
+
         while True:
             try:
                 repos = db.get_repos()
@@ -127,6 +128,15 @@ def main():
                 pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
                 log.append(module='pachad', line='reading pacha.conf')
                 pacha_conf.options()
+                # frequency check:
+                try:
+                    freq = int(pacha_conf.frequency)
+                    if freq < 10:
+                        freq = 60
+                except ValueError: # if we do not get a number
+                    freq = 60
+                except AttributeError:
+                    freq = 60
                 try:
                     master = pacha_conf.master
                     log.append(module='pachad.main', type='INFO',
@@ -150,7 +160,7 @@ def main():
                     else:
                         log.append(module='pachad', 
                          type='WARN', line='path %s does not exist' % repo_path)
-                time.sleep(10)
+                time.sleep(freq)
             except Exception, error:
                 log.append(module='pachad', type='ERROR', 
                     line='Fatal Exception - daemon killed')
