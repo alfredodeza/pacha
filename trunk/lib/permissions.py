@@ -50,7 +50,7 @@ class Tracker(object):
             # do the directories first:
             for dirs in directories:
                 try:
-                    absolute = os.path.join(root, f)
+                    absolute = os.path.join(root, dirs)
                     metadata = Permissions(absolute)
                     if os.path.isdir(absolute):
                         own = metadata.owner()
