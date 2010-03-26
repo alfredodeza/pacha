@@ -39,6 +39,12 @@ class Worker(object):
         self.conn.commit()
         self.conn.close()
 
+    def get_meta(self, path):
+        """Gets metadata for a specific file"""
+        values = (path,)
+        command = "SELECT * FROM metadata WHERE path = (?)"
+        return self.c.execute(command, values)
+
     def update_rev(self, path, revision):
         """Inserts a path with a revision and keeps updating this 
         for a comparison """

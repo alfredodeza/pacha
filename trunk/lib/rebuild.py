@@ -146,7 +146,7 @@ in config\n""")
 
     def default_replace(self, dirname, path):
         """Usually you will replace the configs you were backing up. Here
-        all directories get pushed if not specified in the DB"""
+        all directories get pushed if not specified in the database"""
         #repos_path = self.repos()
         log.append(module='rebuild.default_replace', line='repos path: %s' % path)
         tmp_dir = '/tmp/%s/' % self.hostname
@@ -169,8 +169,8 @@ in config\n""")
 
     def tracked(self):
         """There needs to be a comparison between the copied files and the
-        files that are in the config file. If they are being tracked but
-        nothing is specified in the config the whole directory is moved."""
+        files that are in the database.
+        """
         list_files = os.listdir('/tmp/%s' % self.hostname)
         return list_files
 
@@ -189,3 +189,10 @@ in config\n""")
             print """Make sure that the db directory is being tracked at /opt/pacha/hosts/%s/
 in the Pacha server"""  % self.hostname
             sys.exit(1)
+
+    def chmod(self):
+        """Set permissions right by checking what is on the database"""
+
+    def permission_lookup(self):
+        """find the file we are moving in the database and return the
+        metadata we need"""
