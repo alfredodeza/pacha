@@ -76,7 +76,7 @@ Check your settings and run --rebuild again."""
                 # we have to be flexible and allow a path or a file name
                 package_file = os.path.basename(package)
                 package_file_path = '/tmp/%s/conf/%s' % (self.hostname, package_file)
-                is os.path.isfile(package_file_path): # is it really there?
+                if os.path.isfile(package_file_path): # is it really there?
                     txt = open(package_file_path)
                     for line in txt.readlines():
                         package = line.split('\n')[0]
