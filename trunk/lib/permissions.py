@@ -46,7 +46,20 @@ class Tracker(object):
     def walker(self):
         """If we have a directory, walk every file in it"""
 
-        for root, directory, files in os.walk(self.path):
+        for root, directories, files in os.walk(self.path):
+            # do the directories first:
+            for dirs in directories:
+                try:
+                    absolute = os.path.join(root, f)
+                    metadata = Permissions(absolute)
+                    if os.path.isdir(absolute):
+                        own = metadata.owner()
+                        grp = metadata.group()
+                        permissions = metadata.rwx()
+                        self.insert(absolute, own, grp, permissions, 'dir')
+                    except IOError:
+                        pass # we are ok if it does not get recorded
+
             for f in files:
                 try:
                     absolute = os.path.join(root, f)
