@@ -39,7 +39,7 @@ class Tracker(object):
 
     def __init__(self,
             path,
-            database = '/opt/pacha/db/meta.db')
+            database = '/opt/pacha/db/meta.db'):
         self.path = path
         self.database = database
 
