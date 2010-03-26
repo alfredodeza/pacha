@@ -43,13 +43,13 @@ class Parse(object):
                 #get_header = HEADER.match(line) #don't do anything just yet
                 get_options = OPTION.match(line)
                 if get_options:
-                      optname, optdivider, optvalue = get_options.group('option',
+                    optname, optdivider, optvalue = get_options.group('option',
                                                                         'divider',
                                                                         'value')
-                      # make sure we have words without trailing space:
-                      new_key = optname.split()[0]
-                      new_value = optvalue.split()[0]
-                      values[new_key] = new_value
+                    # make sure we have words without trailing space:
+                    new_key = optname.split()[0]
+                    new_value = optvalue.split()[0]
+                    values[new_key] = new_value
         # matches the attributes from the dicionary to the values:
         for (key, value) in values.items():
             # convert string to list if within brackets
@@ -59,7 +59,7 @@ class Parse(object):
             # Convert to dictionary if curly brackets
             elif value.startswith('{'):
                 dictionary = eval(value)
-                setattr(self, key ,dictionary)
+                setattr(self, key, dictionary)
             else:
                 setattr(self, key, value)
     def text_read(self):

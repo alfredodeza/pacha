@@ -135,6 +135,7 @@ when rebuilding."""
                 # get the abs_path and add '.hgignore' and make
                 # sure it does not exist, 
                 hgignore = dirname+'/.hgignore'
+                # !!! need to add single file permissions here
                 if os.path.isfile(hgignore): # make sure we arent overwriting
                     # we are already watching unique files here
                     # so let's add the new guy and commit it
@@ -154,6 +155,9 @@ when rebuilding."""
                     mercurial.clone()
                     #at the end of everything we put the hgrc method in
                     mercurial.hgrc()
+                    # !!! Need to walk the given directory and 
+                    # !!! get file permissions for every file
+
                 # now insert the whole path into the database to 
                 # check for it here. DB can figure out if
                 # it is a duplicate so no double checking
@@ -174,7 +178,6 @@ when rebuilding."""
             try:
                 confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
 
-            #try:
                 run = rebuild.Rebuild(options.ssh_server,
                         options.ssh_user,
                         options.host)
