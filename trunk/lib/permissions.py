@@ -57,8 +57,8 @@ class Tracker(object):
                         grp = metadata.group()
                         permissions = metadata.rwx()
                         self.insert(absolute, own, grp, permissions, 'dir')
-                    except IOError:
-                        pass # we are ok if it does not get recorded
+                except IOError:
+                    pass # we are ok if it does not get recorded
 
             for f in files:
                 try:
