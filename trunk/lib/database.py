@@ -15,11 +15,12 @@ class Worker(object):
             self.conn = sqlite3.connect(self.db)
             table = """CREATE TABLE repos(id integer primary key, path TEXT, 
  permissions TEXT, type TEXT, revision TEXT)"""
-            table2 = """CREATE TABLE metadata(id integer primery key, path TEXT,
- owner TEXT, group TEXT, permissions INT, ftype TEXT)"""
+            table2 = """CREATE TABLE metadata(id integer primary key, path TEXT,
+ owner TEXT, grp TEXT, permissions INT, ftype TEXT)""" #sqlite does not like 'group'
             self.c = self.conn.cursor()
             self.c.execute(table)
             self.c.execute(table2)
+            self.conn.commit()
 
     def insert(self, path=None, permissions=None, type=None, revision=None):
         """Puts a new repo in the database and checks if the record
@@ -30,10 +31,10 @@ class Worker(object):
         self.conn.commit()
         self.conn.close()
 
-    def insert_meta(self, path, owner, group, permissions, ftype):
+    def insert_meta(self, path, owner, grp, permissions, ftype):
         """Gets the metadata into the corresponding table"""
-        values = (path, owner, group, permissions, ftype, path)
-        command = 'INSERT INTO metadata(path, owner, group, permissions, ftype) select ?,?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM metadata WHERE path=?)'
+        values = (path, owner, grp, permissions, ftype, path)
+        command = 'INSERT INTO metadata(path, owner, grp, permissions, ftype) select ?,?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM metadata WHERE path=?)'
         self.c.execute(command, values)
         self.conn.commit()
         self.conn.close()
