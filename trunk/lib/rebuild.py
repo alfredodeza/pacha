@@ -190,9 +190,17 @@ in config\n""")
 in the Pacha server"""  % self.hostname
             sys.exit(1)
 
-    def chmod(self):
+    def chmod(self, path):
         """Set permissions right by checking what is on the database"""
+        info = self.permission_lookup(path)
+        permissions = int(info[4], 8)
+        os.chmod(path, permissions)
 
-    def permission_lookup(self):
+    def permission_lookup(self, path):
         """find the file we are moving in the database and return the
         metadata we need"""
+        db_file = '/tmp/%s/db/pacha.db' % self.hostname
+        if os.path.exists(db_file):
+            db = database.Worker(db_file)
+            for info in db.get_meta(path):
+                return info
