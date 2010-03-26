@@ -52,9 +52,27 @@ class Tracker(object):
                     absollute = os.path.join(root, f)
                     metadata = Permissions(absolute)
                     if os.path.isfile(absolute):
+                        own = metadata.owner()
+                        grp = metadata.group()
+                        permissions = metadata.rwx()
+                        self.insert(absolute, own, grp, permissions,
+                                    'file')
+    def single_file(self):
+        """If we are given a single file we get the information without
+        trying to walk the whole tree"""
+        if os.path.isfile(self.path):
+            metadata = Permissions(self.path)
+            own = metadata.owner()
+            grp = metadata.group()
+            permissions = metadata.rwx()
+            self.insert(absolute, own, grp, permissions,
+                    'dir')
 
 
-    def insert(self):
+    def insert(self, path, own, grp, permissions, ftype):
         """For every file, sends the info to the database"""
+        db = database.Worker()
+        db.insert_meta(path, own, grp, permissions, ftype)
+
 
 
