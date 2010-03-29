@@ -25,7 +25,8 @@ import getpass
 import os
 import sys
 from optparse import OptionParser, OptionGroup
-from lib import install, uninstall, hg, host, rebuild, upgrade, database
+from lib import install, uninstall, hg, host, rebuild, upgrade, 
+    database, permissions
     
 def main():
     """All command line options happen here"""
@@ -122,6 +123,9 @@ when rebuilding."""
             # add the path to repos table in database
             db = database.Worker()
             db.insert(path=path, type='dir')
+            # now make sure we record permissions metadata
+            meta = permissions.Tracker(path=path)
+            meta.walker()
 
         if options.watch_single:
             if os.path.isfile(options.watch_single):
@@ -135,7 +139,9 @@ when rebuilding."""
                 # get the abs_path and add '.hgignore' and make
                 # sure it does not exist, 
                 hgignore = dirname+'/.hgignore'
-                # !!! need to add single file permissions here
+                # permissions metadata
+                meta = permissions.Tracker(path=absath)
+                meta.single_file()
                 if os.path.isfile(hgignore): # make sure we arent overwriting
                     # we are already watching unique files here
                     # so let's add the new guy and commit it
@@ -155,8 +161,6 @@ when rebuilding."""
                     mercurial.clone()
                     #at the end of everything we put the hgrc method in
                     mercurial.hgrc()
-                    # !!! Need to walk the given directory and 
-                    # !!! get file permissions for every file
 
                 # now insert the whole path into the database to 
                 # check for it here. DB can figure out if
