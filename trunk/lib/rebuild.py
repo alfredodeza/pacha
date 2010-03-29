@@ -146,16 +146,13 @@ in config\n""")
 
     def default_replace(self, dirname, path):
         """Usually you will replace the configs you were backing up. Here
-        all directories get pushed if not specified in the database"""
-        #repos_path = self.repos()
+        the directory gets pushed if not specified in the database"""
         log.append(module='rebuild.default_replace', line='repos path: %s' % path)
         tmp_dir = '/tmp/%s/' % self.hostname
         log.append(module='rebuild', line='tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
-        #for path in repos_path:
         base = os.path.basename(path)
         log.append(module='rebuild.default_replace', line= 'base dir: %s' % base)
-        #for dirname in self.tracked():
         if dirname == base: # we have a winner
             log.append(module='rebuild.default_replace',
             line='DR found path with matching dir: %s %s' % (dirname, 
