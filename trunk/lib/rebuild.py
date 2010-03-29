@@ -193,7 +193,7 @@ in the Pacha server"""  % self.hostname
     def chmod(self, path):
         """Set permissions right by checking what is on the database"""
         info = self.permission_lookup(path)
-        permissions = int(info[4], 8)
+        permissions = int(info[4], 8) # convert back for correct mode
         os.chmod(path, permissions)
 
     def permission_lookup(self, path):
@@ -204,3 +204,12 @@ in the Pacha server"""  % self.hostname
             db = database.Worker(db_file)
             for info in db.get_meta(path):
                 return info
+
+    def chown(self, path):
+        """Change the group and owner of a single file or directory"""
+        info = self.permission_lookup(path)
+        owner = pwd.getpwnam(info[2])[3]
+        group = grp.getgrnam(info[3])[2]
+        os.chown(path, owner, group)
+
+
