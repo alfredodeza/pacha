@@ -25,8 +25,7 @@ import getpass
 import os
 import sys
 from optparse import OptionParser, OptionGroup
-from lib import install, uninstall, hg, host, rebuild, upgrade, 
-    database, permissions
+from lib import install, uninstall, hg, host, rebuild, upgrade, database, permissions
     
 def main():
     """All command line options happen here"""
@@ -140,7 +139,7 @@ when rebuilding."""
                 # sure it does not exist, 
                 hgignore = dirname+'/.hgignore'
                 # permissions metadata
-                meta = permissions.Tracker(path=absath)
+                meta = permissions.Tracker(path=abspath)
                 meta.single_file()
                 if os.path.isfile(hgignore): # make sure we arent overwriting
                     # we are already watching unique files here
