@@ -143,6 +143,9 @@ in config\n""")
                 shutil.copyfile(tmp_subdir+'/'+file, path)
                 log.append(module='rebuild.single_tracking',
                     line='moving %s to %s' % (tmp_subdir+'/'+file, path))
+                # get permissions right without walking the tree
+                self.chmod(path)
+                self.chown(path)
 
     def default_replace(self, dirname, path):
         """Usually you will replace the configs you were backing up. Here
@@ -163,6 +166,17 @@ in config\n""")
             shutil.copytree(tmp_dir+dirname, path)
             log.append(module='rebuild.default_replace',
                 line='moving %s to %s' % (tmp_dir+dirname, path))
+            # get ownership and permissions right walking the tree
+            self.walk(path)
+
+    def walk(self, path):
+        """If we are replacing whole directories we need to make sure
+        we get the permissions in each file within the tree"""
+        for root, dirs, files in os.walk(path):
+            for f in files:
+                absolute = os.path.join(root, f)
+                self.chown(absolute)
+                self.chmod(absolute)
 
     def tracked(self):
         """There needs to be a comparison between the copied files and the
@@ -194,7 +208,7 @@ in the Pacha server"""  % self.hostname
         os.chmod(path, permissions)
 
     def permission_lookup(self, path):
-        """find the file we are moving in the database and return the
+        """find the matching file in the database and return the
         metadata we need"""
         db_file = '/tmp/%s/db/pacha.db' % self.hostname
         if os.path.exists(db_file):
