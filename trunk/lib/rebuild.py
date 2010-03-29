@@ -207,7 +207,7 @@ in the Pacha server"""  % self.hostname
         """Set permissions right by checking what is on the database"""
         info = self.permission_lookup(path)
         try:
-            permissions = int(info[4], 8) # convert back for correct mode
+            permissions = int(str(info[4]), 8) # convert back for correct mode
             os.chmod(path, permissions)
         except TypeError:
             print "Could not find matching permissions info for path:"
