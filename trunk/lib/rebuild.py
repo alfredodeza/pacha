@@ -1,5 +1,7 @@
 import os
 import sys
+import pwd
+import grp
 from subprocess import call
 import shutil
 from time import strftime
@@ -204,8 +206,12 @@ in the Pacha server"""  % self.hostname
     def chmod(self, path):
         """Set permissions right by checking what is on the database"""
         info = self.permission_lookup(path)
-        permissions = int(info[4], 8) # convert back for correct mode
-        os.chmod(path, permissions)
+        try:
+            permissions = int(info[4], 8) # convert back for correct mode
+            os.chmod(path, permissions)
+        except TypeError:
+            print "Could not find matching permissions info for path:"
+            print path
 
     def permission_lookup(self, path):
         """find the matching file in the database and return the
@@ -219,8 +225,12 @@ in the Pacha server"""  % self.hostname
     def chown(self, path):
         """Change the group and owner of a single file or directory"""
         info = self.permission_lookup(path)
-        owner = pwd.getpwnam(info[2])[3]
-        group = grp.getgrnam(info[3])[2]
-        os.chown(path, owner, group)
+        try:
+            owner = pwd.getpwnam(info[2])[3]
+            group = grp.getgrnam(info[3])[2]
+            os.chown(path, owner, group)
+        except TypeError:
+            print "Could not find matching ownership info for path:"
+            print path
 
 
