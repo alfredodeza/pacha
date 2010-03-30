@@ -209,28 +209,27 @@ in the Pacha server"""  % self.hostname
         try:
             permissions = int(str(info[4]), 8) # convert back for correct mode
             os.chmod(path, permissions)
-        except TypeError:
-            print "Could not find matching permissions info for path:"
-            print path
+        except TypeError, e:
+            print "Could not find matching permissions info for path: %s" % path
 
     def permission_lookup(self, path):
         """find the matching file in the database and return the
         metadata we need"""
         db_file = '/tmp/%s/db/pacha.db' % self.hostname
-        if os.path.exists(db_file):
+        if os.path.isfile(db_file):
             db = database.Worker(db_file)
             for info in db.get_meta(path):
-                return info
+                meta = list(info)
+                return meta
 
     def chown(self, path):
         """Change the group and owner of a single file or directory"""
         info = self.permission_lookup(path)
         try:
-            owner = pwd.getpwnam(info[2])[3]
-            group = grp.getgrnam(info[3])[2]
-            os.chown(path, owner, group)
-        except TypeError:
-            print "Could not find matching ownership info for path:"
-            print path
+            owner = pwd.getpwnam(info[2])
+            group = grp.getgrnam(info[3])
+            os.chown(path, owner[3], group[2])
+        except TypeError, e:
+            print "Could not find matching ownership info for path: %s" % path
 
 
