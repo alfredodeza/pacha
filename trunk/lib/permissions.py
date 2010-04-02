@@ -46,6 +46,11 @@ class Tracker(object):
     def walker(self):
         """If we have a directory, walk every file in it"""
 
+        # we need to verify the directory itself first
+        dir_meta = Permissions(self.path)
+        self.insert(self.path, dir_meta.owner(), dir_meta.group(),
+                dir_meta.rwx(), 'dir')
+
         for root, directories, files in os.walk(self.path):
             # do the directories first:
             for dirs in directories:
