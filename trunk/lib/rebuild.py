@@ -184,6 +184,9 @@ in config\n""")
                 line='moving %s to %s' % (tmp_dir+dirname, path))
             # get ownership and permissions right walking the tree
             self.walk(path)
+            # we also need to set permissions for the directory
+            self.chown(path)
+            self.chmod(path)
 
     def walk(self, path):
         """If we are replacing whole directories we need to make sure
