@@ -1,3 +1,5 @@
+"""rebuilder that checks for permissions and locations in the datbase, 
+moves files from one places to the other and installs packages if needed"""
 import os
 import sys
 import pwd
@@ -47,7 +49,8 @@ class Rebuild(object):
         if os.path.isdir(host_copy):
             pass # we are good
         else:
-            print """Pacha was not able to retrieve the files from the SSH server provided.
+            print """Pacha was not able to retrieve the files from the 
+SSH server provided.
 Check your settings and run --rebuild again."""
             sys.exit(1)
 
@@ -71,25 +74,29 @@ Check your settings and run --rebuild again."""
             packages = parse.packages
             if type(packages) == type(list()): # we have a list 
                 for package in packages:
-                    log.append(module='rebuild.install', line="installing %s" % package)
+                    log.append(module='rebuild.install', 
+                            line="installing %s" % package)
                     command = "sudo apt-get -y install %s" % package
                     call(command, shell=True)
             else:
                 # we have to be flexible and allow a path or a file name
                 package_file = os.path.basename(package)
-                package_file_path = '/tmp/%s/conf/%s' % (self.hostname, package_file)
+                package_file_path = '/tmp/%s/conf/%s' % (self.hostname, 
+                        package_file)
                 if os.path.isfile(package_file_path): # is it really there?
                     txt = open(package_file_path)
                     for line in txt.readlines():
                         package = line.split('\n')[0]
-                        log.append(module='rebuild.install', line="installing %s" % package)
+                        log.append(module='rebuild.install', 
+                                line="installing %s" % package)
                         command = "sudo apt-get -y install %s" % package
                         call(command, shell=True)
                 else:
                     sys.stderr.write("""Could not find a text file 
 with packages in: %s\n""" % package_file_path)
         except AttributeError, error:
-            log.append(module='rebuild.install', type='ERROR', line="%s" % error)
+            log.append(module='rebuild.install', type='ERROR', 
+                    line="%s" % error)
             sys.stderr.write("""No packages specified for installation 
 in config\n""")
 
@@ -105,13 +112,13 @@ in config\n""")
             db = database.Worker(db=db_location)
             for path in db.get_repos():
                 for dirname in self.tracked():
-                    if path[3] == 'dir': # if this is a dir then do default replace
+                    if path[3] == 'dir': # dir so do default replace
                         log.append(module='rebuild.replace_manager', 
-                                line = "dirname in self.tracked: %s" % dirname)
+                             line = "dirname in self.tracked: %s" % dirname)
                         self.default_replace(dirname, path[1])
                     if path[3] == 'single': # a single file tracking
                         log.append(module='rebuild.replace_manager',
-                                line='single file in self.tracked: %s' % dirname)
+                             line='single file in self.tracked: %s' % dirname)
                         self.single_tracking(path[1])
         else:
             print "Could not find DB at /tmp/%s/db/pacha.db" % self.hostname
@@ -130,21 +137,24 @@ in config\n""")
         #for path in repos_path:
         base = os.path.basename(path) #gets us the file name
         dir_path = os.path.dirname(path)
-        directory = os.path.basename(dir_path) # finally a dir name from the path
+        # finally a dir name from the path
+        directory = os.path.basename(dir_path)
         tmp_subdir = tmp_dir+directory
-        log.append(module='rebuild.single_tracking', line= 'base file: %s' % base)
-        for file in os.listdir(tmp_subdir): 
-            if file == base: # we have a winner
+        log.append(module='rebuild.single_tracking', 
+                line= 'base file: %s' % base)
+        for filen in os.listdir(tmp_subdir): 
+            if filen == base: # we have a winner
                 log.append(module='rebuild.single_tracking',
                 line='found path with matching file: %s %s' % (path, 
                     base))
                 if os.path.exists(path):
-                    shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%s'))) # get it out of the way
+                    # get it out of the way
+                    shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%s'))) 
                     log.append(module='rebuild.single_tracking', 
                             line='moving %s to /tmp' % path)
-                shutil.copyfile(tmp_subdir+'/'+file, path)
+                shutil.copyfile(tmp_subdir+'/'+filen, path)
                 log.append(module='rebuild.single_tracking',
-                    line='moving %s to %s' % (tmp_subdir+'/'+file, path))
+                    line='moving %s to %s' % (tmp_subdir+'/'+filen, path))
                 # get permissions right without walking the tree
                 self.chmod(path)
                 self.chown(path)
@@ -152,19 +162,23 @@ in config\n""")
     def default_replace(self, dirname, path):
         """Usually you will replace the configs you were backing up. Here
         the directory gets pushed if not specified in the database"""
-        log.append(module='rebuild.default_replace', line='repos path: %s' % path)
+        log.append(module='rebuild.default_replace', 
+                line='repos path: %s' % path)
         tmp_dir = '/tmp/%s/' % self.hostname
         log.append(module='rebuild', line='tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
         base = os.path.basename(path)
-        log.append(module='rebuild.default_replace', line= 'base dir: %s' % base)
+        log.append(module='rebuild.default_replace', 
+                line= 'base dir: %s' % base)
         if dirname == base: # we have a winner
             log.append(module='rebuild.default_replace',
             line='DR found path with matching dir: %s %s' % (dirname, 
                 base))
             if os.path.exists(path):
-                shutil.move(path,'/tmp/%s.%s' % (base, strftime('%H%M%s'))) # get it out of the way
-                log.append(module='rebuild.default_replace', line='moving %s' % path)
+                shutil.move(path,'/tmp/%s.%s' % (base, 
+                    strftime('%H%M%s'))) # get it out of the way
+                log.append(module='rebuild.default_replace', 
+                        line='moving %s' % path)
             shutil.copytree(tmp_dir+dirname, path)
             log.append(module='rebuild.default_replace',
                 line='moving %s to %s' % (tmp_dir+dirname, path))
@@ -198,19 +212,21 @@ in config\n""")
             return repos_list
         else:
             print "Aborting the --rebuild operation"
-            print "The Pacha database from host %s could not be found." % self.hostname
-            print """Make sure that the db directory is being tracked at /opt/pacha/hosts/%s/
-in the Pacha server"""  % self.hostname
+            print """The Pacha database from host %s could not be 
+found.""" % self.hostname
+            print """Make sure that the db directory is being tracked 
+at /opt/pacha/hosts/%s/ in the Pacha server"""  % self.hostname
             sys.exit(1)
 
     def chmod(self, path):
         """Set permissions right by checking what is on the database"""
         info = self.permission_lookup(path)
         try:
-            permissions = int(str(info[4]), 8) # convert back for correct mode
+            permissions = int(str(info[4]), 8) # convert back correct mode
             os.chmod(path, permissions)
         except TypeError, e:
-            print "Could not find matching permissions info for path: %s" % path
+            print """Could not find matching permissions info for 
+path: %s""" % path
 
     def permission_lookup(self, path):
         """find the matching file in the database and return the
@@ -221,6 +237,9 @@ in the Pacha server"""  % self.hostname
             for info in db.get_meta(path):
                 meta = list(info)
                 return meta
+        else:
+            print "No permissions information was found in the database"
+
 
     def chown(self, path):
         """Change the group and owner of a single file or directory"""
