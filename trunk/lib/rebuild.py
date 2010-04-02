@@ -180,7 +180,7 @@ in config\n""")
                 log.append(module='rebuild.default_replace', 
                         line='moving %s' % path)
             # remove .hg:
-            shutil.rmtree(tmp_dir+dirname+'.hg')
+            shutil.rmtree(tmp_dir+dirname+'/.hg')
             shutil.copytree(tmp_dir+dirname, path)
             log.append(module='rebuild.default_replace',
                 line='moving %s to %s' % (tmp_dir+dirname, path))
