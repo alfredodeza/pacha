@@ -172,13 +172,15 @@ in config\n""")
                 line= 'base dir: %s' % base)
         if dirname == base: # we have a winner
             log.append(module='rebuild.default_replace',
-            line='DR found path with matching dir: %s %s' % (dirname, 
+            line='found path with matching dir: %s %s' % (dirname, 
                 base))
             if os.path.exists(path):
                 shutil.move(path,'/tmp/%s.%s' % (base, 
                     strftime('%H%M%s'))) # get it out of the way
                 log.append(module='rebuild.default_replace', 
                         line='moving %s' % path)
+            # remove .hg:
+            shutil.rmtree(tmp_dir+dirname+'.hg')
             shutil.copytree(tmp_dir+dirname, path)
             log.append(module='rebuild.default_replace',
                 line='moving %s to %s' % (tmp_dir+dirname, path))
