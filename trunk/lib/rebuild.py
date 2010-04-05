@@ -179,16 +179,19 @@ in config\n""")
                     strftime('%H%M%s'))) # get it out of the way
                 log.append(module='rebuild.default_replace', 
                         line='moving %s' % path)
-            # remove .hg:
-            shutil.rmtree(tmp_dir+dirname+'/.hg')
-            shutil.copytree(tmp_dir+dirname, path)
-            log.append(module='rebuild.default_replace',
-                line='moving %s to %s' % (tmp_dir+dirname, path))
-            # get ownership and permissions right walking the tree
-            self.walk(path)
-            # we also need to set permissions for the directory
-            self.chown(path)
-            self.chmod(path)
+                # remove .hg:
+                try:
+                    shutil.rmtree(tmp_dir+dirname+'/.hg')
+                    shutil.copytree(tmp_dir+dirname, path)
+                    log.append(module='rebuild.default_replace',
+                        line='moving %s to %s' % (tmp_dir+dirname, path))
+                except OSError:
+                    pass # maybe there is no .hg dir
+                # get ownership and permissions right walking the tree
+                self.walk(path)
+                # we also need to set permissions for the directory
+                self.chown(path)
+                self.chmod(path)
 
     def walk(self, path):
         """If we are replacing whole directories we need to make sure
@@ -244,7 +247,6 @@ path: %s""" % path
                 return meta
         else:
             print "No permissions information was found in the database"
-
 
     def chown(self, path):
         """Change the group and owner of a single file or directory"""
