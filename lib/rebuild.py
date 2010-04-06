@@ -15,19 +15,7 @@ class Rebuild(object):
     with Pacha. Minimal configurations come from pacha.conf and more complex
     executions come from the sh folder.
     All executions should be done with Super User powers.
-
-    ### WORKFLOW ###
-    1. Install Pacha on new machine
-    2. run `pacha --rebuild` and answer the prompts:
-        pacha server:
-        pacha server user:
-        machine to rebuild (hostname):
-    3. This will scp all the files from the pacha server to /tmp/pacha
-    4. Pacha will read the config and install packages
-    replaced
-    6. The config will say what files need to be replaced and copied from /tmp/
-    to final location.
-    7. A reboot is strongly suggested, and printed."""
+    """
 
     def __init__(self,
             server = None,
