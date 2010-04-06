@@ -1,0 +1,178 @@
+#!/usr/bin/env python
+#
+# Copyright 2009-2010 Alfredo Deza
+# Pacha Daemon
+
+import os
+import sys
+import time
+from getpass import getuser
+from optparse import OptionParser
+from subprocess import Popen, PIPE
+# fix for local imports
+sys.path.append('/opt/pacha/lib')
+import supay, log, hg, confparser, database
+    
+class Watcher(object):
+    """Handles all the Reports to display"""
+ 
+    def __init__(self,
+                 path=None):
+        self.path = os.path.normpath(path)
+ 
+    def report(self):
+        """Report if a file changed and the change has not been commited"""
+        log.append(module='pachad', 
+                line='watching for changes in %s' % self.path)
+        run = Runners(location=self.path)
+        if run.modified() is True:
+            mercurial = hg.Hg(path=self.path)
+            mercurial.commit()
+            mercurial.push()
+
+    def revision_compare(self):
+        """Conect to the database for revision comparison
+        and insert a revision hash from Mercurial if it 
+        does not exist"""
+
+        run = Runners(location=self.path)
+        db = database.Worker()
+        for repo in db.get_repo(self.path):
+            if repo[4] == None:  #a path without a revision so insert one
+                log.append(module='pachad.Watcher.revision_compare',
+                        line='No revision recorded in DB - so adding it')
+                revision = run.hg_revision()[0]
+                db.update_rev(self.path, revision)
+                log.append(module='pachad.Watcher.revision_compare',
+                        line='added revision %s for path %s' % (revision,
+                            self.path))
+            else: # we have a hash there so:
+                revision = run.hg_revision()[0]
+                if repo[4] != revision:
+                    log.append(module='pachad.Watcher.revision_compare',
+                            line='found a new revision: %s at %s' % (repo[4],
+                            self.path))
+                    mercurial = hg.Hg(path=self.path)
+                    mercurial.push()
+                    db.update_rev(self.path, revision) 
+
+class Runners(object):
+    """Handles everything related to Mercurial calls"""
+ 
+    def __init__(self, location=None):
+        self.location = location
+        os.chdir(location) # change directory (HG bug)
+
+    def hg_revision(self):
+        """Gets the revision ID from the path"""
+        changeset = run_command(std="stdout", cmd="hg head")[0]
+        return changeset[-13:].split('\n')
+
+    def modified(self):
+        """Checks if a file has been modified and not commited"""
+        out = run_command(std="stdout", cmd="hg st")
+        for line in out:
+            file_name = line[2:].split('\n')[0] # get a nice file name
+            if line.startswith('M'):
+                log.append(module='pachad', 
+                        line='found modified file: %s' % file_name)
+                return True
+            else:
+                return False
+                log.append(module='pachad', 
+                        line='no changes with: %s' % file_name)
+
+def run_command(std, cmd):
+    """Runs a command via Popen"""
+    if std == "stderr":
+        run = Popen(cmd, shell=True, stderr=PIPE)
+        out = run.stderr.readlines()
+    if std == "stdout":
+        run = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out = run.stdout.readlines()
+    return out
+
+def check_path(file_path):
+    """We need to always return a path that ends with a directory """ 
+    if os.path.isdir(file_path):
+        return file_path
+    else:
+        return os.path.dirname(file_path)
+
+def main():
+    """All command line options happen here"""
+    parser = OptionParser()
+
+    parser.add_option('--start', action="store_true",
+           help="starts daemon")
+    parser.add_option('--stop', action="store_true",
+           help="stops daemons")
+    
+    options, arguments = parser.parse_args()
+
+    # Cleanest way to show the help menu if no options are given
+    if len(sys.argv) == 1:
+        parser.print_help()
+
+    if options.start:
+        daemon = supay.Daemon(name='pachad', log=False)
+        daemon.start()
+        log.append(module='pachad', line='Daemon started')
+        db = database.Worker()
+
+
+        while True:
+            try:
+                repos = db.get_repos()
+                log.append(module='pachad', line='reading repos from database')
+                pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
+                log.append(module='pachad', line='reading pacha.conf')
+                pacha_conf.options()
+                # frequency check:
+                try:
+                    freq = int(pacha_conf.frequency)
+                    if freq < 10:
+                        freq = 60
+                except ValueError: # if we do not get a number
+                    freq = 60
+                except AttributeError:
+                    freq = 60
+                try:
+                    master = pacha_conf.master
+                    log.append(module='pachad.main', type='INFO',
+                            line='machine set to master')
+                    if master == 'True':
+                        hg.update()
+                except AttributeError, error:
+                    # it is ok if this setting is not ON
+                    # but annoying if you see this INFO all over
+                    # your log files, so nothing to see here
+                    pass
+                log.append(module='pachad.main', line='looping over repos in db')
+                for repo in repos:
+                    # need to get an abspath from 'repo' and then pass it on
+                    # else the daemon will error out
+                    repo_path = check_path(repo[1])
+                    if os.path.exists(repo_path): # catches a path no longer there...
+                        watch = Watcher(path=repo_path)
+                        watch.report()
+                        watch.revision_compare()
+                    else:
+                        log.append(module='pachad', 
+                         type='WARN', line='path %s does not exist' % repo_path)
+                time.sleep(freq)
+            except Exception, error:
+                log.append(module='pachad', type='ERROR', 
+                    line='Fatal Exception - daemon killed')
+                log.append(module='pachad', type='ERROR',
+                    line='%s' % error)
+                sys.exit(1)
+
+    if options.stop:
+        daemon = supay.Daemon(name='pachad', log=False)
+        daemon.stop()
+        log.append(module='pachad', line='Daemon stopped')
+
+if __name__ == '__main__':
+    main()
+
