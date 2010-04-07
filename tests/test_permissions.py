@@ -119,7 +119,15 @@ class TestTracker(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_single_file(self):
-        pass
+        """A single file should be tracked """
+        meta = permissions.Tracker(path='/tmp/tracker/file.txt',
+                database = '/tmp/tracker/db')
+        meta.single_file()
+        data = database.Worker('/tmp/tracker/db')
+        for i in data.get_meta('/tmp/tracker/file.txt'):
+            actual = i[1]
+        expected = '/tmp/tracker/file.txt'
+        self.assertEqual(actual, expected)
 
     def test_insert(self):
         pass

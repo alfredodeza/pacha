@@ -86,7 +86,7 @@ class Tracker(object):
             own = metadata.owner()
             grp = metadata.group()
             permissions = metadata.rwx()
-            self.insert(absolute, own, grp, permissions, 'dir')
+            self.insert(self.path, own, grp, permissions, 'dir')
 
 
     def insert(self, path, own, grp, permissions, ftype):
