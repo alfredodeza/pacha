@@ -39,7 +39,7 @@ class Tracker(object):
 
     def __init__(self,
             path,
-            database = '/opt/pacha/db/meta.db'):
+            database = '/opt/pacha/db/pacha.db'):
         self.path = path
         self.database = database
 
@@ -91,7 +91,7 @@ class Tracker(object):
 
     def insert(self, path, own, grp, permissions, ftype):
         """For every file, sends the info to the database"""
-        db = database.Worker()
+        db = database.Worker(self.database)
         db.insert_meta(path, own, grp, permissions, ftype)
 
 
