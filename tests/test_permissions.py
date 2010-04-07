@@ -107,7 +107,16 @@ class TestTracker(unittest.TestCase):
         expected = info.owner()
         self.assertEqual(actual, expected)
 
-
+    def test_walker_single(self):
+        """Walker should be able to track single file"""
+        meta = permissions.Tracker(path='/tmp/tracker',
+                database = '/tmp/tracker/db')
+        meta.walker()
+        data = database.Worker('/tmp/tracker/db')
+        for i in data.get_meta('/tmp/tracker/file.txt'):
+            actual = i[1]
+        expected = '/tmp/tracker/file.txt'
+        self.assertEqual(actual, expected)
 
     def test_single_file(self):
         pass
