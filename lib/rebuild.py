@@ -247,4 +247,8 @@ path: %s""" % path
         except TypeError, e:
             print "Could not find matching ownership info for path: %s" % path
 
+        except KeyError, e:
+            print "Could not find matching ownership info for path: %s" % path
+
+
 
