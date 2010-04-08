@@ -44,11 +44,19 @@ Check your settings and run --rebuild again."""
 
     def update(self):
         """Do a simple update to apt so it won't complain about unreachable
-        repositories"""
-        cmd = "sudo apt-get update"
-        call(cmd, shell=True)
-        log.append(module='rebuild.update', 
+        repositories but only if we have packages to install"""
+        conf = '/tmp/%s/conf/pacha.conf' % self.hostname
+        parse = confparser.Parse(conf)
+        parse.options()
+        try:
+            parse.packages()
+            cmd = "sudo apt-get update"
+            call(cmd, shell=True)
+            log.append(module='rebuild.update', 
                 line="updated repositories via apt-get update")
+        except AttributeError:
+            log.append(module='rebuild.update',
+                    line="no packages to install so no update performed")
 
     def install(self):
         """Reads the config and install via apt-get any packages that have to 
