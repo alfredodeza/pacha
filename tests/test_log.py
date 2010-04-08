@@ -5,7 +5,7 @@ import os
 import tarfile
 import shutil
 import unittest
-import log
+from lib import log
 
 class TestAppend(unittest.TestCase):
 

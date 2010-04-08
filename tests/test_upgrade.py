@@ -5,7 +5,7 @@ import unittest
 from subprocess import Popen, PIPE
 import os
 import shutil
-import upgrade
+from lib import upgrade
 
 class TestUpgrade(unittest.TestCase):
 

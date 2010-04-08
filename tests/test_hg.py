@@ -7,8 +7,8 @@ import shutil
 import unittest
 import getpass
 from subprocess import Popen, PIPE
-from hg import Hg, update
-import host
+#from hg import Hg, update
+from lib import host, hg
 
 
 class TestHg(unittest.TestCase):
@@ -37,25 +37,25 @@ class TestHg(unittest.TestCase):
         os.mkdir('/tmp/remote_pacha')
         os.mkdir('/tmp/remote_pacha/hosts/')
         os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
-        hg = Hg(port=22, host='localhost', user=self.username, 
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
 		path='/tmp/test_pacha', 
             	test=True, conf='/tmp/test_pacha/pacha.conf')
 	
-        hg.initialize()
-        hg.hg_add()
-        hg.commit()
-        hg.clone()
+        mercurial.initialize()
+        mercurial.hg_add()
+        mercurial.commit()
+        mercurial.clone()
         result = os.path.isdir('/tmp/remote_pacha/hosts/%s/test_pacha' % host.hostname())
         self.assertTrue(result)
 
     def test_commit(self):
         """Builds a mercurial repo and commits"""
-        hg = Hg(port=22, host='localhost', user=self.username, 
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
 		path='/tmp/test_pacha', test=True,
 		conf='/tmp/test_pacha/pacha.conf')
-    	hg.initialize()
-        hg.hg_add()
-        hg.commit()
+    	mercurial.initialize()
+        mercurial.hg_add()
+        mercurial.commit()
         # we need to run hg st to verify we have actually commited stuff
         out = Popen('hg st /tmp/test_pacha', shell=True, stdout=PIPE)
         expected = ''
@@ -64,11 +64,11 @@ class TestHg(unittest.TestCase):
 
     def test_hg_add(self):
         """We create a file and then we add it"""
-        hg = Hg(port=22, host='localhost', user=self.username, 
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
 		path='/tmp/test_pacha', test=True,
 		conf='/tmp/test_pacha/pacha.conf')
-        hg.initialize()
-        hg.hg_add()
+        mercurial.initialize()
+        mercurial.hg_add()
         out = Popen('hg st /tmp/test_pacha', shell=True, stdout=PIPE)
         expected = 'A pacha.conf\n'
         actual = out.stdout.readline()
@@ -76,20 +76,20 @@ class TestHg(unittest.TestCase):
 
     def test_hgrc(self):
         """Add a line for automated push inside .hg"""
-        hg = Hg(port=22, host='localhost', user=self.username, 
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
 		path='/tmp/test_pacha', 
                 test=True, conf='/tmp/test_pacha/pacha.conf')
-        hg.hgrc()
+        mercurial.hgrc()
         actual = open('/tmp/test_pacha/.hg/hgrc').readlines()[1]
         expected = 'default = ssh://%s@localhost//tmp/remote_pacha/hosts/%s/test_pacha' % (self.username, host.hostname())
         self.assertEqual(expected, actual)
 
     def test_initialize(self):
         """Initializes a directory with Mercurial"""
-        hg = Hg(port=22, host='localhost', user=self.username, 
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
                 path='/tmp/test_pacha', test=True,
 		conf='/tmp/test_pacha/pacha.conf')
-        hg.initialize()
+        mercurial.initialize()
         expected = os.path.isdir('/tmp/test_pacha/.hg')
         self.assertTrue(expected) 
 
@@ -98,7 +98,7 @@ class TestHg(unittest.TestCase):
         os.mkdir('/tmp/remote_pacha')
         os.mkdir('/tmp/remote_pacha/hosts/')
         os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
-        mercurial = Hg(port=22, host='localhost', user=self.username,
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username,
                 path='/tmp/test_pacha', 
 		        test=True, conf='/tmp/test_pacha/pacha.conf')
         mercurial.hgrc()
@@ -111,7 +111,7 @@ class TestHg(unittest.TestCase):
         mercurial.hg_add()
         mercurial.commit()
         mercurial.push()
-        update(hosts_path = '/tmp/remote_pacha/hosts')
+        hg.update(hosts_path = '/tmp/remote_pacha/hosts')
         new_line = open('/tmp/remote_pacha/hosts/%s/test_pacha/foo' % host.hostname())
         actual = new_line.readlines()[0]
         expected = 'new line'
@@ -120,19 +120,19 @@ class TestHg(unittest.TestCase):
 
     def test_validate_true(self):
         """Validate a working hg repository by returning True"""
-        hg = Hg(port=22, host='localhost', user=self.username,
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username,
                 path='/tmp/test_pacha', test=True,
 		conf='/tmp/test_pacha/pacha.conf')
-        hg.initialize()
-        expected = hg.validate()
+        mercurial.initialize()
+        expected = mercurial.validate()
         self.assertTrue(expected)
 
     def test_validate_false(self):
         """Return False to a non existent hg repository"""
-        hg = Hg(port=22, host='localhost', user=self.username,
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username,
                 path='/tmp/test_pacha', test=True,
 		conf='/tmp/test_pacha/pacha.conf')
-        expected = hg.validate()
+        expected = mercurial.validate()
         self.assertFalse(expected)
 
     def test_update(self):
@@ -140,20 +140,20 @@ class TestHg(unittest.TestCase):
         os.mkdir('/tmp/remote_pacha')
         os.mkdir('/tmp/remote_pacha/hosts')
         os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
-        hg = Hg(port=22, host='localhost', user=self.username,
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username,
                 path='/tmp/test_pacha', test=True,
 		conf='/tmp/test_pacha/pacha.conf')
-        hg.hgrc()
-        hg.hg_add()
-        hg.commit()
-        hg.clone()
+        mercurial.hgrc()
+        mercurial.hg_add()
+        mercurial.commit()
+        mercurial.clone()
         new_line = open('/tmp/test_pacha/foo', 'w')
         new_line.write('new line')
         new_line.close()
-        hg.hg_add()
-        hg.commit()
-        hg.push()
-        update(hosts_path='/tmp/remote_pacha/hosts')
+        mercurial.hg_add()
+        mercurial.commit()
+        mercurial.push()
+        hg.update(hosts_path='/tmp/remote_pacha/hosts')
         get_line = open('/tmp/remote_pacha/hosts/%s/test_pacha/foo' % host.hostname())
         actual = get_line.readlines()[0]
         expected = 'new line'

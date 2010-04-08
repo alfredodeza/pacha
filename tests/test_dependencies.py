@@ -16,6 +16,5 @@ class TestDependencies(unittest.TestCase):
         hg = os.path.exists('/usr/bin/hg')
         self.assertTrue(hg)
 
-
 if __name__ == '__main__':
     unittest.main()

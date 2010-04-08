@@ -4,7 +4,7 @@ if '../' not in sys.path:
 import os
 from time import sleep
 import unittest
-import database
+from lib import database
 
 class TestWorker(unittest.TestCase):
 

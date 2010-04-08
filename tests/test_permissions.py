@@ -7,7 +7,7 @@ import pwd
 import grp
 import unittest
 import shutil
-from lib import permissions, database
+from lib import hg, database, permissions
 
 class TestPermissions(unittest.TestCase):
 

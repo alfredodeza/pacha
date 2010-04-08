@@ -2,7 +2,6 @@
 import sys
 if '/opt/pacha/lib' not in sys.path:
     sys.path.append('/opt/pacha/lib')
-print sys.path
 import os
 from subprocess import call
 import unittest
