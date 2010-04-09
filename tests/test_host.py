@@ -18,6 +18,13 @@ class TestHost(unittest.TestCase):
         self.foo_host.create()
         self.assertTrue(host_dir)
 
+    def test_create_error(self):
+        """Don't create a host folder if present"""
+        host_dir = '/opt/pacha/hosts/foo'
+        self.foo_host.create()
+        self.assertFalse(self.foo_host.create())
+
+
     def tearDown(self):
         """Remove the created folder"""
         shutil.rmtree('/opt/pacha/hosts/foo')

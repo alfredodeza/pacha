@@ -23,8 +23,10 @@ class Host(object):
             info = 'created host directory %s' % self.host_dir
             log.append(module='host', line=info)
         else:
-            info = '%s already present'
+            info = '%s already present' % self.host
+            print info
             log.append(module='host', type='WARNING', line=info)
+            return False
 
 def hostname():
     """Return the hostname of this machine"""

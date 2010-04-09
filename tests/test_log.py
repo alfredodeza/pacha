@@ -28,6 +28,12 @@ class TestAppend(unittest.TestCase):
         else:
             assert False
 
+    def test_append_ioerror(self):
+        """If it can't write to a file return False"""
+        expected = log.append(module='test', type='INFO', line='running a test',
+                 log_file = '/foo/foo/log.txt')
+        self.assertFalse(expected)
+
     def tearDown(self):
         """Delete the log file that was created for the test"""
         os.remove('/tmp/test.log')
@@ -40,13 +46,21 @@ class TestRotate(unittest.TestCase):
         log.append(module='test', type='INFO', line='running a test',
                 log_file = '/tmp/testlog/test.log')
         
-    def test_location_verify(self):
-        """Verify the location verifier"""
+    def test_location_verify_true(self):
+        """Verify the location verifier to return True"""
         rotate = log.Rotate(location='/tmp/testlog',
                 max_size=1,
                 max_items=3,
                 log_name='test.log')
         self.assertTrue(rotate.location_verify())
+
+    def test_location_verify_false(self):
+        """Verify the location verifier to return False"""
+        rotate = log.Rotate(location='/tmp/testlog_inexistent',
+                max_size=1,
+                max_items=3,
+                log_name='test.log')
+        self.assertFalse(rotate.location_verify())
 
     def test_item_count(self):
         """Return the total number of files"""

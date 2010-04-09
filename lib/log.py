@@ -29,7 +29,8 @@ def append(module='pacha',
 
     except IOError:
         sys.stderr.write("Permission denied to write log file ")
-        sys.exit(1)
+#        sys.exit(1)
+        return False
 
 class Rotate(object):
     """A simple approach to rotating a log file by compressing and
