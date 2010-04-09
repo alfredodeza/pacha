@@ -15,16 +15,21 @@ class TestParse(unittest.TestCase):
         config_file.write('three = {"number":"three"}\n')
         config_file.write('# a comment that should not be readi\n')
         config_file.close()
+        self.parse = confparser.Parse('test.conf')
+        self.parse.options()
 
     def tearDown(self):
         os.remove('test.conf')
 
-    def test_options(self):
-        """False if IOError happens"""
-        parse = confparser.Parse('test.conf')
-        parse.options()
+    def test_options_parse(self):
+        """Should pick up the options when parsing"""
+        self.assertTrue(hasattr(self.parse, 'one'))
 
-        self.assertTrue(hasattr(parse, 'one'))
+    def test_option_string(self):
+        """We should get a string from an option"""
+        expected = 'True'
+        actual = self.parse.one
+        self.assertEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()
