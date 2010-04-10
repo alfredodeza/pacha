@@ -23,12 +23,18 @@ class Parse(object):
     def __init__(self,
                  config,
                  new_value = None):
+        self.conf = config
+        self.new_value = new_value
+        self.fileopen()
+
+    def fileopen(self):
+        """Open the given file and leave it ready for parsing"""
         try:
-            self.config = open(config)
-            self.txt = open(config, 'a')
-            self.new_value = new_value
+            self.config = open(self.conf)
+            self.txt = open(self.conf, 'a')
         except IOError, e:
             print e
+            return False
         
     def options(self):
         """Return a dictionary of values found in the config file"""

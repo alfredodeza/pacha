@@ -53,11 +53,10 @@ class TestParse(unittest.TestCase):
         """Should pick up the options when parsing"""
         self.assertTrue(hasattr(self.parse, 'one'))
 
-    def test_Parse_init(self):
-        """Make sure we catch IOError in init"""
-        actual = confparser.Parse('/noconfigfile')
-        expected = None
-        self.assertNone(actual)
+    def test_fileopen(self):
+        """Make sure we catch IOError when opening a file"""
+        conf = confparser.Parse('/noconfigfile')
+        self.assertFalse(conf.fileopen())
 
     def test_option_string(self):
         """We should get a string from an option"""
