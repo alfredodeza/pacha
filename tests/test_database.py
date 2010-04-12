@@ -43,6 +43,18 @@ class TestWorker(unittest.TestCase):
         expected = u'dir'
         self.assertEqual(actual, expected)
 
+    def test_update_rev(self):
+        """Updates the DB revision information"""
+        db = database.Worker(db='/tmp/pacha.db')
+        db.insert(path='/tmp/foo', type='dir',
+                revision='1')
+        db = database.Worker(db='/tmp/pacha.db')
+        db.update_rev(path='/tmp/foo', revision='2')
+        for i in db.get_repo('/tmp/foo'):
+            actual = i[4]
+        expected = '2'
+        self.assertEqual(actual, expected)
+
     def test_remove(self):
         """Remove a record from the db"""
         db = database.Worker(db='/tmp/pacha.db')
