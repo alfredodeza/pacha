@@ -127,7 +127,8 @@ But no username was supplied (see "hg help config")
                 log.append(module='hg', line="default is %s" % ssh_line)
 
             except Exception, error:
-                log.append(module='hg', type='ERROR', line=error)
+                log.append(module='hg', type='****ERROR', line=error)
+                return False
 
         else:
             self.initialize()

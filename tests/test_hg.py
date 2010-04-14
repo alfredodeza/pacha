@@ -26,8 +26,9 @@ class TestHg(unittest.TestCase):
 
     def tearDown(self):
         """Will run last at the end of all tests"""
-        shutil.rmtree('/tmp/test_pacha')
         try:
+
+            shutil.rmtree('/tmp/test_pacha')
             shutil.rmtree('/tmp/remote_pacha')
         except OSError:
             pass # nevermind if you could not delte this guy
@@ -84,6 +85,15 @@ class TestHg(unittest.TestCase):
         expected = 'default = ssh://%s@localhost//tmp/remote_pacha/hosts/%s/test_pacha' % (self.username, host.hostname())
         self.assertEqual(expected, actual)
 
+    def test_hgrc_except(self):
+        """Return False for issues if hgrc cannot be written"""
+        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
+		        path='/tmp/test_pacha', 
+                test=True, 
+                conf='/tmp/test_pacha/pacha.conf')
+        mercurial.hgrc()
+        self.assertFalse(mercurial.hgrc())
+
     def test_initialize(self):
         """Initializes a directory with Mercurial"""
         mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
@@ -116,7 +126,6 @@ class TestHg(unittest.TestCase):
         actual = new_line.readlines()[0]
         expected = 'new line'
         self.assertEqual(actual, expected)
-
 
     def test_validate_true(self):
         """Validate a working hg repository by returning True"""
