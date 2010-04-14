@@ -92,10 +92,23 @@ class Upgrade(object):
         else:
             db_location = "/opt/pacha/"
             db_clone = "/tmp/upgrade/pacha/db"
-            shutil.move(lib_location, self.lib_dest)
+            shutil.move(db_clone, self.db_location)
             log.append(module='upgrade.db', type='INFO', 
                     line="moved db to /opt/pacha/db")
             print "Upgraded to use a database"
+
+    def log(self):
+        """Moves log in if not there"""
+        # first check if db folder is there
+        if self.check_log():
+            pass # if it is there we do not need anything
+        else:
+            log_location = "/opt/pacha/"
+            log_clone = "/tmp/upgrade/pacha/log"
+            shutil.move(log_clone, log_location)
+            log.append(module='upgrade.db', type='INFO', 
+                    line="moved db to /opt/pacha/db")
+            print "Upgraded to use a different log location"
 
     def cleanup(self):
         """After all these downloads and uncmpressions, lets clean up!"""
@@ -176,6 +189,14 @@ class Upgrade(object):
             return True
         else:
             return False
+
+    def check_log(self):
+        """Verify that the log folder is *not* installed"""
+        if os.path.isdir('/opt/pacha/log'):
+            return True
+        else:
+            return False
+
 
 def main():
     """does the upgrade step by step"""
