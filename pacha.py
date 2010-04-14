@@ -72,10 +72,6 @@ http://code.google.com/p/pacha/wiki/Options"""
 
     parser.add_option_group(group)
 
-    parser.add_option('--upgrade', action="store_true",
-            help="""Upgrades to a newer version by pulling the latest
- .tar.gz file.""")
-
     # Check for sudo privileges before annything else:
     if getpass.getuser() != 'root':
         sys.stderr.write(" * Pacha needs sudo privileges to run *\n")
@@ -191,9 +187,6 @@ when rebuilding."""
             except KeyboardInterrupt:
                 print "\nExiting nicely from Pacha"
                 sys.exit(1)
-
-        if options.upgrade:
-            upgrade.main()
 
 if __name__ == '__main__':
     main()
