@@ -32,7 +32,7 @@ def main():
     parser = OptionParser(description="""For more detailed option 
 descriptions please visit:
 http://code.google.com/p/pacha/wiki/Options"""
-    ,version='0.0.5')
+    ,version='0.1.0')
     parser.add_option('--install', action="store_true",
         help="Installs pacha to /opt/ and creates the symlinks")
 
