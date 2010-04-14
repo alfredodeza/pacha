@@ -27,22 +27,23 @@ class Upgrade(object):
 
     def get(self):
         """Downloads the latest version of Pacha to the tmp directory"""
-        link = self.download_link()[0]
-        tar_file = self.url_filename(link)
-        dest = '/tmp/%s' % tar_file
-        print "Downloading latest Pacha version from: %s" % link
-        urllib.urlretrieve(link, dest)
-        log.append(module='upgrade.get', type='INFO', 
-                line="downloaded %s" % link)
-        self.uncompress(dest)
+        try:
+            link = self.download_link()[0]
+            tar_file = self.url_filename(link)
+            dest = '/tmp/%s' % tar_file
+            print "Downloading latest Pacha version from: %s" % link
+            urllib.urlretrieve(link, dest)
+            print "Downloaded %s" % link
+            self.uncompress(dest)
+        except IndexError:
+            print "Could not retrieve file from Google Code"
 
     def uncompress(self, file):
         """Given a tar.gz file we uncompress it and return a path"""
         tar_file = tarfile.open(file)
         print "Extracting from tar.gz: %s" % file
         tar_file.extractall('/tmp/upgrade')
-        log.append(module='upgrade.uncompress', type='INFO', 
-                line="uncompressed %s" % file)
+        print "Uncompressed %s" % file
 
     def lib(self):
         """Replaces all lib and test files"""
@@ -50,11 +51,10 @@ class Upgrade(object):
         lib_location = "/opt/pacha/lib"
         lib_clone = "/tmp/upgrade/pacha/lib"
         shutil.move(lib_location, self.lib_dest)
-        log.append(module='upgrade', type='INFO', line="moved lib to tmp")
+        print "Moved lib to tmp"
         # now we move the new lib into place
         shutil.copytree(lib_clone, lib_location)
         print "Upgraded lib"
-        log.append(module='upgrade.lib', type='INFO', line="moved new lib into /opt/pacha")
 
     def daemon(self):
         """updates the init.d file"""
@@ -62,13 +62,10 @@ class Upgrade(object):
         daemon_location = "/etc/init.d/pacha"
         daemon_clone = "/tmp/upgrade/pacha/lib/daemon/pacha"
         shutil.move(daemon_location, self.daemon_dest)
-        log.append(module='upgrade.daemon', type='INFO', 
-                line="moved daemon to tmp")
+        print "Moved daemon to tmp"
         # new daemon goes into place
         shutil.move(daemon_clone, daemon_location)
         print "Upgraded the Pacha daemon"
-        log.append(module='upgrade.daemon', type='INFO', 
-                line="moved new daemon to init.d")
 
     def pacha(self):
         """updates pacha.py"""
@@ -76,13 +73,10 @@ class Upgrade(object):
         pacha_location = "/opt/pacha/pacha.py"
         pacha_clone = "/tmp/upgrade/pacha/pacha.py"
         shutil.move(pacha_location, self.pacha_dest)
-        log.append(module='upgrade.pacha', type='INFO', 
-                line="moved pacha.py to tmp")
+        print "Moved pacha.py to tmp"
         # new pacha.py into place
         shutil.move(pacha_clone, pacha_location)
-        "Upgraded /usr/bin/pacha"
-        log.append(module='upgrade.pacha', type='INFO', 
-                line="moved new pacha.py to /opt/pacha")
+        print "Upgraded /usr/bin/pacha"
 
     def db(self):
         """Moves DB in if not there"""
@@ -93,8 +87,6 @@ class Upgrade(object):
             db_location = "/opt/pacha/"
             db_clone = "/tmp/upgrade/pacha/db"
             shutil.move(db_clone, self.db_location)
-            log.append(module='upgrade.db', type='INFO', 
-                    line="moved db to /opt/pacha/db")
             print "Upgraded to use a database"
 
     def log(self):
@@ -106,8 +98,6 @@ class Upgrade(object):
             log_location = "/opt/pacha/"
             log_clone = "/tmp/upgrade/pacha/log"
             shutil.move(log_clone, log_location)
-            log.append(module='upgrade.db', type='INFO', 
-                    line="moved db to /opt/pacha/db")
             print "Upgraded to use a different log location"
 
     def cleanup(self):
@@ -117,11 +107,8 @@ class Upgrade(object):
             shutil.rmtree('/tmp/upgrade')
             os.remove('/tmp/pacha')
             print "cleaned up tmp files"
-            log.append(module='upgrade.cleanup', type='INFO', 
-                    line="removing /tmp/pacha")
         except Exception, error:
             pass # we are not worried if it could not actually delete 
-            log.append(module='upgrade.cleanup', type='ERROR', line="%s" % error)
 
     def download_link(self):
         """Return a list with the available download links"""
@@ -130,8 +117,7 @@ class Upgrade(object):
         for line in source:
             if 'files/pacha-' in line:
                 links.append(line.split('"')[1])
-        log.append(module='upgrade.download_link', type='INFO', 
-            line="links found: %s" % links)
+        print "Links found: %s" % links
         return links
 
     def current_version(self):
@@ -161,8 +147,6 @@ class Upgrade(object):
         """Return the filename from a url"""
         file = self.url.split('/')[-1]
         return file
-        log.append(module='upgrade.url_filename', type='INFO', 
-                line="file name to download: %s" % file)
 
     def repos_check(self):
         """Return True if there is a .repos file"""
