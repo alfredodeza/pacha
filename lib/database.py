@@ -22,6 +22,11 @@ class Worker(object):
             self.c.execute(table2)
             self.conn.commit()
 
+    def closedb(self):
+        """Make sure the db is closed"""
+        self.conn.close()
+
+
     def insert(self, path=None, permissions=None, type=None, revision=None):
         """Puts a new repo in the database and checks if the record
         is not already there"""
