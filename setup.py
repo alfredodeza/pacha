@@ -7,8 +7,9 @@ tests_require = ['nose']
 setup(
     name = "pacha",
     version = "0.2.0",
-    packages = find_packages(),
-    scripts = ['bin/pacha.py'],
+    packages = ['pacha'],
+#    packages = find_packages(),
+#    scripts = ['bin/cli.py'],
     entry_points = {
         'console_scripts': [
             'pacha = pacha:main'
@@ -35,7 +36,7 @@ host from those same configurations.
 """,
 
     license = "MIT",
-    py_modules = ['pacha'],
+#    py_modules = ['pacha'],
     keywords = "systems configuration management engine hg mercurial",
     url = "http://code.google.com/p/pacha",   
 
