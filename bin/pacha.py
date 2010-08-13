@@ -25,7 +25,7 @@ import getpass
 import os
 import sys
 from optparse import OptionParser, OptionGroup
-from pacha import install, uninstall, hg, host, rebuild, upgrade, database, permissions
+from pacha import hg, host, rebuild,database, permissions
     
 def main():
     """All command line options happen here"""
