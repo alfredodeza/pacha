@@ -7,8 +7,7 @@ import shutil
 import unittest
 import getpass
 from subprocess import Popen, PIPE
-#from hg import Hg, update
-from lib import host, hg
+from pacha import host, hg
 
 
 class TestHg(unittest.TestCase):
