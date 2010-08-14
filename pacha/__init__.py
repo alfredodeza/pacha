@@ -22,11 +22,12 @@
 # THE SOFTWARE.
 
 
-import getpass
+#import getpass
 import os
 import sys
 from optparse import OptionParser, OptionGroup
 import hg, host, rebuild,database, permissions
+
 
 def main():
     """All command line options happen here"""
@@ -34,6 +35,12 @@ def main():
 A systems configuration management engine
 """
     ,version='0.2.0')
+
+    parser.add_option('--add-config',
+            help="""Adds a path to a configuration file""")
+
+    parser.add_option('--remove-config', action="store_true",
+            help="""Removes a configuration file""")
 
     parser.add_option('--add-host',
             help="""Creates structure for saving host configs
@@ -83,6 +90,7 @@ run in the background, these options will help you manage the daemon")
 
     parser.add_option_group(group)
 
+
     # Check for sudo privileges before annything else:
     #if getpass.getuser() != 'root':
     #    sys.stderr.write(" * Pacha needs sudo privileges to run *\n")
@@ -98,6 +106,36 @@ run in the background, these options will help you manage the daemon")
     # Cleanest way to show the help menu if no options are given
     if len(sys.argv) == 1:
         parser.print_help()
+
+
+    if options.add_config:
+        db = database.Worker()
+        abspath = os.path.abspath(options.add_config)
+        db.add_config(options.add_config)
+        print "Configuration file added: %s" % abspath
+
+    if options.remove_config:
+        db = database.Worker()
+        db.remove_config()
+        print "Configuration file(s) removed"
+        sys.exit(0)
+
+    # if any commands are run, check for a MASTER config file Location
+    db = database.Worker()
+    config_db = db.get_config_path()
+    try:
+        config_list = [i for i in db.get_config_path()]
+        config_path = config_list[0]
+    except IndexError:
+        print """
+        
+*********************************************************
+
+Warning! You have not set a configuration file for Pacha.
+To add a configuration file, run:
+    pacha --add-config /path/to/config 
+Pacha will try to run with minimum defaults.
+"""
 
     if options.add_host:
         new = host.Host(host=options.add_host)

@@ -5,7 +5,7 @@ import os
 # Fixes Database Absolute Location
 FILE_CWD =  os.path.abspath(__file__)
 FILE_DIR = os.path.dirname(FILE_CWD)
-DB_FILE = FILE_DIR+'/db/pacha.db'
+DB_FILE = FILE_DIR+'/pacha.db'
 
 class Worker(object):
     """All database operations happen here"""
@@ -102,7 +102,7 @@ class Worker(object):
         self.conn.close()
 
 
-    def remove_config(self, path):
+    def remove_config(self):
         """Removes the MASTER config path"""
         drop = "DROP TABLE config"
         create = "CREATE TABLE config(path TEXT)"
