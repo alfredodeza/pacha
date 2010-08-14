@@ -14,6 +14,7 @@ Contents:
    :maxdepth: 2
 
    getting_started.rst
+   daemon.rst
 
 Configuration Manager
 -----------------------
