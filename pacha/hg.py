@@ -28,13 +28,14 @@ class Hg(object):
         self.user = user
         
         if os.path.exists(path):
+            log.hg.debug('verified path exists: %s' % path)
             self.path = os.path.normpath(path)
             self.dir = os.path.basename(path)
             self.hg_dir = self.path+'/.hg'
             os.chdir(self.path)
         else:
-            log.append(module='hg', type='ERROR', 
-                    line='%s does not exist' % path)
+            log.hg.error('%s does not exist' % path)
+
         # read the config file once and make sure is edited:
         self.conf = conf
         self.parse = confparser.Parse(self.conf)
@@ -43,8 +44,7 @@ class Hg(object):
             self.dest_path = '/%s/%s/%s' % (self.parse.path,
                     hostname(), self.dir)
         except AttributeError, error:
-            log.append(module='hg.init', type='ERROR',
-                    line='config file not edited - aborting')
+            log.hg.error('config file not edited - aborting')
             sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
             sys.exit(1)
         if not test:
@@ -57,8 +57,7 @@ But no username was supplied (see "hg help config")
       [ui]
       username = Firstname Lastname <firstname.lastname@example.net>
       verbose = True"""
-                log.append(module='hg.init', type='ERROR',
-                        line='No hgrc found with username')
+                log.hg.error(line='No hgrc found with username')
                 sys.exit(1)
             else:
 
@@ -66,9 +65,8 @@ But no username was supplied (see "hg help config")
                     self.parse.user
                     self.parse.host
                 except AttributeError, error:
-                    log.append(module='hg', type='ERROR',
-                    line='config file not edited - aborting')
-                    sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
+                    log.hg.error('config file not edited - aborting')
+                    sys.stderr.write('config file not edited! or missing params- aborting\n')
                     sys.exit(1)
         # testing functionality:
         if test:
@@ -87,7 +85,7 @@ But no username was supplied (see "hg help config")
         repo = hg.repository(ui.ui(), self.path)
         commands.commit(ui.ui(), repo=repo, message=message,
                 logfile=None, addremove=None, user=None, date=None)
-        log.append(module='hg', line='doing commit at %s' % self.path)
+        log.hg.debug('doing commit at %s' % self.path)
 
     def hg_add(self, single=None):
         """Adds all files to Mercurial when the --watch options is passed
@@ -96,11 +94,11 @@ But no username was supplied (see "hg help config")
         repo = hg.repository(ui.ui(), self.path)
         if single is None:
             commands.add(ui.ui(), repo=repo)
-            log.append(module='hg', line='added files to repo %s' % single)
+            log.hg.debug('added files to repo %s' % single)
 
         else:
             commands.add(ui.ui(), repo, single) 
-            log.append(module='hg', line='added files to repo %s' % self.path)
+            log.hg.debug('added files to repo %s' % self.path)
 
     def push(self):
         """Pushes the repository to the centralized Pacha Master server
@@ -109,7 +107,7 @@ But no username was supplied (see "hg help config")
         subprocess.call"""
         command = "hg push"
         call(command, shell=True, stdout=PIPE, stderr=PIPE)
-        log.append(module='hg', line='push %s to central pacha' % self.path)
+        log.hg.debug('push %s to central pacha' % self.path)
 
     def hgrc(self):
         """An option to write the default path in hgrc for pushing
@@ -123,11 +121,11 @@ But no username was supplied (see "hg help config")
                         self.parse.host, self.dest_path)
                 hgrc.write(ssh_line)
                 hgrc.close()
-                log.append(module='hg', line="wrote hgrc in %s" % self.path)
-                log.append(module='hg', line="default is %s" % ssh_line)
+                log.hg.debug("wrote hgrc in %s" % self.path)
+                log.hg.debug("default is %s" % ssh_line)
 
             except Exception, error:
-                log.append(module='hg', type='****ERROR', line=error)
+                log.hg.error(error)
                 return False
 
         else:
@@ -146,28 +144,29 @@ But no username was supplied (see "hg help config")
         try:
             commands.clone(ui.ui(), source, dest, pull=False, uncompressed=False, rev=False,
                  noupdate=False)
-            log.append(module='CLONE', line='cloning %s' % dest )
+            log.hg.debug('cloning %s' % dest )
         except Exception, error:
+            log.hg.error('could not clone repo: %s' % error)
             print "Could not clone this repository: %s" % error
             print """Have you added this host in the Pacha server?"""
         # TODO: need to add trusted USERS in the global .hgrc 
         
     def validate(self):
         """Validates a working HG path"""
-        log.append(module='hg', line="validating repository at %s" % self.path)
+        log.hg(module='hg', line="validating repository at %s" % self.path)
         if os.path.exists(self.hg_dir):
-            log.append(module='hg', 
+            log.hg(module='hg', 
                     line="hg repository found at %s" % self.path)
             return True
         else:
-            log.append(module='hg', type='ERROR',  
+            log.hg(module='hg', type='ERROR',  
                     line="hg repository not found at %s" % self.path)
             return False
 
     def initialize(self):
         """Creates a mercurial repository"""
         commands.init(ui.ui(), dest=self.path)
-        log.append(module='hg', line='created hg repo at %s' % self.path)
+        log.hg(module='hg', line='created hg repo at %s' % self.path)
 
     def hgignore(self):
         """Writes an hgignore to ignore all files"""
@@ -190,14 +189,13 @@ def update(hosts_path = '/opt/pacha/hosts'):
                     repo = hg.repository(u, directory)
                     repo.ui.pushbuffer()
                     commands.update(ui.ui(), repo)
-                    log.append(module='hg.update', type='INFO', 
+                    log.hg(module='hg.update', type='INFO', 
                         line='updating host %s directory: %s' % (dirs, 
                             directory))
-                    log.append(module='hg.update', type='INFO',
+                    log.hg(module='hg.update', type='INFO',
                             line=repo.ui.popbuffer().split('\n')[0])
                 else:
-                    log.append(module='hg.update', type='ERROR',
-                            line = '%s is not a directory' % directory)
+                    log.hg.error('%s is not a directory' % directory)
 
 def hg_user():
     """In charge of checking if you have a username set in either 
