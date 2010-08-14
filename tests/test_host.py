@@ -4,7 +4,7 @@ if '../' not in sys.path:
 import os
 import shutil
 import unittest
-import host
+from pacha import host
 
 class TestHost(unittest.TestCase):
     
