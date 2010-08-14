@@ -153,20 +153,18 @@ But no username was supplied (see "hg help config")
         
     def validate(self):
         """Validates a working HG path"""
-        log.hg(module='hg', line="validating repository at %s" % self.path)
+        log.hg.debug("validating repository at %s" % self.path)
         if os.path.exists(self.hg_dir):
-            log.hg(module='hg', 
-                    line="hg repository found at %s" % self.path)
+            log.hg.debug("hg repository found at %s" % self.path)
             return True
         else:
-            log.hg(module='hg', type='ERROR',  
-                    line="hg repository not found at %s" % self.path)
+            log.hg.debug("hg repository not found at %s" % self.path)
             return False
 
     def initialize(self):
         """Creates a mercurial repository"""
         commands.init(ui.ui(), dest=self.path)
-        log.hg(module='hg', line='created hg repo at %s' % self.path)
+        log.hg.debug('created hg repo at %s' % self.path)
 
     def hgignore(self):
         """Writes an hgignore to ignore all files"""
@@ -189,11 +187,8 @@ def update(hosts_path = '/opt/pacha/hosts'):
                     repo = hg.repository(u, directory)
                     repo.ui.pushbuffer()
                     commands.update(ui.ui(), repo)
-                    log.hg(module='hg.update', type='INFO', 
-                        line='updating host %s directory: %s' % (dirs, 
-                            directory))
-                    log.hg(module='hg.update', type='INFO',
-                            line=repo.ui.popbuffer().split('\n')[0])
+                    log.hg.debug('updating host %s directory: %s' % (dirs, directory))
+                    log.hg.debug(repo.ui.popbuffer().split('\n')[0])
                 else:
                     log.hg.error('%s is not a directory' % directory)
 
