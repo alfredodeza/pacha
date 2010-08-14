@@ -75,7 +75,7 @@ def config_defaults(config=None):
             'host': 'localhost',
             'ssh_user': 'root',
             'ssh_port': 22,
-            'hosts_path': '/opt/pacha/hosts',
+            'hosts_path': '/opt/pacha',
             'log_level': 'DEBUG',
             'log_format': '%(asctime)s %(levelname) [%(name)s]  %(message)s',
             'log_datefmt' : '%H:%M:%S'
