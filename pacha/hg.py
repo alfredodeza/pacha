@@ -1,8 +1,7 @@
 """Plugs into Mercurial and matches Pacha's need to commit, push, clone and
-other commands. Some actions are not able to plug in directly to Mercurial,
-but I will make an effort in integrating them as soon as I can."""
+other commands. """
 
-from subprocess import call, Popen, PIPE
+from subprocess import call, PIPE
 from getpass import getuser
 import os
 import sys
@@ -10,7 +9,8 @@ from time import strftime
 from mercurial import commands, ui, hg
 import log
 import confparser
-from host import hostname
+
+from pacha.host import hostname
 
 class Hg(object):
     """Does local commits and pushes to a central Pacha Master location"""
