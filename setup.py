@@ -1,6 +1,6 @@
 import distribute_setup
 distribute_setup.use_setuptools()
-from setuptools import setup, find_packages
+from setuptools import setup
 
 tests_require = ['nose']
 
@@ -8,8 +8,7 @@ setup(
     name = "pacha",
     version = "0.2.0",
     packages = ['pacha'],
-#    packages = find_packages(),
-#    scripts = ['bin/cli.py'],
+    install_requires = ['supay>=0.0.6'],
     entry_points = {
         'console_scripts': [
             'pacha = pacha:main'
@@ -20,7 +19,7 @@ setup(
         '': ['distribute_setup.py'],
         },
 
-    # metadata for upload to PyPI
+    # metadata 
     author = "Alfredo Deza",
     author_email = "alfredodeza [at] gmail [dot] com",
     description = "Systems configuration/management engine",
@@ -36,7 +35,6 @@ host from those same configurations.
 """,
 
     license = "MIT",
-#    py_modules = ['pacha'],
     keywords = "systems configuration management engine hg mercurial",
     url = "http://code.google.com/p/pacha",   
 
