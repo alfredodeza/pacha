@@ -55,13 +55,13 @@ def config_options(config=None):
             try:
                 configuration = config_defaults(converted_opts)
             except Exception, e:
-                log.util.error(e)
+                log.config.error(e)
 
         except Exception, e:
             pass
-            log.util.error("couldn't map configuration: %s" % e)
+            log.config.error("couldn't map configuration: %s" % e)
 
-    log.util.debug("valid full configuration returned")
+    log.config.debug("valid full configuration returned")
     return configuration
 
 def config_defaults(config=None):
@@ -86,7 +86,7 @@ def config_defaults(config=None):
             config[key]
         except KeyError:
             config[key] = defaults[key]
-    log.util.debug("returning basic configuration defaults")
+    log.config.debug("returning basic configuration defaults")
     return config
 
 def setlogging(config=None):

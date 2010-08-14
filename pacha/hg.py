@@ -7,9 +7,9 @@ import os
 import sys
 from time import strftime
 from mercurial import commands, ui, hg
-import log
-import confparser
 
+from pacha import log
+from pacha.config_options import config_defaults
 from pacha.host import hostname
 
 
@@ -21,7 +21,7 @@ class Hg(object):
             host = None,
             user = None,
             path = None,
-            conf = '/opt/pacha/conf/pacha.conf',
+            conf = config_defaults(),
             test = False
             ):
         self.port = port
@@ -39,8 +39,8 @@ class Hg(object):
 
         # read the config file once and make sure is edited:
         self.conf = conf
-        self.parse = confparser.Parse(self.conf)
-        self.parse.options()
+#        self.parse = confparser.Parse(self.conf)
+#        self.parse.options()
         try:
             self.dest_path = '/%s/%s/%s' % (self.parse.path,
                     hostname(), self.dir)
