@@ -2,7 +2,6 @@ import sys
 if '../' not in sys.path:
     sys.path.append('../')
 import os
-from time import sleep
 import unittest
 from pacha import database
 
@@ -48,6 +47,7 @@ class TestWorker(unittest.TestCase):
         db = database.Worker(db='/tmp/pacha.db')
         db.insert(path='/tmp/foo', type='dir',
                 revision='1')
+        db.closedb()
         db = database.Worker(db='/tmp/pacha.db')
         db.update_rev(path='/tmp/foo', revision='2')
         for i in db.get_repo('/tmp/foo'):

@@ -27,6 +27,7 @@ import os
 import sys
 from optparse import OptionParser, OptionGroup
 import hg, host, rebuild,database, permissions
+from pacha.config_options import config_options, config_defaults
 
 
 def main():
@@ -123,9 +124,10 @@ run in the background, these options will help you manage the daemon")
     # if any commands are run, check for a MASTER config file Location
     db = database.Worker()
     config_db = db.get_config_path()
+    config_file = None
     try:
         config_list = [i for i in db.get_config_path()]
-        config_path = config_list[0]
+        config_file = config_list[0]
     except IndexError:
         print """
         
@@ -147,7 +149,7 @@ Pacha will try to run with minimum defaults.
             path = os.getcwd()
         if len(sys.argv) >=3: #with path
             path = sys.argv[2]
-        mercurial = hg.Hg(path=path)
+        mercurial = hg.Hg(path=path, conf=config_options(config_file))
         mercurial.hgrc()
         # we do a first time clone:
         mercurial.clone()
