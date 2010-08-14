@@ -30,9 +30,9 @@ import hg, host, rebuild,database, permissions
 
 def main():
     """All command line options happen here"""
-    parser = OptionParser(description="""For more detailed option 
-descriptions please visit:
-http://code.google.com/p/pacha/wiki/Options"""
+    parser = OptionParser(description="""
+A systems configuration management engine
+"""
     ,version='0.2.0')
 
     parser.add_option('--add-host',
