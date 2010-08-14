@@ -12,6 +12,7 @@ import confparser
 
 from pacha.host import hostname
 
+
 class Hg(object):
     """Does local commits and pushes to a central Pacha Master location"""
 

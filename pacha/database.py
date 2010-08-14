@@ -2,11 +2,16 @@
 import sqlite3
 import os
 
+# Fixes Database Absolute Location
+FILE_CWD =  os.path.abspath(__file__)
+FILE_DIR = os.path.dirname(FILE_CWD)
+DB_FILE = FILE_DIR+'/db/pacha.db'
+
 class Worker(object):
     """All database operations happen here"""
 
     def __init__(self,
-            db = '/opt/pacha/db/pacha.db'):
+            db = DB_FILE):
         self.db = db 
         if os.path.isfile(self.db):
             self.conn = sqlite3.connect(self.db)
