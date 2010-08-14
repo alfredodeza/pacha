@@ -15,6 +15,7 @@ Contents:
 
    getting_started.rst
    daemon.rst
+   configuration.rst
 
 Configuration Manager
 -----------------------

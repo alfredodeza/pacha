@@ -48,6 +48,19 @@ A systems configuration management engine
  Also used to add more individual files to track within the same\
  directory (e.g. like tracking .vimrc in $HOME)") 
 
+    group = OptionGroup(parser, "Daemon Options", "Pacha is able to\
+run in the background, these options will help you manage the daemon")
+
+    group.add_option('--daemon-start', action='store_true',
+            help="Starts the Pacha daemon")
+
+    group.add_option('--daemon-stop', action='store_true',
+            help="Stops the Pacha daemon")
+
+    group.add_option('--daemon-status', action='store_true',
+            help="Checks the status of the Pacha daemon")
+
+
     group = OptionGroup(parser, "Rebuilding Options", "When rebuilding\
  a host, you will need to pass a few required options to Pacha so it can\
  connect to a remote host via SSH and copy the needed files.")
