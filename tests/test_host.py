@@ -1,6 +1,3 @@
-import sys
-if '../' not in sys.path:
-    sys.path.append('../')
 import os
 import shutil
 import unittest
@@ -14,7 +11,7 @@ class TestHost(unittest.TestCase):
     
     def test_create(self):
         """Create a host folder"""
-        host_dir = '/opt/pacha/hosts/foo'
+        host_dir = '/tmp/test_pacha/hosts/foo'
         self.foo_host.create()
         self.assertTrue(host_dir)
 
