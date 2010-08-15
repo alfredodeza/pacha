@@ -9,7 +9,7 @@ from time import strftime
 from mercurial import commands, ui, hg
 
 from pacha import log
-from pacha.config_options import config_defaults
+from pacha.config_options import config_defaults, setlogging
 from pacha.host import hostname
 
 
@@ -27,7 +27,9 @@ class Hg(object):
         self.port = port
         self.host = host
         self.user = user
+        self.conf = conf
         
+        setlogging(self.conf)
         if os.path.exists(path):
             log.hg.debug('verified path exists: %s' % path)
             self.path = os.path.normpath(path)
@@ -36,12 +38,6 @@ class Hg(object):
             os.chdir(self.path)
         else:
             log.hg.error('%s does not exist' % path)
-
-        # read the config file once and make sure is edited:
-        self.conf = conf
-        print self.conf
-#        self.parse = confparser.Parse(self.conf)
-#        self.parse.options()
         try:
             self.dest_path = '/%s/%s/%s' % (self.conf['hosts_path'],
                     hostname(), self.dir)

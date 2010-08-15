@@ -2,7 +2,6 @@ import sys
 if '../' not in sys.path:
     sys.path.append('../')
 import os
-from time import sleep
 import shutil
 import unittest
 import getpass

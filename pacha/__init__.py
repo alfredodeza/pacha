@@ -27,7 +27,7 @@ import os
 import sys
 from optparse import OptionParser, OptionGroup
 import hg, host, rebuild,database, permissions
-from pacha.config_options import config_options, config_defaults
+from pacha.config_options import config_options
 
 
 def main():
