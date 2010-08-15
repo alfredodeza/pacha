@@ -39,6 +39,7 @@ class Hg(object):
 
         # read the config file once and make sure is edited:
         self.conf = conf
+        print self.conf
 #        self.parse = confparser.Parse(self.conf)
 #        self.parse.options()
         try:
@@ -80,9 +81,6 @@ But no username was supplied (see "hg help config")
         and information from pacha."""
         timestamp = strftime('%b %d %H:%M:%S')
         message = "pacha auto-commit: %s" % timestamp
-        #stdout = open('/var/log/pacha.log', 'a')
-        #sys.stdout = stdout
-        #sys.stderr = stdout
         repo = hg.repository(ui.ui(), self.path)
         commands.commit(ui.ui(), repo=repo, message=message,
                 logfile=None, addremove=None, user=None, date=None)

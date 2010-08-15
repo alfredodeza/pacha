@@ -36,21 +36,26 @@ class TestHg(unittest.TestCase):
         except OSError:
             pass # nevermind if you could not delte this guy
 
- #   def test_clone(self):
- #       """Clones the test repo to localhost"""
- #       os.mkdir('/tmp/remote_pacha')
- #       os.mkdir('/tmp/remote_pacha/hosts/')
- #       os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
- #       mercurial = hg.Hg(port=22, host=host.hostname(), user=self.username, 
- #   	path='/tmp/test_pacha', 
- #           	test=True, conf=config_options('/tmp/test_pacha/pacha.conf'))
- #   
- #       mercurial.initialize()
- #       mercurial.hg_add()
- #       mercurial.commit()
- #       mercurial.clone()
- #       result = os.path.isdir('/tmp/remote_pacha/hosts/%s/test_pacha' % host.hostname())
- #       self.assertTrue(result)
+    def test_clone(self):
+        """Clones the test repo to localhost"""
+        os.mkdir('/tmp/remote_pacha')
+        os.mkdir('/tmp/remote_pacha/hosts/')
+        os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s' % host.hostname()))
+        mercurial = hg.Hg(port=22, 
+                host=host.hostname(), 
+                user=self.username, 
+    	        path='/tmp/test_pacha', 
+            	test=True, 
+                conf=config_options('/tmp/test_pacha/pacha.conf'))
+    
+        mercurial.initialize()
+        mercurial.hg_add()
+        mercurial.commit()
+        mercurial.clone()
+        
+        result = os.path.isdir('/tmp/remote_pacha/hosts/%s/test_pacha' % host.hostname())
+        self.assertTrue(result)
 
     def test_commit(self):
         """Builds a mercurial repo and commits"""
@@ -185,19 +190,19 @@ class TestHg(unittest.TestCase):
                 test=True,
 		        conf=config_options('/tmp/test_pacha/pacha.conf'))
 
-
-
-        mercurial.hgrc()
+        mercurial.initialize()
         mercurial.hg_add()
         mercurial.commit()
         mercurial.clone()
         new_line = open('/tmp/test_pacha/foo', 'w')
         new_line.write('new line')
         new_line.close()
+        mercurial.hgrc()
         mercurial.hg_add()
         mercurial.commit()
         mercurial.push()
         hg.update(hosts_path='/tmp/remote_pacha/hosts')
+        self.assertTrue(os.path.isfile('/tmp/remote_pacha/hosts/%s/test_pacha/foo' % host.hostname()))
         get_line = open('/tmp/remote_pacha/hosts/%s/test_pacha/foo' % host.hostname())
         actual = get_line.readlines()[0]
         expected = 'new line'
