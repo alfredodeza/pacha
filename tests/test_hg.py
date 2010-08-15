@@ -71,9 +71,9 @@ class TestHg(unittest.TestCase):
 
     def test_hg_add(self):
         """We create a file and then we add it"""
-        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
+        mercurial = hg.Hg(port=22, host=host.hostname(), user=self.username, 
 		path='/tmp/test_pacha', test=True,
-		conf='/tmp/test_pacha/pacha.conf')
+		conf=config_options('/tmp/test_pacha/pacha.conf'))
         mercurial.initialize()
         mercurial.hg_add()
         out = Popen('hg st /tmp/test_pacha', shell=True, stdout=PIPE)
@@ -83,28 +83,38 @@ class TestHg(unittest.TestCase):
 
     def test_hgrc(self):
         """Add a line for automated push inside .hg"""
-        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
-		path='/tmp/test_pacha', 
-                test=True, conf='/tmp/test_pacha/pacha.conf')
+        mercurial = hg.Hg(port=22, 
+                host=host.hostname(), 
+                user=self.username, 
+		        path='/tmp/test_pacha', 
+                test=True,
+		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+
         mercurial.hgrc()
         actual = open('/tmp/test_pacha/.hg/hgrc').readlines()[1]
-        expected = 'default = ssh://%s@localhost//tmp/remote_pacha/hosts/%s/test_pacha' % (self.username, host.hostname())
+        expected = 'default = ssh://%s@%s//tmp/remote_pacha/hosts/%s/test_pacha' % (self.username,host.hostname(), host.hostname())
         self.assertEqual(expected, actual)
 
     def test_hgrc_except(self):
         """Return False for issues if hgrc cannot be written"""
-        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
+        mercurial = hg.Hg(port=22, 
+                host=host.hostname(), 
+                user=self.username, 
 		        path='/tmp/test_pacha', 
-                test=True, 
-                conf='/tmp/test_pacha/pacha.conf')
+                test=True,
+		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+
         mercurial.hgrc()
         self.assertFalse(mercurial.hgrc())
 
     def test_initialize(self):
         """Initializes a directory with Mercurial"""
-        mercurial = hg.Hg(port=22, host='localhost', user=self.username, 
-                path='/tmp/test_pacha', test=True,
-		conf='/tmp/test_pacha/pacha.conf')
+        mercurial = hg.Hg(port=22, 
+                host=host.hostname(), 
+                user=self.username, 
+		        path='/tmp/test_pacha', 
+                test=True,
+		        conf=config_options('/tmp/test_pacha/pacha.conf'))
         mercurial.initialize()
         expected = os.path.isdir('/tmp/test_pacha/.hg')
         self.assertTrue(expected) 
@@ -114,9 +124,14 @@ class TestHg(unittest.TestCase):
         os.mkdir('/tmp/remote_pacha')
         os.mkdir('/tmp/remote_pacha/hosts/')
         os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
-        mercurial = hg.Hg(port=22, host='localhost', user=self.username,
-                path='/tmp/test_pacha', 
-		        test=True, conf='/tmp/test_pacha/pacha.conf')
+        mercurial = hg.Hg(port=22, 
+                host=host.hostname(), 
+                user=self.username, 
+		        path='/tmp/test_pacha', 
+                test=True,
+		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+
+
         mercurial.hgrc()
         mercurial.hg_add()
         mercurial.commit()
@@ -135,18 +150,26 @@ class TestHg(unittest.TestCase):
 
     def test_validate_true(self):
         """Validate a working hg repository by returning True"""
-        mercurial = hg.Hg(port=22, host='localhost', user=self.username,
-                path='/tmp/test_pacha', test=True,
-		conf='/tmp/test_pacha/pacha.conf')
+        mercurial = hg.Hg(port=22, 
+                host=host.hostname(), 
+                user=self.username, 
+		        path='/tmp/test_pacha', 
+                test=True,
+		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+
         mercurial.initialize()
         expected = mercurial.validate()
         self.assertTrue(expected)
 
     def test_validate_false(self):
         """Return False to a non existent hg repository"""
-        mercurial = hg.Hg(port=22, host='localhost', user=self.username,
-                path='/tmp/test_pacha', test=True,
-		conf='/tmp/test_pacha/pacha.conf')
+        mercurial = hg.Hg(port=22, 
+                host=host.hostname(), 
+                user=self.username, 
+		        path='/tmp/test_pacha', 
+                test=True,
+		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+
         expected = mercurial.validate()
         self.assertFalse(expected)
 
@@ -155,9 +178,15 @@ class TestHg(unittest.TestCase):
         os.mkdir('/tmp/remote_pacha')
         os.mkdir('/tmp/remote_pacha/hosts')
         os.mkdir('/tmp/remote_pacha/hosts/%s' % host.hostname())
-        mercurial = hg.Hg(port=22, host='localhost', user=self.username,
-                path='/tmp/test_pacha', test=True,
-		conf='/tmp/test_pacha/pacha.conf')
+        mercurial = hg.Hg(port=22, 
+                host=host.hostname(), 
+                user=self.username, 
+		        path='/tmp/test_pacha', 
+                test=True,
+		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+
+
+
         mercurial.hgrc()
         mercurial.hg_add()
         mercurial.commit()
