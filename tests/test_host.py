@@ -7,24 +7,28 @@ class TestHost(unittest.TestCase):
     
     def setUp(self):
         """init the host class"""
-        self.foo_host = host.Host(host='foo')
+        self.foo_host = host.Host(host='foo', host_path='/tmp/test_pacha/hosts')
     
     def test_create(self):
         """Create a host folder"""
+        os.mkdir('/tmp/test_pacha')
+        os.mkdir('/tmp/test_pacha/hosts')
         host_dir = '/tmp/test_pacha/hosts/foo'
         self.foo_host.create()
         self.assertTrue(host_dir)
 
     def test_create_error(self):
         """Don't create a host folder if present"""
-        host_dir = '/opt/pacha/hosts/foo'
+        os.mkdir('/tmp/test_pacha')
+        os.mkdir('/tmp/test_pacha/hosts')
+        host_dir = '/tmp/test_pacha/hosts/foo'
         self.foo_host.create()
         self.assertFalse(self.foo_host.create())
 
 
     def tearDown(self):
         """Remove the created folder"""
-        shutil.rmtree('/opt/pacha/hosts/foo')
+        shutil.rmtree('/tmp/test_pacha')
 
 class TestHostname(unittest.TestCase):
     def test_hostname(self):
