@@ -112,7 +112,7 @@ run in the background, these options will help you manage the daemon")
     if options.add_config:
         db = database.Worker()
         abspath = os.path.abspath(options.add_config)
-        db.add_config(options.add_config)
+        db.add_config(abspath)
         print "Configuration file added: %s" % abspath
 
     if options.remove_config:
@@ -127,7 +127,8 @@ run in the background, these options will help you manage the daemon")
     config_file = None
     try:
         config_list = [i for i in db.get_config_path()]
-        config_file = config_list[0]
+        config_file = config_list[0][0]
+        config = config_options(config_file)
     except IndexError:
         print """
         
@@ -136,12 +137,18 @@ run in the background, these options will help you manage the daemon")
 Warning! You have not set a configuration file for Pacha.
 To add a configuration file, run:
     pacha --add-config /path/to/config 
-Pacha will try to run with minimum defaults.
 """
+        sys.exit(1)
 
     if options.add_host:
-        new = host.Host(host=options.add_host)
-        new.create()
+        import pdb; pdb.set_trace() 
+        print config
+        try:
+            new = host.Host(host=options.add_host, 
+                    host_path=config['hosts_path'])
+            new.create()
+        except Exception, error:
+            print "Could not complete command: %s" % error 
 
     if options.watch:
         # a hack to have ambiguous optparse behavior 
