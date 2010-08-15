@@ -22,11 +22,11 @@ class Host(object):
         if os.path.isdir(self.host_dir) is not True:
             os.mkdir(self.host_dir)
             info = 'created host directory %s' % self.host_dir
-            #log.append(module='host', line=info)
+            log.host.debug(info)
         else:
             info = '%s already present' % self.host
             print info
-            #log.append(module='host', type='WARNING', line=info)
+            log.host.debug(info)
             return False
 
 def hostname():

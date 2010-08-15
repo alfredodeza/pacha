@@ -7,7 +7,7 @@ import grp
 from subprocess import call
 import shutil
 from time import strftime
-import confparser, log, database
+from pacha import log, database
 
 
 class Rebuild(object):
