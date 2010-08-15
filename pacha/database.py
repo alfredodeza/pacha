@@ -42,7 +42,6 @@ class Worker(object):
         command = 'INSERT INTO repos(path, permissions, type, revision) select ?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM repos WHERE path=?)'
         self.c.execute(command, values)
         self.conn.commit()
-        #self.conn.close()
 
 
     def insert_meta(self, path, owner, grp, permissions, ftype):
@@ -51,7 +50,6 @@ class Worker(object):
         command = 'INSERT INTO metadata(path, owner, grp, permissions, ftype) select ?,?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM metadata WHERE path=?)'
         self.c.execute(command, values)
         self.conn.commit()
-        #self.conn.close()
 
 
     def get_meta(self, path):
@@ -68,8 +66,6 @@ class Worker(object):
         command = 'UPDATE repos SET revision=? WHERE path=?'
         self.c.execute(command, values)
         self.conn.commit()
-        #self.conn.close()
-
 
     def remove(self, path):
         """Removes a repo from the database"""
@@ -77,8 +73,6 @@ class Worker(object):
         command = "DELETE FROM repos WHERE path = (?)"
         self.c.execute(command, values)
         self.conn.commit()
-        #self.conn.close()
-
 
     def get_repos(self):
         """Gets all the hosts"""
@@ -99,7 +93,6 @@ class Worker(object):
         command = 'INSERT INTO config(path) select ? WHERE NOT EXISTS(SELECT 1 FROM config WHERE path=?)' 
         self.c.execute(command, values)
         self.conn.commit()
-        #self.conn.close()
 
 
     def remove_config(self):
@@ -108,8 +101,6 @@ class Worker(object):
         create = "CREATE TABLE config(path TEXT)"
         self.c.execute(drop)
         self.c.execute(create)
-        self.conn.commit()
-        #self.conn.close()
 
     def get_config_path(self):
         """Returns the first entry for the config path"""

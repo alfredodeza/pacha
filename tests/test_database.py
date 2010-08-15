@@ -69,6 +69,47 @@ class TestWorker(unittest.TestCase):
         expected = u'/tmp/fooo'
         self.assertEqual(actual, expected)
 
+    def test_add_config(self):
+        """Add a configuration file path"""
+        db= database.Worker(db='/tmp/pacha.db')
+        db.add_config('/foo')
+        config = [i for i in db.get_config_path()][0][0]
+        self.assertEqual(config, u'/foo')
+
+    def test_add_config_unique(self):
+        """You can't add duplicates to the config table"""
+        db = database.Worker(db='/tmp/pacha.db')
+        db.add_config('/foo')
+        db.add_config('/foo')
+        db.add_config('/foo')
+        actual = [i for i in db.get_config_path()]
+        expected = [(u'/foo',)]
+        self.assertEqual(actual, expected)
+ 
+
+    def test_remove_config(self):
+        """Add and then remove a configuration file path"""
+        db = database.Worker(db='/tmp/pacha.db')
+        db.add_config('/foo')
+        db.remove_config()
+        config = [i for i in db.get_config_path()]
+        self.assertEqual(config, [])
+        
+    def test_get_config_path(self):
+        """Add a config path and then query it"""
+        db = database.Worker(db='/tmp/pacha.db')
+        db.add_config('/foo')
+        actual = [i for i in db.get_config_path()][0][0]
+        expected = u'/foo'
+        self.assertEqual(actual, expected) 
+ 
+    def test_insert_meta(self):
+        db = database.Worker(db='/tmp/pacha.db')
+        db.insert_meta('/foo', 'alfredo', 'admin', 'rwx', 'dir')
+        actual = [i for i in db.get_meta('/foo')]
+        expected = [(1, u'/foo', u'alfredo', u'admin', u'rwx', u'dir')]
+        self.assertEqual(actual, expected) 
+
 
 if __name__ == '__main__':
     unittest.main()

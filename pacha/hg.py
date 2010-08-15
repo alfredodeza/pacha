@@ -42,11 +42,11 @@ class Hg(object):
 #        self.parse = confparser.Parse(self.conf)
 #        self.parse.options()
         try:
-            self.dest_path = '/%s/%s/%s' % (self.parse.path,
+            self.dest_path = '/%s/%s/%s' % (self.conf['hosts_path'],
                     hostname(), self.dir)
         except AttributeError, error:
-            log.hg.error('config file not edited - aborting')
-            sys.stderr.write('pacha.conf not edited! or missing params- aborting\n')
+            log.hg.error('error trying to use config options: %s' % error)
+            sys.stderr.write('error trying to use config options: %s' % error)
             sys.exit(1)
         if not test:
             if hg_user() is False:
@@ -60,29 +60,29 @@ But no username was supplied (see "hg help config")
       verbose = True"""
                 log.hg.error(line='No hgrc found with username')
                 sys.exit(1)
-            else:
-
-                try:
-                    self.parse.user
-                    self.parse.host
-                except AttributeError, error:
-                    log.hg.error('config file not edited - aborting')
-                    sys.stderr.write('config file not edited! or missing params- aborting\n')
-                    sys.exit(1)
+          #  else:
+#
+#                try:
+#                    self.par.user
+#                    self.parse.host
+#                except AttributeError, error:
+#                    log.hg.error('config file not edited - aborting')
+#                    sys.stderr.write('config file not edited! or missing params- aborting\n')
+#                    sys.exit(1)
         # testing functionality:
-        if test:
-            self.parse.user = user
-            self.parse.path = '/tmp/remote_pacha'
-            self.parse.host = host
+        #if test:
+        #    self.parse.user = user
+        #    self.parse.path = '/tmp/remote_pacha'
+        #    self.parse.host = host
 
     def commit(self):
         """hg commit action, adding a message with the correct timestamp
         and information from pacha."""
         timestamp = strftime('%b %d %H:%M:%S')
         message = "pacha auto-commit: %s" % timestamp
-        stdout = open('/var/log/pacha.log', 'a')
-        sys.stdout = stdout
-        sys.stderr = stdout
+        #stdout = open('/var/log/pacha.log', 'a')
+        #sys.stdout = stdout
+        #sys.stderr = stdout
         repo = hg.repository(ui.ui(), self.path)
         commands.commit(ui.ui(), repo=repo, message=message,
                 logfile=None, addremove=None, user=None, date=None)
@@ -95,7 +95,7 @@ But no username was supplied (see "hg help config")
         repo = hg.repository(ui.ui(), self.path)
         if single is None:
             commands.add(ui.ui(), repo=repo)
-            log.hg.debug('added files to repo %s' % single)
+            log.hg.debug('added files to repo %s' % self.path)
 
         else:
             commands.add(ui.ui(), repo, single) 
@@ -118,8 +118,8 @@ But no username was supplied (see "hg help config")
             try:
                 hgrc = open(self.path+'/.hg/hgrc', 'w')
                 hgrc.write('[paths]\n')
-                ssh_line = "default = ssh://%s@%s%s" % (self.parse.user,
-                        self.parse.host, self.dest_path)
+                ssh_line = "default = ssh://%s@%s%s" % (self.conf['ssh_user'],
+                        self.conf['host'], self.dest_path)
                 hgrc.write(ssh_line)
                 hgrc.close()
                 log.hg.debug("wrote hgrc in %s" % self.path)
@@ -140,8 +140,10 @@ But no username was supplied (see "hg help config")
         needs to be ouralled when --watch is passed, runs just one time
         """
         source = self.path
-        dest = 'ssh://%s@%s%s' % (self.parse.user, self.parse.host,
+        dest = 'ssh://%s@%s%s' % (self.conf['ssh_user'], 
+                self.conf['host'],
             self.dest_path)
+        log.hg.debug('destination command for clone: %s' % dest)
         try:
             commands.clone(ui.ui(), source, dest, pull=False, uncompressed=False, rev=False,
                  noupdate=False)
