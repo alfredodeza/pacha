@@ -141,8 +141,6 @@ To add a configuration file, run:
         sys.exit(1)
 
     if options.add_host:
-        import pdb; pdb.set_trace() 
-        print config
         try:
             new = host.Host(host=options.add_host, 
                     host_path=config['hosts_path'])
