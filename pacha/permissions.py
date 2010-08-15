@@ -17,15 +17,17 @@ class Permissions(object):
         self.path = path
         self.stat = os.stat(self.path)
         self.info = self.stat.st_uid
+        self.uid = self.stat.st_uid
+        self.gid = self.stat.st_gid
 
     def owner(self):
         """Return the owner of a given file or directory"""
-        owner = pwd.getpwuid(self.info)[0]
+        owner = pwd.getpwuid(self.uid)[0]
         return owner
 
     def group(self):
         """Return the group of a give file or directory"""
-        group = grp.getgrgid(self.info)[0]
+        group = grp.getgrgid(self.gid)[0]
         return group
 
     def rwx(self):
