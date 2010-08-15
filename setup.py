@@ -6,9 +6,9 @@ tests_require = ['nose']
 
 setup(
     name = "pacha",
-    version = "0.2.0",
+    version = "0.2.1",
     packages = ['pacha'],
-    install_requires = ['supay>=0.0.6'],
+    install_requires = ['supay>=0.0.6', 'mercurial==1.5.3'],
     entry_points = {
         'console_scripts': [
             'pacha = pacha:main'
@@ -33,6 +33,15 @@ via a version control, giving the System Administrator the ability
 to rollback and safe guard valid, working configurations and rebuild a 
 host from those same configurations.
 """,
+   classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Topic :: Software Development :: Build Tools',
+        'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+      ],
 
     license = "MIT",
     keywords = "systems configuration management engine hg mercurial",

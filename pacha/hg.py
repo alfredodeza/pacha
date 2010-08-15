@@ -59,7 +59,7 @@ But no username was supplied (see "hg help config")
       [ui]
       username = Firstname Lastname <firstname.lastname@example.net>
       verbose = True"""
-                log.hg.error(line='No hgrc found with username')
+                log.hg.error('No hgrc found with username')
                 sys.exit(1)
           #  else:
 #

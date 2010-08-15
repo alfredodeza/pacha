@@ -16,7 +16,6 @@ class Permissions(object):
             path):
         self.path = path
         self.stat = os.stat(self.path)
-        self.info = self.stat.st_uid
         self.uid = self.stat.st_uid
         self.gid = self.stat.st_gid
 
