@@ -7,6 +7,11 @@ import os
 import stat
 import database
 
+# Fixes Database Absolute Location
+FILE_CWD =  os.path.abspath(__file__)
+FILE_DIR = os.path.dirname(FILE_CWD)
+DB_FILE = FILE_DIR+'/pacha.db'
+
 class Permissions(object):
     """Gathers the exact metadata we need for every file or given
     directory, like owner, group ownership and the octogonal 
@@ -40,7 +45,7 @@ class Tracker(object):
 
     def __init__(self,
             path,
-            database = '/opt/pacha/db/pacha.db'):
+            database = DB_FILE):
         self.path = path
         self.database = database
 
