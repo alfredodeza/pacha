@@ -22,8 +22,8 @@ class Watcher(object):
  
     def report(self):
         """Report if a file changed and the change has not been commited"""
-        log.append(module='pachad', 
-                line='watching for changes in %s' % self.path)
+        #log.append(module='pachad', 
+        #        line='watching for changes in %s' % self.path)
         run = Runners(location=self.path)
         if run.modified() is True:
             mercurial = hg.Hg(path=self.path)
@@ -36,20 +36,20 @@ class Watcher(object):
         does not exist"""
         run = Runners(location=self.path)
         if rev == None:  #a path without a revision so insert one
-            log.append(module='pachad.Watcher.revision_compare',
-                    line='No revision recorded in DB - so adding it')
+        #    log.append(module='pachad.Watcher.revision_compare',
+        #            line='No revision recorded in DB - so adding it')
             revision = run.hg_revision()[0]
             db = database.Worker()
             db.update_rev(self.path, revision)
-            log.append(module='pachad.Watcher.revision_compare',
-                    line='added revision %s for path %s' % (revision,
-                        self.path))
+       #     log.append(module='pachad.Watcher.revision_compare',
+       #             line='added revision %s for path %s' % (revision,
+       #                 self.path))
         else: # we have a hash there so:
             revision = run.hg_revision()[0]
             if rev != revision:
-                log.append(module='pachad.Watcher.revision_compare',
-                        line='found a new revision: %s at %s' % (rev,
-                        self.path))
+      #          log.append(module='pachad.Watcher.revision_compare',
+      #                  line='found a new revision: %s at %s' % (rev,
+      #                  self.path))
                 mercurial = hg.Hg(path=self.path)
                 mercurial.push()
                 db = database.Worker()
@@ -73,13 +73,13 @@ class Runners(object):
         for line in out:
             file_name = line[2:].split('\n')[0] # get a nice file name
             if line.startswith('M'):
-                log.append(module='pachad', 
-                        line='found modified file: %s' % file_name)
+     #           log.append(module='pachad', 
+     #                   line='found modified file: %s' % file_name)
                 return True
             else:
                 return False
-                log.append(module='pachad', 
-                        line='no changes with: %s' % file_name)
+    #            log.append(module='pachad', 
+    #                    line='no changes with: %s' % file_name)
 
 def run_command(std, cmd):
     """Runs a command via Popen"""
@@ -101,7 +101,7 @@ def check_path(file_path):
 def start(config):
     daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
     daemon.start()
-    log.append(module='pachad', line='Daemon started')
+    #log.append(module='pachad', line='Daemon started')
 
     while True:
         try:
@@ -158,5 +158,5 @@ def start(config):
 def stop():
     daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
     daemon.stop()
-    log.append(module='pachad', line='Daemon stopped')
+    #log.append(module='pachad', line='Daemon stopped')
 

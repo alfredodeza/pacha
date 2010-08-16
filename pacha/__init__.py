@@ -26,7 +26,7 @@ import sys
 from optparse import OptionParser, OptionGroup
 import hg, host, rebuild,database, permissions
 from pacha.config_options import config_options
-
+from pacha import daemon
 
 def main():
     """All command line options happen here"""
@@ -140,6 +140,13 @@ To add a configuration file, run:
     pacha --add-config /path/to/config 
 """
         sys.exit(1)
+
+
+    if options.daemon_start:
+        daemon.start(config)
+
+    if options.daemon_stop:
+        daemon.stop()
 
     if options.add_host:
         try:
