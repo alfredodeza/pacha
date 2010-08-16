@@ -27,13 +27,13 @@ class TestImports(unittest.TestCase):
             imported = False
         self.assertTrue(imported)
 
-    def test_pacha_daemon(self):
-        try:
-            from pacha import daemon
-            imported = True
-        except:
-            imported = False
-        self.assertTrue(imported)
+#    def test_pacha_daemon(self):
+#        try:
+#            from pacha import daemon
+#            imported = True
+#        except:
+#            imported = False
+#        self.assertTrue(imported)
 
     def test_pacha_database(self):
         try:

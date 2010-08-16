@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 #
 # Copyright (c) 2009-2010 Alfredo Deza <alfredodeza [at] gmail [dot] com>
@@ -22,7 +21,6 @@
 # THE SOFTWARE.
 
 
-#import getpass
 import os
 import sys
 from optparse import OptionParser, OptionGroup
@@ -36,6 +34,9 @@ def main():
 A systems configuration management engine
 """
     ,version='0.2.0')
+
+    parser.add_option('--config-values', action="store_true",
+            help="""Displays the current configuration values used""")
 
     parser.add_option('--add-config',
             help="""Adds a path to a configuration file""")
@@ -91,17 +92,6 @@ run in the background, these options will help you manage the daemon")
 
     parser.add_option_group(group)
 
-
-    # Check for sudo privileges before annything else:
-    #if getpass.getuser() != 'root':
-    #    sys.stderr.write(" * Pacha needs sudo privileges to run *\n")
-    #    sys.exit(1)
-
-    # now check for mercurial:
-    #if os.path.isfile('/usr/bin/hg') == False:
-    #    sys.stderr.write(" * Pacha needs Mercurial installed to run *\n")
-
-#    else:
     options, arguments = parser.parse_args()
 
     # Cleanest way to show the help menu if no options are given
@@ -114,6 +104,17 @@ run in the background, these options will help you manage the daemon")
         abspath = os.path.abspath(options.add_config)
         db.add_config(abspath)
         print "Configuration file added: %s" % abspath
+
+    if options.config_values:
+        try:
+            db = database.Worker()
+            config_list = [i for i in db.get_config_path()]
+            config_file = config_list[0][0]
+            config = config_options(config_file)
+            print "Current config values are:\n%s" % config
+        except Exception, error:
+            print "Could not complete command: %s" % error 
+
 
     if options.remove_config:
         db = database.Worker()
@@ -149,21 +150,25 @@ To add a configuration file, run:
             print "Could not complete command: %s" % error 
 
     if options.watch:
-        # a hack to have ambiguous optparse behavior 
-        if len(sys.argv) is 2: #no path
-            path = os.getcwd()
-        if len(sys.argv) >=3: #with path
-            path = sys.argv[2]
-        mercurial = hg.Hg(path=path, conf=config_options(config_file))
-        mercurial.hgrc()
-        # we do a first time clone:
-        mercurial.clone()
-        # add the path to repos table in database
-        db = database.Worker()
-        db.insert(path=path, type='dir')
-        # now make sure we record permissions metadata
-        meta = permissions.Tracker(path=path)
-        meta.walker()
+        try:
+            # a hack to have ambiguous optparse behavior 
+            if len(sys.argv) is 2: #no path
+                path = os.getcwd()
+            if len(sys.argv) >=3: #with path
+                path = sys.argv[2]
+            mercurial = hg.Hg(path=path, conf=config_options(config_file))
+            mercurial.hgrc()
+            # we do a first time clone:
+            mercurial.clone()
+            # add the path to repos table in database
+            db = database.Worker()
+            db.insert(path=path, type='dir')
+            # now make sure we record permissions metadata
+            meta = permissions.Tracker(path=path)
+            meta.walker()
+        except Exception, error:
+            print "Could not complete command: %s" % error 
+
 
     if options.watch_single:
         if os.path.isfile(options.watch_single):
