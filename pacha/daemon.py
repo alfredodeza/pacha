@@ -11,7 +11,8 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 import supay
 from pacha import log, hg, database
-    
+from pacha.config_options import config_defaults
+
 class Watcher(object):
     """Handles all the Reports to display"""
  
@@ -97,82 +98,65 @@ def check_path(file_path):
     else:
         return os.path.dirname(file_path)
 
-def main():
-    """All command line options happen here"""
-    parser = OptionParser()
+def start(config):
+    daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+    daemon.start()
+    log.append(module='pachad', line='Daemon started')
 
-    parser.add_option('--start', action="store_true",
-           help="starts daemon")
-    parser.add_option('--stop', action="store_true",
-           help="stops daemons")
-    
-    options, arguments = parser.parse_args()
-
-    # Cleanest way to show the help menu if no options are given
-    if len(sys.argv) == 1:
-        parser.print_help()
-
-    if options.start:
-        daemon = supay.Daemon(name='pachad', log=False)
-        daemon.start()
-        log.append(module='pachad', line='Daemon started')
-
-        while True:
+    while True:
+        try:
+            db = database.Worker()
+            repos = []
+            for i in db.get_repos():
+                repos.append(i)
+            db.closedb()
+            #log.append(module='pachad', line='reading repos from database')
+            #pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
+            #log.append(module='pachad', line='reading pacha.conf')
+            #pacha_conf.options()
+            # frequency check:
             try:
-                db = database.Worker()
-                repos = []
-                for i in db.get_repos():
-                    repos.append(i)
-                db.closedb()
-                log.append(module='pachad', line='reading repos from database')
-                pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
-                log.append(module='pachad', line='reading pacha.conf')
-                pacha_conf.options()
-                # frequency check:
-                try:
-                    freq = int(pacha_conf.frequency)
-                    if freq < 10:
-                        freq = 60
-                except ValueError: # if we do not get a number
+                freq = int(config['frequency'])
+                if freq < 10:
                     freq = 60
-                except AttributeError:
-                    freq = 60
-                try:
-                    master = pacha_conf.master
-                    log.append(module='pachad.main', type='INFO',
-                            line='machine set to master')
-                    if master == 'True':
-                        hg.update()
-                except AttributeError, error:
-                    # it is ok if this setting is not ON
-                    # but annoying if you see this INFO all over
-                    # your log files, so nothing to see here
-                    pass
-                log.append(module='pachad.main', line='looping over repos in db')
-                for repo in repos:
-                    # need to get an abspath from 'repo' and then pass it on
-                    # else the daemon will error out
-                    repo_path = check_path(repo[1])
-                    if os.path.exists(repo_path): # catches a path no longer there...
-                        watch = Watcher(path=repo_path)
-                        watch.report()
-                        watch.revision_compare(path=repo_path, rev=repo[4])
-                    else:
-                        log.append(module='pachad', 
-                         type='WARN', line='path %s does not exist' % repo_path)
-                time.sleep(freq)
-            except Exception, error:
-                log.append(module='pachad', type='ERROR', 
-                    line='Fatal Exception - daemon killed')
-                log.append(module='pachad', type='ERROR',
-                    line='%s' % error)
-                sys.exit(1)
+            except ValueError: # if we do not get a number
+                freq = 60
+            except AttributeError:
+                freq = 60
+            try:
+                master = config['master']
+               # log.append(module='pachad.main', type='INFO',
+               #         line='machine set to master')
+                if master == 'True':
+                    hg.update()
+            except AttributeError, error:
+                # it is ok if this setting is not ON
+                # but annoying if you see this INFO all over
+                # your log files, so nothing to see here
+                pass
+#                log.append(module='pachad.main', line='looping over repos in db')
+            for repo in repos:
+                # need to get an abspath from 'repo' and then pass it on
+                # else the daemon will error out
+                repo_path = check_path(repo[1])
+                if os.path.exists(repo_path): # catches a path no longer there...
+                    watch = Watcher(path=repo_path)
+                    watch.report()
+                    watch.revision_compare(path=repo_path, rev=repo[4])
+                else:
+                    pass # TODO Add logging
+                    #log.append(module='pachad', 
+                     #type='WARN', line='path %s does not exist' % repo_path)
+            time.sleep(freq)
+        except Exception, error:
+#                log.append(module='pachad', type='ERROR', 
+#                    line='Fatal Exception - daemon killed')
+#                log.append(module='pachad', type='ERROR',
+#                    line='%s' % error)
+            sys.exit(1)
 
-    if options.stop:
-        daemon = supay.Daemon(name='pachad', log=False)
-        daemon.stop()
-        log.append(module='pachad', line='Daemon stopped')
-
-if __name__ == '__main__':
-    main()
+def stop():
+    daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+    daemon.stop()
+    log.append(module='pachad', line='Daemon stopped')
 
