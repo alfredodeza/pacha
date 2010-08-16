@@ -195,7 +195,9 @@ def hg_user():
     if 'root' == getuser():
         user_hgrc = '/root/.hgrc'
     else:
-        user_hgrc = '/home/%s/.hgrc' % getuser()
+        home_dir = os.environ.get('HOME')
+        user_hgrc = home_dir+'/.hgrc'
+#        user_hgrc = '/home/%s/.hgrc' % getuser()
     global_hgrc = '/etc/mercurial/hgrc'
     result = False
     if os.path.isfile(global_hgrc):

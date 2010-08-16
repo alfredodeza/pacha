@@ -42,7 +42,7 @@ A systems configuration management engine
             help="""Adds a path to a configuration file""")
 
     parser.add_option('--remove-config', action="store_true",
-            help="""Removes a configuration file""")
+            help="""Removes the stored configuration file""")
 
     parser.add_option('--add-host',
             help="""Creates structure for saving host configs
@@ -146,6 +146,7 @@ To add a configuration file, run:
             new = host.Host(host=options.add_host, 
                     host_path=config['hosts_path'])
             new.create()
+            print "Added host %s" % options.add_host
         except Exception, error:
             print "Could not complete command: %s" % error 
 
