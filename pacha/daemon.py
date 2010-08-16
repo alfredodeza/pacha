@@ -9,9 +9,8 @@ import time
 from getpass import getuser
 from optparse import OptionParser
 from subprocess import Popen, PIPE
-# fix for local imports
-sys.path.append('/opt/pacha/lib')
-import supay, log, hg, confparser, database
+import supay
+from pacha import log, hg, database
     
 class Watcher(object):
     """Handles all the Reports to display"""
