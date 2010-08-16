@@ -112,22 +112,32 @@ But no username was supplied (see "hg help config")
 <div class="section" id="master-slave-approach">
 <h2>Master Slave approach<a class="headerlink" href="#master-slave-approach" title="Permalink to this headline">¶</a></h2>
 <p>Pacha can run as a single instance but we want to accomplish a good configuration backup setup. Master/Slave is what we are going to cover here.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">host</span></tt></td>
+<td>Where is the Pacha master server running?. An IP or a FQDN works</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">port</span></tt></td>
+<td>If you are running a different port other than 22 for SSH, edit this. No need to specify
+if you have not changed the standard port.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">user</span></tt></td>
+<td>The user Pacha will use to connect via SSH</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">path</span></tt></td>
+<td>If you are running a different port other than 22 for SSH, edit this. No need to
+specify if you have not changed the standard port.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We will not cover the rebuilding process here. Again, the goal is to have Pacha backing up configuration files in this guide.</p>
 </div>
-<div class="section" id="host">
-<h2>host<a class="headerlink" href="#host" title="Permalink to this headline">¶</a></h2>
-<p>Where is the Pacha master server running?. An IP or a FQDN works</p>
-</div>
-<div class="section" id="port">
-<h2>port<a class="headerlink" href="#port" title="Permalink to this headline">¶</a></h2>
-<p>If you are running a different port other than 22 for SSH, edit this. No need to specify if you have not changed the standard port.</p>
-</div>
-<div class="section" id="user">
-<h2>user<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h2>
-<p>The user Pacha will use to connect via SSH</p>
-</div>
-<div class="section" id="path">
-<h2>path<a class="headerlink" href="#path" title="Permalink to this headline">¶</a></h2>
-<p>The location of the hosts files. Usually in /opt/pacha/hosts</p>
 </div>
 <div class="section" id="ssh-and-keys">
 <h2>SSH and Keys<a class="headerlink" href="#ssh-and-keys" title="Permalink to this headline">¶</a></h2>
@@ -168,10 +178,6 @@ But no username was supplied (see "hg help config")
 <li><a class="reference internal" href="#edit-the-configuration-file">Edit the configuration file</a></li>
 <li><a class="reference internal" href="#verify-username-in-hgrc">Verify username in HGRC</a></li>
 <li><a class="reference internal" href="#master-slave-approach">Master Slave approach</a></li>
-<li><a class="reference internal" href="#host">host</a></li>
-<li><a class="reference internal" href="#port">port</a></li>
-<li><a class="reference internal" href="#user">user</a></li>
-<li><a class="reference internal" href="#path">path</a></li>
 <li><a class="reference internal" href="#ssh-and-keys">SSH and Keys</a></li>
 <li><a class="reference internal" href="#tracking-configuration-files">Tracking Configuration Files</a></li>
 <li><a class="reference internal" href="#sudo-pacha-add-host-hostname">sudo pacha &#8211;add-host hostname</a></li>

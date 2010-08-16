@@ -67,23 +67,19 @@ Master Slave approach
 ----------------------
 Pacha can run as a single instance but we want to accomplish a good configuration backup setup. Master/Slave is what we are going to cover here.
 
-host
--------
-Where is the Pacha master server running?. An IP or a FQDN works
++-----------+------------------------------------------------------------------------------------------+
+| ``host``  | Where is the Pacha master server running?. An IP or a FQDN works                         |
++-----------+------------------------------------------------------------------------------------------+
+| ``port``  | If you are running a different port other than 22 for SSH, edit this. No need to specify |
+|           | if you have not changed the standard port.                                               |
++-----------+------------------------------------------------------------------------------------------+
+| ``user``  | The user Pacha will use to connect via SSH                                               |
++-----------+------------------------------------------------------------------------------------------+
+| ``path``  | If you are running a different port other than 22 for SSH, edit this. No need to         |
+|           | specify if you have not changed the standard port.                                       |
++-----------+------------------------------------------------------------------------------------------+
 
-port
---------
-If you are running a different port other than 22 for SSH, edit this. No need to specify if you have not changed the standard port.
-
-user
-------
-The user Pacha will use to connect via SSH
-
-path
-------
-The location of the hosts files. Usually in /opt/pacha/hosts
-
-.. _NOTE: We will not cover the rebuilding process here. Again, the goal is to have Pacha backing up configuration files in this guide.
+.. note:: We will not cover the rebuilding process here. Again, the goal is to have Pacha backing up configuration files in this guide.
 
 SSH and Keys
 --------------
