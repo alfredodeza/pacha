@@ -97,10 +97,10 @@ run in the background, these options will help you manage the daemon")
 
     options, arguments = parser.parse_args()
 
-    # Cleanest way to show the help menu if no options are given
-    if len(sys.argv) == 1:
-        parser.print_help()
-
+#    # Cleanest way to show the help menu if no options are given
+#    if len(sys.argv) == 1:
+#        parser.print_help()
+#
 
     if options.add_config:
         db = database.Worker()
@@ -149,6 +149,10 @@ run in the background, these options will help you manage the daemon")
  +----------------------------------------------------------+
 """
         sys.exit(1)
+    
+    # Cleanest way to show the help menu if no options are given
+    if len(sys.argv) == 1:
+        parser.print_help()
 
     #
     # Sets up Logging
