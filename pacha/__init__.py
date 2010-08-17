@@ -156,19 +156,11 @@ To add a configuration file, run:
     level = levels.get(config['log_level'])
     log_format = config['log_format']
     datefmt = config['log_datefmt']
-    format='%(asctime)s %(levelname)s %(name)s %(message)s'
-    import pdb; pdb.set_trace() 
+
     logging.basicConfig(level=level,
-            format=format,
-            #format='%(asctime)s %(levelname)s %(name)s %(message)s',
-            #format=str(log_format),
+            format=log_format,
             datefmt=datefmt)
        
-#    logging.basicConfig(level=logging.DEBUG,
-#                format='%(asctime)s %(levelname)s %(name)s %(message)s',
-#                datefmt='%H:%M:%S')
-#
-
     if options.daemon_start:
         daemon.start(config)
 
