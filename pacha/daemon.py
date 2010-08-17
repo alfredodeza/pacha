@@ -6,14 +6,7 @@ import supay
 from pacha import hg, database
 import logging
 
-
-#
-#logging.basicConfig(level=logging.DEBUG,
-#                    format='%(asctime)s %(levelname)s %(name)s %(message)s',
-#                    datefmt='%H:%M:%S')
-
 daemon_log = logging.getLogger('pacha.daemon')
- 
 
 class Watcher(object):
     """Handles all the Reports to display"""
@@ -69,13 +62,11 @@ class Runners(object):
         for line in out:
             file_name = line[2:].split('\n')[0] # get a nice file name
             if line.startswith('M'):
-     #           log.append(module='pachad', 
-     #                   line='found modified file: %s' % file_name)
+                daemon_log.debug('found modified file: %s' % file_name)
                 return True
             else:
                 return False
-    #            log.append(module='pachad', 
-    #                    line='no changes with: %s' % file_name)
+                daemon_log.debug('no changes with: %s' % file_name)
 
 def run_command(std, cmd):
     """Runs a command via Popen"""
@@ -108,11 +99,6 @@ def start(config, foreground=False):
                 repos.append(i)
             db.closedb()
             daemon_log.debug('reading repos from database')
-            #log.append(module='pachad', line='reading repos from database')
-            #pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
-            #log.append(module='pachad', line='reading pacha.conf')
-            #pacha_conf.options()
-            # frequency check:
             try:
                 freq = int(config['frequency'])
                 if freq < 10:
@@ -123,16 +109,15 @@ def start(config, foreground=False):
                 freq = 60
             try:
                 master = config['master']
-               # log.append(module='pachad.main', type='INFO',
-               #         line='machine set to master')
                 if master == 'True':
                     hg.update()
+                    daemon_log.debug('machine set to master')
             except AttributeError, error:
                 # it is ok if this setting is not ON
                 # but annoying if you see this INFO all over
                 # your log files, so nothing to see here
                 pass
-#                log.append(module='pachad.main', line='looping over repos in db')
+                daemon_log.debug('looping over repos in db')
             for repo in repos:
                 # need to get an abspath from 'repo' and then pass it on
                 # else the daemon will error out
@@ -142,21 +127,17 @@ def start(config, foreground=False):
                     watch.report()
                     watch.revision_compare(path=repo_path, rev=repo[4])
                 else:
-                    pass # TODO Add logging
-                    #log.append(module='pachad', 
-                     #type='WARN', line='path %s does not exist' % repo_path)
+                    pass
+                    daemon_log.warning('path %s does not exist' % repo_path)
+            daemon_log.debug('daemon going to sleep')
             time.sleep(freq)
         except Exception, error:
             daemon_log.error('Fatal exception - daemon killed')
             daemon_log.error(error)
-#                log.append(module='pachad', type='ERROR', 
-#                    line='Fatal Exception - daemon killed')
-#                log.append(module='pachad', type='ERROR',
-#                    line='%s' % error)
             sys.exit(1)
 
 def stop():
     daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
     daemon.stop()
-    #log.append(module='pachad', line='Daemon stopped')
+    daemon_log.debug("daemon stopped")
 
