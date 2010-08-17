@@ -110,7 +110,7 @@ def start(config, foreground=False):
             try:
                 master = config['master']
                 if master == 'True':
-                    hg.update()
+                    hg.update(config['hosts_path'])
                     daemon_log.debug('machine set to master')
             except AttributeError, error:
                 # it is ok if this setting is not ON
@@ -131,6 +131,11 @@ def start(config, foreground=False):
                     daemon_log.warning('path %s does not exist' % repo_path)
             daemon_log.debug('daemon going to sleep')
             time.sleep(freq)
+
+        except KeyboardInterrupt:
+            print "Exiting from foreground daemon"
+            sys.exit(0)
+
         except Exception, error:
             daemon_log.error('Fatal exception - daemon killed')
             daemon_log.error(error)
