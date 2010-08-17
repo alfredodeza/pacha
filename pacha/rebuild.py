@@ -7,7 +7,6 @@ import grp
 from subprocess import call
 import shutil
 from time import strftime
-import log, database
 
 #
 #class Rebuild(object):
