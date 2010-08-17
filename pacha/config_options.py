@@ -61,7 +61,7 @@ def config_options(config=None):
             pass
             log.config.error("couldn't map configuration: %s" % e)
 
-    log.config.debug("valid full configuration returned")
+#    log.config.debug("valid full configuration returned")
     return configuration
 
 def config_defaults(config=None):
@@ -77,7 +77,7 @@ def config_defaults(config=None):
             'ssh_port': 22,
             'hosts_path': '/opt/pacha',
             'log_level': 'DEBUG',
-            'log_format': '%(asctime)s %(levelname) %(name)s %(message)s',
+            'log_format': '%(asctime)s %(levelname)s %(name)s %(message)s',
             'log_datefmt' : '%H:%M:%S'
             }
 
@@ -86,7 +86,7 @@ def config_defaults(config=None):
             config[key]
         except KeyError:
             config[key] = defaults[key]
-    log.config.debug("returning basic configuration defaults")
+#    log.config.debug("returning basic configuration defaults")
     return config
 
 def setlogging(config=None):

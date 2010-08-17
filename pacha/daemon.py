@@ -1,17 +1,19 @@
-#!/usr/bin/env python
-#
-# Copyright 2009-2010 Alfredo Deza
-# Pacha Daemon
-
 import os
 import sys
 import time
-from getpass import getuser
-from optparse import OptionParser
 from subprocess import Popen, PIPE
 import supay
-from pacha import log, hg, database
-from pacha.config_options import config_defaults
+from pacha import hg, database
+import logging
+
+
+#
+#logging.basicConfig(level=logging.DEBUG,
+#                    format='%(asctime)s %(levelname)s %(name)s %(message)s',
+#                    datefmt='%H:%M:%S')
+
+daemon_log = logging.getLogger('pacha.daemon')
+ 
 
 class Watcher(object):
     """Handles all the Reports to display"""
@@ -22,8 +24,7 @@ class Watcher(object):
  
     def report(self):
         """Report if a file changed and the change has not been commited"""
-        #log.append(module='pachad', 
-        #        line='watching for changes in %s' % self.path)
+        daemon_log.debug('watching for changes in %s' % self.path)
         run = Runners(location=self.path)
         if run.modified() is True:
             mercurial = hg.Hg(path=self.path)
@@ -36,20 +37,15 @@ class Watcher(object):
         does not exist"""
         run = Runners(location=self.path)
         if rev == None:  #a path without a revision so insert one
-        #    log.append(module='pachad.Watcher.revision_compare',
-        #            line='No revision recorded in DB - so adding it')
+            daemon_log.debug('No revision recorded in DB - so adding it')
             revision = run.hg_revision()[0]
             db = database.Worker()
             db.update_rev(self.path, revision)
-       #     log.append(module='pachad.Watcher.revision_compare',
-       #             line='added revision %s for path %s' % (revision,
-       #                 self.path))
+            daemon_log.debug('added revision %s for path %s' % (revision, self.path))
         else: # we have a hash there so:
             revision = run.hg_revision()[0]
             if rev != revision:
-      #          log.append(module='pachad.Watcher.revision_compare',
-      #                  line='found a new revision: %s at %s' % (rev,
-      #                  self.path))
+                daemon_log.debug('found a new revision: %s at %s' % (rev,self.path))
                 mercurial = hg.Hg(path=self.path)
                 mercurial.push()
                 db = database.Worker()
@@ -98,10 +94,11 @@ def check_path(file_path):
     else:
         return os.path.dirname(file_path)
 
-def start(config):
-    daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
-    daemon.start()
-    #log.append(module='pachad', line='Daemon started')
+def start(config, foreground=False):
+    if not foreground:
+        daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+        daemon.start()
+    daemon_log.debug('Daemon started')
 
     while True:
         try:
@@ -110,6 +107,7 @@ def start(config):
             for i in db.get_repos():
                 repos.append(i)
             db.closedb()
+            daemon_log.debug('reading repos from database')
             #log.append(module='pachad', line='reading repos from database')
             #pacha_conf = confparser.Parse(config='/opt/pacha/conf/pacha.conf')
             #log.append(module='pachad', line='reading pacha.conf')
@@ -149,6 +147,8 @@ def start(config):
                      #type='WARN', line='path %s does not exist' % repo_path)
             time.sleep(freq)
         except Exception, error:
+            daemon_log.error('Fatal exception - daemon killed')
+            daemon_log.error(error)
 #                log.append(module='pachad', type='ERROR', 
 #                    line='Fatal Exception - daemon killed')
 #                log.append(module='pachad', type='ERROR',

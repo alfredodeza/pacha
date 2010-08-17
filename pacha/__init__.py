@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
+import logging
 import os
 import sys
 from optparse import OptionParser, OptionGroup
@@ -67,6 +67,9 @@ run in the background, these options will help you manage the daemon")
             help="Stops the Pacha daemon")
 
     daemon_group.add_option('--daemon-status', action='store_true',
+            help="Checks the status of the Pacha daemon")
+
+    daemon_group.add_option('--daemon-foreground', action='store_true',
             help="Checks the status of the Pacha daemon")
 
     parser.add_option_group(daemon_group)
@@ -141,12 +144,39 @@ To add a configuration file, run:
 """
         sys.exit(1)
 
+    #
+    # Sets up Logging
+    #
+
+    levels = {
+            'debug': logging.DEBUG,
+           'info': logging.INFO
+            }
+    
+    level = levels.get(config['log_level'])
+    log_format = config['log_format']
+    datefmt = config['log_datefmt']
+    format='%(asctime)s %(levelname)s %(name)s %(message)s'
+    import pdb; pdb.set_trace() 
+    logging.basicConfig(level=level,
+            format=format,
+            #format='%(asctime)s %(levelname)s %(name)s %(message)s',
+            #format=str(log_format),
+            datefmt=datefmt)
+       
+#    logging.basicConfig(level=logging.DEBUG,
+#                format='%(asctime)s %(levelname)s %(name)s %(message)s',
+#                datefmt='%H:%M:%S')
+#
 
     if options.daemon_start:
         daemon.start(config)
 
     if options.daemon_stop:
         daemon.stop()
+
+    if options.daemon_foreground:
+        daemon.start(config=config, foreground=True)
 
     if options.add_host:
         try:
