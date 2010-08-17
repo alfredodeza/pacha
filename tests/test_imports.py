@@ -11,14 +11,6 @@ class TestImports(unittest.TestCase):
             imported = False
         self.assertTrue(imported)
 
-    def test_pacha_log(self):
-        try:
-            from pacha import log
-            imported = True
-        except:
-            imported = False
-        self.assertTrue(imported)
-
     def test_pacha_config_options(self):
         try:
             from pacha import config_options
