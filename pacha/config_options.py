@@ -1,7 +1,6 @@
 import log
 from ConfigParser import ConfigParser
 from os.path import isfile
-from logging import basicConfig, INFO, DEBUG
 
 def config_options(config=None):
     """Instead of calling ConfigParser all over the place
@@ -88,23 +87,4 @@ def config_defaults(config=None):
             config[key] = defaults[key]
 #    log.config.debug("returning basic configuration defaults")
     return config
-
-def setlogging(config=None):
-    if config == None:
-        config = config_defaults()
-    levels = {
-            'debug': DEBUG,
-           'info': INFO
-            }
-    
-    level = levels.get(config['log_level'])
-    log_format = config['log_format']
-    datefmt = config['log_datefmt']
-
-    basicConfig(
-            level   = level,
-            format  = log_format,
-           datefmt = datefmt)
-
-
 
