@@ -30,7 +30,6 @@ class Hg(object):
         self.user = user
         self.conf = conf
         
-        setlogging(self.conf)
         if os.path.exists(path):
             hg_log.debug('verified path exists: %s' % path)
             self.path = os.path.normpath(path)

@@ -138,11 +138,15 @@ run in the background, these options will help you manage the daemon")
     except IndexError:
         print """
         
-*********************************************************
-
-Warning! You have not set a configuration file for Pacha.
-To add a configuration file, run:
-    pacha --add-config /path/to/config 
+ +----------------------------------------------------------+
+ |                   **WARNING**                            |
+ |                                                          |
+ |  You have not set a configuration file for Pacha.        |
+ |  To add a configuration file, run:                       |
+ |                                                          |
+ |    pacha --add-config /path/to/config                    |
+ |                                                          |
+ +----------------------------------------------------------+
 """
         sys.exit(1)
 
