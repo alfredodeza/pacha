@@ -114,7 +114,9 @@ run in the background, these options will help you manage the daemon")
             config_list = [i for i in db.get_config_path()]
             config_file = config_list[0][0]
             config = config_options(config_file)
-            print "Current config values are:\n%s" % config
+            print "\nConfiguration file: %s\n" % config_file
+            for i in config.items():
+                print "%-15s= %-4s" % (i[0], i[1])
         except Exception, error:
             print "Could not complete command: %s" % error 
 
