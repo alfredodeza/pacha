@@ -1,4 +1,3 @@
-import log
 from ConfigParser import ConfigParser
 from os.path import isfile
 

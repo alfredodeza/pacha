@@ -9,7 +9,7 @@ import sys
 from time import strftime
 from mercurial import commands, ui, hg
 
-from pacha.config_options import config_defaults, setlogging
+from pacha.config_options import config_defaults
 from pacha.host import hostname
 
 hg_log = logging.getLogger('pacha.hg')
