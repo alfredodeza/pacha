@@ -12,7 +12,6 @@ from mercurial import commands, ui, hg
 from pacha.config_options import config_defaults
 from pacha.host import hostname
 
-hg_log = logging.getLogger('pacha.hg')
 
 class Hg(object):
     """Does local commits and pushes to a central Pacha Master location"""
@@ -23,26 +22,31 @@ class Hg(object):
             user = None,
             path = None,
             conf = config_defaults(),
+            logging = True,
             test = False
             ):
         self.port = port
         self.host = host
         self.user = user
         self.conf = conf
-        
+        self.logging = logging
+
+        if self.logging:
+            self.log = logging.getLogger('pacha.hg')
+
         if os.path.exists(path):
-            hg_log.debug('verified path exists: %s' % path)
+            self.log.debug('verified path exists: %s' % path)
             self.path = os.path.normpath(path)
             self.dir = os.path.basename(path)
             self.hg_dir = self.path+'/.hg'
             os.chdir(self.path)
         else:
-            hg_log.error('%s does not exist' % path)
+            self.log.error('%s does not exist' % path)
         try:
             self.dest_path = '/%s/%s/%s' % (self.conf['hosts_path'],
                     hostname(), self.dir)
         except AttributeError, error:
-            hg_log.error('error trying to use config options: %s' % error)
+            self.log.error('error trying to use config options: %s' % error)
             sys.stderr.write('error trying to use config options: %s' % error)
             sys.exit(1)
         if not test:
@@ -55,7 +59,7 @@ But no username was supplied (see "hg help config")
       [ui]
       username = Firstname Lastname <firstname.lastname@example.net>
       verbose = True"""
-                hg_log.error('No hgrc found with username')
+                self.log.error('No hgrc found with username')
                 sys.exit(1)
 
     def commit(self):
@@ -68,8 +72,8 @@ But no username was supplied (see "hg help config")
         repo = hg.repository(u, self.path)
         commands.commit(u, repo=repo, message=message,
                 logfile=None, addremove=None, user=None, date=None)
-        hg_log.debug('doing commit at %s' % self.path)
-        hg_log.debug(u.popbuffer())
+        self.log.debug('doing commit at %s' % self.path)
+        self.log.debug(u.popbuffer())
 
     def hg_add(self, single=None):
         """Adds all files to Mercurial when the --watch options is passed
@@ -78,11 +82,11 @@ But no username was supplied (see "hg help config")
         repo = hg.repository(ui.ui(), self.path)
         if single is None:
             commands.add(ui.ui(), repo=repo)
-            hg_log.debug('added files to repo %s' % self.path)
+            self.log.debug('added files to repo %s' % self.path)
 
         else:
             commands.add(ui.ui(), repo, single) 
-            hg_log.debug('added files to repo %s' % self.path)
+            self.log.debug('added files to repo %s' % self.path)
 
     def push(self):
         """Pushes the repository to the centralized Pacha Master server
@@ -91,7 +95,7 @@ But no username was supplied (see "hg help config")
         subprocess.call"""
         command = "hg push"
         call(command, shell=True, stdout=PIPE, stderr=PIPE)
-        hg_log.debug('push %s to central pacha' % self.path)
+        self.log.debug('push %s to central pacha' % self.path)
 
     def hgrc(self):
         """An option to write the default path in hgrc for pushing
@@ -105,11 +109,11 @@ But no username was supplied (see "hg help config")
                         self.conf['host'], self.dest_path)
                 hgrc.write(ssh_line)
                 hgrc.close()
-                hg_log.debug("wrote hgrc in %s" % self.path)
-                hg_log.debug("default is %s" % ssh_line)
+                self.log.debug("wrote hgrc in %s" % self.path)
+                self.log.debug("default is %s" % ssh_line)
 
             except Exception, error:
-                hg_log.error(error)
+                self.log.error(error)
                 return False
 
         else:
@@ -126,31 +130,31 @@ But no username was supplied (see "hg help config")
         dest = 'ssh://%s@%s%s' % (self.conf['ssh_user'], 
                 self.conf['host'],
             self.dest_path)
-        hg_log.debug('destination command for clone: %s' % dest)
+        self.log.debug('destination command for clone: %s' % dest)
         try:
             commands.clone(ui.ui(), source, dest, pull=False, uncompressed=False, rev=False,
                  noupdate=False)
-            hg_log.debug('cloning %s' % dest )
+            self.log.debug('cloning %s' % dest )
         except Exception, error:
-            hg_log.error('could not clone repo: %s' % error)
+            self.log.error('could not clone repo: %s' % error)
             print "Could not clone this repository: %s" % error
             print """Have you added this host in the Pacha server?"""
         # TODO: need to add trusted USERS in the global .hgrc 
         
     def validate(self):
         """Validates a working HG path"""
-        hg_log.debug("validating repository at %s" % self.path)
+        self.log.debug("validating repository at %s" % self.path)
         if os.path.exists(self.hg_dir):
-            hg_log.debug("hg repository found at %s" % self.path)
+            self.log.debug("hg repository found at %s" % self.path)
             return True
         else:
-            hg_log.debug("hg repository not found at %s" % self.path)
+            self.log.debug("hg repository not found at %s" % self.path)
             return False
 
     def initialize(self):
         """Creates a mercurial repository"""
         commands.init(ui.ui(), dest=self.path)
-        hg_log.debug('created hg repo at %s' % self.path)
+        self.log.debug('created hg repo at %s' % self.path)
 
     def hgignore(self):
         """Writes an hgignore to ignore all files"""
@@ -163,6 +167,7 @@ def update(hosts_path):
     This update() function will be used as a trial to later plug
     all of Pacha into Mercurial, instead of doing subprocess calls"""
     
+    hg_log = logging.getLogger('pacha.hg')
     for dirs in os.listdir(hosts_path):
         sub_dir = os.path.join(hosts_path, dirs)
         if os.path.isdir(sub_dir):
