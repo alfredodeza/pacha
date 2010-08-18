@@ -6,7 +6,7 @@ tests_require = ['nose', 'unittest2']
 
 setup(
     name = "pacha",
-    version = "0.2.1",
+    version = "0.2.2",
     packages = ['pacha'],
     install_requires = ['supay>=0.0.6', 'mercurial==1.5.3'],
     entry_points = {
