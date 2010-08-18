@@ -223,14 +223,14 @@ run in the background, these options will help you manage the daemon")
             if os.path.isfile(hgignore): # make sure we arent overwriting
                 # we are already watching unique files here
                 # so let's add the new guy and commit it
-                mercurial = hg.Hg(path=dirname)
+                mercurial = hg.Hg(path=dirname, conf=config_options(config_file))
                 mercurial.hg_add(abspath)
                 mercurial.commit()
 
             # if it does not exist then this should be the first 
             # time this is being run here 
             else:
-                mercurial = hg.Hg(path=dirname)
+                mercurial = hg.Hg(path=dirname, conf=config_options(config_file))
                 # then ignore everything within the path
                 mercurial.hgignore()
                 mercurial.initialize()

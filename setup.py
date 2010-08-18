@@ -2,7 +2,7 @@ import distribute_setup
 distribute_setup.use_setuptools()
 from setuptools import setup
 
-tests_require = ['nose']
+tests_require = ['nose', 'unittest2']
 
 setup(
     name = "pacha",
