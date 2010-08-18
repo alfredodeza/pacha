@@ -5,11 +5,13 @@ GettingStarted
 
 Introduction
 --------------
-You will be able to quickly get started with this guide. The main goal is to get Pacha installed and running and having you backing up your configuration files. More advanced Pacha functions are not covered here.
+The main goal is to get Pacha running and having you backing up your configuration files in as 
+little steps as possible. More advanced Pacha functions are not covered here.
+
 
 Dependencies
 -----------------
-We have 3 dependencies, make sure you have them installed and ready when installing Pacha:
+We have 3 dependencies, make sure you have them installed and ready:
 
  *  SSH (versions 4.7p1 to 5.1p1)
  *  Mercurial (versions 0.9.5 to 1.3.1)
@@ -29,25 +31,68 @@ We recommend installing from the Python Package Index (PYPI)::
 
     pip install pacha 
 
-But you can also install from the latest version of Pacha from the http://code.google.com/p/pacha Uncompress the contents::
-
-    hg clone https://pacha.googlecode.com/hg/ pacha 
-
-And run the following within the extracted directory::
-
-    python setup.py install 
-
-
 After Installation
 ======================
-Remember to edit pacha.conf and run:
-pacha --watch /opt/pacha/conf
-This will keep track of all host specific configurations that will be needed
-when rebuilding.
+Have your SSH keys ready for the machines you want Pacha to talk to.
+
+Even if you plan to keep files in a single server, get your ssh keys for ``localhost``. 
+Pacha pushes information **only** via SSH.
+
+If this is a single machine, below is a quick example of getting SSH keys running::
+
+    cd ~/.ssh
+    ssh-keygen
+    [...]
+    cat id_rsa.pub >> authorized_keys
+
+Verify it is working by logging in passwordless::
+
+    ssh localhost
+
 
 Edit the configuration file
 -------------------------------
-After installing you need to edit the config file. Pacha needs to have this edited to be running properly. The config file should be located in: /opt/pacha/conf/pacha.conf
+After installing you need to edit the config file. Pacha needs to have  a configuration 
+file added to be running properly. The config file can be located anywhere and can be 
+called whatever you want. For a sample config file see :ref:`configuration`
+
+If no configuration file is added, Pacha complains::
+
+        
+     +----------------------------------------------------+
+     |                 ** WARNING **                      |
+     |                                                    |
+     |  You have not set a configuration file for Pacha.  |
+     |  To add a configuration file, run:                 |
+     |                                                    |
+     |    pacha --add-config /path/to/config              |
+     |                                                    |
+     +----------------------------------------------------+
+
+Once you have a config file, run::
+
+    pacha --add-config /path/to/config
+
+If you want to remove it, you can::
+
+    pacha --remove-config /path/to/config
+
+And if you want to check the values that are being parsed, you can run::
+
+    pacha --config-values
+
+    Configuration file: /Users/alfredo/vpacha/foo/pacha.conf
+
+    log_level      = DEBUG
+    ssh_port       = 22  
+    hosts_path     = /tmp/pacha/hosts
+    host           = localhost
+    frequency      = 60  
+    master         = True
+    log_datefmt    = %H:%M:%S
+    ssh_user       = alfredo
+    log_format     = %(asctime)s %(levelname)s %(name)s %(message)s
+        
 
 Verify username in HGRC
 ---------------------------
@@ -67,34 +112,59 @@ Master Slave approach
 ----------------------
 Pacha can run as a single instance but we want to accomplish a good configuration backup setup. Master/Slave is what we are going to cover here.
 
-+-----------+------------------------------------------------------------------------------------------+
-| ``host``  | Where is the Pacha master server running?. An IP or a FQDN works                         |
-+-----------+------------------------------------------------------------------------------------------+
-| ``port``  | If you are running a different port other than 22 for SSH, edit this. No need to specify |
-|           | if you have not changed the standard port.                                               |
-+-----------+------------------------------------------------------------------------------------------+
-| ``user``  | The user Pacha will use to connect via SSH                                               |
-+-----------+------------------------------------------------------------------------------------------+
-| ``path``  | If you are running a different port other than 22 for SSH, edit this. No need to         |
-|           | specify if you have not changed the standard port.                                       |
-+-----------+------------------------------------------------------------------------------------------+
++-----------------+------------------------------------------------------------------------------------------+
+| ``host``        | Where is the Pacha master server running?. An IP or a FQDN works                         |
++-----------------+------------------------------------------------------------------------------------------+
+| ``port``        | If you are running a different port other than 22 for SSH, edit this. No need to specify |
+|                 | if you have not changed the standard port.                                               |
++-----------------+------------------------------------------------------------------------------------------+
+| ``ssh_user``    | The user Pacha will use to connect via SSH                                               |
++-----------------+------------------------------------------------------------------------------------------+
+| ``hosts_path``  | What is the path where the config files will be pushing to. e.g.:                        |
+|                 |   ``/opt/hosts``                                                                         |
++-----------------+------------------------------------------------------------------------------------------+
 
 .. note:: We will not cover the rebuilding process here. Again, the goal is to have Pacha backing up configuration files in this guide.
 
-SSH and Keys
---------------
-Pacha is intended to be fully automated so you need to have your ssh keys associated with the user you set in the configuration file so it has read/write access to the location where Pacha is installed.
-
 Tracking Configuration Files
 ------------------------------
-First we need to create a directory where all the configuration files will be pushed. This is the way of "granting permissions" in the Pacha server. So in the master server run:
+First we need to create a directory where all the configuration files will be pushed. 
+This is the way of "granting permissions" in the Pacha server. So in the master server run::
 
-sudo pacha --add-host hostname
----------------------------------
-Replace "hostname" with the name of the machine you want to get configuration files from. NOTE: Pacha will not be able to push files if this is not done!
+    pacha --add-host my_hostname
 
-Pacha uses the --watch option to start tracking a directory. Let's follow the recommendation when we finished installing Pacha. You can either be in the directory and run --watch or specify the path directly::
+Replace *my_hostname* with the name of the machine you want to get configuration files from. 
 
-    pacha --watch /opt/pacha/conf
+.. note::
+    Pacha will not be able to push files if this is not done!
 
-You are now all set!
+Pacha uses the --watch option to start tracking a directory. You can either be in the directory and run --watch or specify the path directly::
+
+    pacha --watch ~/bar 
+    adding foo.txt
+    foo.txt
+    running ssh alfredo@localhost "/usr/local/bin/hg init /tmp/pacha/hosts/mbp.local/bar"
+    running ssh alfredo@localhost "/usr/local/bin/hg -R /tmp/pacha/hosts/mbp.local/bar serve --stdio"
+    searching for changes
+    1 changesets found
+    remote: adding changesets
+    remote: adding manifests
+    remote: adding file changes
+    remote: added 1 changesets with 1 changes to 1 files
+
+Daemon
+--------
+Although you have configured Pacha and added some files, the daemon process is not running. The daemon will 
+help with the *automated* part of using Pacha.
+
+You can start the daemon either in the background or foreground:
+
+Background method (detaches from the terminal)::
+
+    pacha --daemon-start
+
+And in the foreground::
+
+    pacha --daemon-foreground
+
+

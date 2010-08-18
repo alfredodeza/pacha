@@ -93,6 +93,7 @@ def start(config, foreground=False):
 
     while True:
         try:
+            daemon_log.debug('Starting while True')
             db = database.Worker()
             repos = []
             for i in db.get_repos():

@@ -52,11 +52,12 @@
 <span id="getting-started"></span><h1>GettingStarted<a class="headerlink" href="#gettingstarted" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>You will be able to quickly get started with this guide. The main goal is to get Pacha installed and running and having you backing up your configuration files. More advanced Pacha functions are not covered here.</p>
+<p>The main goal is to get Pacha running and having you backing up your configuration files in as
+little steps as possible. More advanced Pacha functions are not covered here.</p>
 </div>
 <div class="section" id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<p>We have 3 dependencies, make sure you have them installed and ready when installing Pacha:</p>
+<p>We have 3 dependencies, make sure you have them installed and ready:</p>
 <blockquote>
 <ul class="simple">
 <li>SSH (versions 4.7p1 to 5.1p1)</li>
@@ -78,23 +79,61 @@
 <p>We recommend installing from the Python Package Index (PYPI):</p>
 <div class="highlight-python"><pre>pip install pacha</pre>
 </div>
-<p>But you can also install from the latest version of Pacha from the <a class="reference external" href="http://code.google.com/p/pacha">http://code.google.com/p/pacha</a> Uncompress the contents:</p>
-<div class="highlight-python"><pre>hg clone https://pacha.googlecode.com/hg/ pacha</pre>
-</div>
-<p>And run the following within the extracted directory:</p>
-<div class="highlight-python"><pre>python setup.py install</pre>
-</div>
 </div>
 </div>
 <div class="section" id="after-installation">
 <h1>After Installation<a class="headerlink" href="#after-installation" title="Permalink to this headline">¶</a></h1>
-<p>Remember to edit pacha.conf and run:
-pacha &#8211;watch /opt/pacha/conf
-This will keep track of all host specific configurations that will be needed
-when rebuilding.</p>
+<p>Have your SSH keys ready for the machines you want Pacha to talk to.</p>
+<p>Even if you plan to keep files in a single server, get your ssh keys for <tt class="docutils literal"><span class="pre">localhost</span></tt>.
+Pacha pushes information <strong>only</strong> via SSH.</p>
+<p>If this is a single machine, below is a quick example of getting SSH keys running:</p>
+<div class="highlight-python"><pre>cd ~/.ssh
+ssh-keygen
+[...]
+cat id_rsa.pub &gt;&gt; authorized_keys</pre>
+</div>
+<p>Verify it is working by logging in passwordless:</p>
+<div class="highlight-python"><pre>ssh localhost</pre>
+</div>
 <div class="section" id="edit-the-configuration-file">
 <h2>Edit the configuration file<a class="headerlink" href="#edit-the-configuration-file" title="Permalink to this headline">¶</a></h2>
-<p>After installing you need to edit the config file. Pacha needs to have this edited to be running properly. The config file should be located in: /opt/pacha/conf/pacha.conf</p>
+<p>After installing you need to edit the config file. Pacha needs to have  a configuration
+file added to be running properly. The config file can be located anywhere and can be
+called whatever you want. For a sample config file see <a class="reference internal" href="configuration.html#configuration"><em>Configuration</em></a></p>
+<p>If no configuration file is added, Pacha complains:</p>
+<div class="highlight-python"><pre>+----------------------------------------------------+
+|                 ** WARNING **                      |
+|                                                    |
+|  You have not set a configuration file for Pacha.  |
+|  To add a configuration file, run:                 |
+|                                                    |
+|    pacha --add-config /path/to/config              |
+|                                                    |
++----------------------------------------------------+</pre>
+</div>
+<p>Once you have a config file, run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pacha</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">config</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">config</span>
+</pre></div>
+</div>
+<p>If you want to remove it, you can:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pacha</span> <span class="o">--</span><span class="n">remove</span><span class="o">-</span><span class="n">config</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">config</span>
+</pre></div>
+</div>
+<p>And if you want to check the values that are being parsed, you can run:</p>
+<div class="highlight-python"><pre>pacha --config-values
+
+Configuration file: /Users/alfredo/vpacha/foo/pacha.conf
+
+log_level      = DEBUG
+ssh_port       = 22
+hosts_path     = /tmp/pacha/hosts
+host           = localhost
+frequency      = 60
+master         = True
+log_datefmt    = %H:%M:%S
+ssh_user       = alfredo
+log_format     = %(asctime)s %(levelname)s %(name)s %(message)s</pre>
+</div>
 </div>
 <div class="section" id="verify-username-in-hgrc">
 <h2>Verify username in HGRC<a class="headerlink" href="#verify-username-in-hgrc" title="Permalink to this headline">¶</a></h2>
@@ -114,8 +153,8 @@ But no username was supplied (see "hg help config")
 <p>Pacha can run as a single instance but we want to accomplish a good configuration backup setup. Master/Slave is what we are going to cover here.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="11%" />
-<col width="89%" />
+<col width="16%" />
+<col width="84%" />
 </colgroup>
 <tbody valign="top">
 <tr><td><tt class="docutils literal"><span class="pre">host</span></tt></td>
@@ -125,12 +164,15 @@ But no username was supplied (see "hg help config")
 <td>If you are running a different port other than 22 for SSH, edit this. No need to specify
 if you have not changed the standard port.</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">user</span></tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">ssh_user</span></tt></td>
 <td>The user Pacha will use to connect via SSH</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">path</span></tt></td>
-<td>If you are running a different port other than 22 for SSH, edit this. No need to
-specify if you have not changed the standard port.</td>
+<tr><td><tt class="docutils literal"><span class="pre">hosts_path</span></tt></td>
+<td><dl class="first last docutils">
+<dt>What is the path where the config files will be pushing to. e.g.:</dt>
+<dd><tt class="docutils literal"><span class="pre">/opt/hosts</span></tt></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -139,22 +181,44 @@ specify if you have not changed the standard port.</td>
 <p class="last">We will not cover the rebuilding process here. Again, the goal is to have Pacha backing up configuration files in this guide.</p>
 </div>
 </div>
-<div class="section" id="ssh-and-keys">
-<h2>SSH and Keys<a class="headerlink" href="#ssh-and-keys" title="Permalink to this headline">¶</a></h2>
-<p>Pacha is intended to be fully automated so you need to have your ssh keys associated with the user you set in the configuration file so it has read/write access to the location where Pacha is installed.</p>
-</div>
 <div class="section" id="tracking-configuration-files">
 <h2>Tracking Configuration Files<a class="headerlink" href="#tracking-configuration-files" title="Permalink to this headline">¶</a></h2>
-<p>First we need to create a directory where all the configuration files will be pushed. This is the way of &#8220;granting permissions&#8221; in the Pacha server. So in the master server run:</p>
+<p>First we need to create a directory where all the configuration files will be pushed.
+This is the way of &#8220;granting permissions&#8221; in the Pacha server. So in the master server run:</p>
+<div class="highlight-python"><pre>pacha --add-host my_hostname</pre>
 </div>
-<div class="section" id="sudo-pacha-add-host-hostname">
-<h2>sudo pacha &#8211;add-host hostname<a class="headerlink" href="#sudo-pacha-add-host-hostname" title="Permalink to this headline">¶</a></h2>
-<p>Replace &#8220;hostname&#8221; with the name of the machine you want to get configuration files from. NOTE: Pacha will not be able to push files if this is not done!</p>
-<p>Pacha uses the &#8211;watch option to start tracking a directory. Let&#8217;s follow the recommendation when we finished installing Pacha. You can either be in the directory and run &#8211;watch or specify the path directly:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">pacha</span> <span class="o">--</span><span class="n">watch</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">pacha</span><span class="o">/</span><span class="n">conf</span>
+<p>Replace <em>my_hostname</em> with the name of the machine you want to get configuration files from.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Pacha will not be able to push files if this is not done!</p>
+</div>
+<p>Pacha uses the &#8211;watch option to start tracking a directory. You can either be in the directory and run &#8211;watch or specify the path directly:</p>
+<div class="highlight-python"><pre>pacha --watch ~/bar
+adding foo.txt
+foo.txt
+running ssh alfredo@localhost "/usr/local/bin/hg init /tmp/pacha/hosts/mbp.local/bar"
+running ssh alfredo@localhost "/usr/local/bin/hg -R /tmp/pacha/hosts/mbp.local/bar serve --stdio"
+searching for changes
+1 changesets found
+remote: adding changesets
+remote: adding manifests
+remote: adding file changes
+remote: added 1 changesets with 1 changes to 1 files</pre>
+</div>
+</div>
+<div class="section" id="daemon">
+<h2>Daemon<a class="headerlink" href="#daemon" title="Permalink to this headline">¶</a></h2>
+<p>Although you have configured Pacha and added some files, the daemon process is not running. The daemon will
+help with the <em>automated</em> part of using Pacha.</p>
+<p>You can start the daemon either in the background or foreground:</p>
+<p>Background method (detaches from the terminal):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pacha</span> <span class="o">--</span><span class="n">daemon</span><span class="o">-</span><span class="n">start</span>
 </pre></div>
 </div>
-<p>You are now all set!</p>
+<p>And in the foreground:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pacha</span> <span class="o">--</span><span class="n">daemon</span><span class="o">-</span><span class="n">foreground</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -178,9 +242,8 @@ specify if you have not changed the standard port.</td>
 <li><a class="reference internal" href="#edit-the-configuration-file">Edit the configuration file</a></li>
 <li><a class="reference internal" href="#verify-username-in-hgrc">Verify username in HGRC</a></li>
 <li><a class="reference internal" href="#master-slave-approach">Master Slave approach</a></li>
-<li><a class="reference internal" href="#ssh-and-keys">SSH and Keys</a></li>
 <li><a class="reference internal" href="#tracking-configuration-files">Tracking Configuration Files</a></li>
-<li><a class="reference internal" href="#sudo-pacha-add-host-hostname">sudo pacha &#8211;add-host hostname</a></li>
+<li><a class="reference internal" href="#daemon">Daemon</a></li>
 </ul>
 </li>
 </ul>
