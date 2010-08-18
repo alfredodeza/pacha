@@ -57,30 +57,19 @@ But no username was supplied (see "hg help config")
       verbose = True"""
                 hg_log.error('No hgrc found with username')
                 sys.exit(1)
-          #  else:
-#
-#                try:
-#                    self.par.user
-#                    self.parse.host
-#                except AttributeError, error:
-#                    hg_log.error('config file not edited - aborting')
-#                    sys.stderr.write('config file not edited! or missing params- aborting\n')
-#                    sys.exit(1)
-        # testing functionality:
-        #if test:
-        #    self.parse.user = user
-        #    self.parse.path = '/tmp/remote_pacha'
-        #    self.parse.host = host
 
     def commit(self):
         """hg commit action, adding a message with the correct timestamp
         and information from pacha."""
         timestamp = strftime('%b %d %H:%M:%S')
         message = "pacha auto-commit: %s" % timestamp
-        repo = hg.repository(ui.ui(), self.path)
-        commands.commit(ui.ui(), repo=repo, message=message,
+        u = ui.ui()
+        u.pushbuffer()
+        repo = hg.repository(u, self.path)
+        commands.commit(u, repo=repo, message=message,
                 logfile=None, addremove=None, user=None, date=None)
         hg_log.debug('doing commit at %s' % self.path)
+        hg_log.debug(u.popbuffer())
 
     def hg_add(self, single=None):
         """Adds all files to Mercurial when the --watch options is passed
