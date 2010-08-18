@@ -158,7 +158,7 @@ run in the background, these options will help you manage the daemon")
            'info': logging.INFO
             }
     
-    level = levels.get(config['log_level'])
+    level = levels.get(config['log_level'].lower())
     log_format = config['log_format']
     datefmt = config['log_datefmt']
 
