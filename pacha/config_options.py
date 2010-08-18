@@ -53,13 +53,12 @@ def config_options(config=None):
             try:
                 configuration = config_defaults(converted_opts)
             except Exception, e:
-                log.config.error(e)
+                print "Couldn't map configuration: %s" % e
 
         except Exception, e:
             pass
-            log.config.error("couldn't map configuration: %s" % e)
+            print "Couldn't map configuration: %s" % e
 
-#    log.config.debug("valid full configuration returned")
     return configuration
 
 def config_defaults(config=None):

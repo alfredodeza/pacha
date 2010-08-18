@@ -33,7 +33,7 @@ def main():
     parser = OptionParser(description="""
 A systems configuration management engine
 """
-    ,version='0.2.0')
+    ,version='0.2.2')
 
     parser.add_option('--config-values', action="store_true",
             help="""Displays the current configuration values used""")
