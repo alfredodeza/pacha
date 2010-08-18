@@ -83,6 +83,5 @@ def config_defaults(config=None):
             config[key]
         except KeyError:
             config[key] = defaults[key]
-#    log.config.debug("returning basic configuration defaults")
     return config
 
