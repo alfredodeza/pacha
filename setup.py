@@ -11,7 +11,7 @@ setup(
     install_requires = ['supay>=0.0.6', 'mercurial==1.5.3'],
     entry_points = {
         'console_scripts': [
-            'pacha = pacha:main'
+            'pacha = pacha:main_'
             ]
         },
     include_package_data=True,

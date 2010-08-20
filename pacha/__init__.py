@@ -28,12 +28,25 @@ import hg, host, rebuild,database, permissions
 from pacha.config_options import config_options
 from pacha import daemon
 
+WARNING = """ 
+     +----------------------------------------------------+
+     |                 ** WARNING **                      |
+     |                                                    |
+     |  You have not set a configuration file for Pacha.  |
+     |  To add a configuration file, run:                 |
+     |                                                    |
+     |    pacha --add-config /path/to/config              |
+     |                                                    |
+     +----------------------------------------------------+
+"""
+ 
+
 def main():
     """All command line options happen here"""
     parser = OptionParser(description="""
 A systems configuration management engine
 """
-    ,version='0.2.2')
+    ,version='0.2.3')
 
     parser.add_option('--config-values', action="store_true",
             help="""Displays the current configuration values used""")
@@ -271,6 +284,141 @@ to a file"
             print "\nExiting nicely from Pacha"
             sys.exit(1)
 
-if __name__ == '__main__':
+class PachaCommands(object):
+    """A lot of complicated options can happen with Pacha, so 
+    it is easier if everything lives under a class rather than
+    the widely used main()"""
+
+    def __init__(self, argv=None):
+        if argv is None:
+            argv = sys.argv
+
+        self.parseArgs(argv)
+
+    def display_message(self, msg, std="out"):
+        if std == "out":
+            sys.stdout.write(msg)
+        else:
+            sys.stderr.write(msg)
+
+    def check_config(self):
+        # if any commands are run, check for a MASTER config file Location
+        db = database.Worker()
+        config_db = db.get_config_path()
+        config_file = None
+        try:
+            config_list = [i for i in db.get_config_path()]
+            config_file = config_list[0][0]
+            config = config_options(config_file)
+        except IndexError:
+            self.display_message(msg=WARNING, std="err")
+            sys.exit(1)
+ 
+
+    def parseArgs(self,argv):
+        parser = OptionParser(description="""
+A systems configuration management engine
+    """
+        ,version='0.2.3')
+
+        parser.add_option('--config-values', action="store_true",
+                help="""Displays the current configuration values used""")
+
+        parser.add_option('--add-config',
+                help="""Adds a path to a configuration file""")
+
+        parser.add_option('--remove-config', action="store_true",
+                help="""Removes the stored configuration file""")
+
+        parser.add_option('--add-host',
+                help="""Creates structure for saving host configs
+     only meant for Pacha server""")
+
+        parser.add_option('--watch', action="store_true",
+               help="Provide a path for Pacha to watch and keep track of")  
+
+        parser.add_option('--watch-single',
+               help="Provide a single file for Pacha to watch in a given\
+     directory. Everything else in the directory will be ignored.\
+     Also used to add more individual files to track within the same\
+     directory (e.g. like tracking .vimrc in $HOME)") 
+
+        # Daemon Group
+        daemon_group = OptionGroup(parser, "Daemon Options", "Pacha is able to\
+    run in the background, these options will help you manage the daemon")
+
+        daemon_group.add_option('--daemon-start', action='store_true',
+                help="Starts the Pacha daemon")
+
+        daemon_group.add_option('--daemon-stop', action='store_true',
+                help="Stops the Pacha daemon")
+
+        daemon_group.add_option('--daemon-status', action='store_true',
+                help="Checks the status of the Pacha daemon")
+
+        daemon_group.add_option('--daemon-foreground', action='store_true',
+                help="Checks the status of the Pacha daemon")
+
+        parser.add_option_group(daemon_group)
+
+        # Rebuilding Group
+        group = OptionGroup(parser, "Rebuilding Options", "When rebuilding\
+     a host, you will need to pass a few required options to Pacha so it can\
+     connect to a remote host via SSH and copy the needed files.")
+
+        group.add_option('--rebuild', action="store_true",
+                help="""Combined with other options it rebuilds the
+     given host with all tracked files. Doesn't take any arguments.""")
+
+        group.add_option('--host',
+                help="""Indicates the name of the host you want to rebuild""")
+
+        group.add_option('--ssh-server', 
+                help="""The server to connect to pull the files from""")
+
+        group.add_option('--ssh-user',
+                help="""User that authenticates to the Pacha server when 
+     rebuilding""")
+
+        parser.add_option_group(group)
+
+        options, arguments = parser.parse_args(argv)
+
+        if options.add_config:
+            db = database.Worker()
+            abspath = os.path.abspath(options.add_config)
+            db.add_config(abspath)
+            print "Configuration file added: %s" % abspath
+
+        if options.config_values:
+            try:
+                db = database.Worker()
+                config_list = [i for i in db.get_config_path()]
+                config_file = config_list[0][0]
+                config = config_options(config_file)
+                print "\nConfiguration file: %s\n" % config_file
+                for i in config.items():
+                    print "%-15s= %-4s" % (i[0], i[1])
+            except Exception, error:
+                print "Could not complete command: %s" % error 
+
+
+        if options.remove_config:
+            db = database.Worker()
+            db.remove_config()
+            print "Configuration file(s) removed"
+            sys.exit(0)
+
+        self.check_config()       
+
+        # Cleanest way to show the help menu if no options are given
+        if len(argv) == 1:
+            parser.print_help()
+
+
+
+main = PachaCommands
+
+def main_():
     main()
 
