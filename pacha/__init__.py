@@ -110,7 +110,84 @@ class PachaCommands(object):
         logging.basicConfig(level=level,
                 format=log_format,
                 datefmt=datefmt)
- 
+
+
+    def add_host(self, host):
+        try:
+            new = host.Host(host=host, 
+                    host_path=self.config['hosts_path'])
+            new.create()
+            print "Added host %s" % host
+        except Exception, error:
+            print "Could not complete command: %s" % error 
+
+
+    def watch(self, path):                
+                try:
+                    mercurial = hg.Hg(path=path, conf=self.config)
+                    mercurial.hgrc()
+                    # we do a first time clone:
+                    mercurial.clone()
+                    # add the path to repos table in database
+                    db = database.Worker()
+                    db.insert(path=path, type='dir')
+                    # now make sure we record permissions metadata
+                    meta = permissions.Tracker(path=path)
+                    meta.walker()
+                except Exception, error:
+                    print "Could not complete command: %s" % error 
+
+
+    def watch_single(self, s_file):
+        if os.path.isfile(s_file):
+
+            # can't pass a single file to hg.Hg so 
+            # convert it to file path without the file here
+            # whatever we receive (either a full path or a single
+            # file name 
+            abspath = os.path.abspath(s_file)
+
+            # now we need only the directory name:
+            dirname = os.path.dirname(abspath)
+
+            # get the abs_path and add '.hgignore' and make
+            # sure it does not exist, 
+            hgignore = dirname+'/.hgignore'
+
+            # permissions metadata
+            meta = permissions.Tracker(path=abspath)
+            meta.single_file()
+            if os.path.isfile(hgignore): # make sure we arent overwriting
+                # we are already watching unique files here
+                # so let's add the new guy and commit it
+                mercurial = hg.Hg(path=dirname, conf=self.config)
+                mercurial.hg_add(abspath)
+                mercurial.commit()
+
+            # if it does not exist then this should be the first 
+            # time this is being run here 
+            else:
+                mercurial = hg.Hg(path=dirname, conf=self.config)
+                # then ignore everything within the path
+                mercurial.hgignore()
+                mercurial.initialize()
+                mercurial.hg_add(single=abspath)
+                mercurial.commit()
+                mercurial.clone()
+                # at the end of everything we put the hgrc method in
+                mercurial.hgrc()
+
+            # now insert the whole path into the database to 
+            # check for it here. DB can figure out if
+            # it is a duplicate so no double checking
+            # before inserting
+            db = database.Worker()
+            db.insert(path=abspath, type='single')
+
+        else:
+            self.msg("You have provided a wrong or non-existent path\
+to a file", std="err")
+
 
     def parseArgs(self,argv):
         parser = OptionParser(description="""
@@ -193,117 +270,59 @@ A systems configuration management engine
             print "Configuration file(s) removed"
             sys.exit(0)
 
+        # important: only config options are allowed before 
+        # actually checking for valid conf files stored 
         self.config = self.check_config()       
 
         # Cleanest way to show the help menu if no options are given
         if len(argv) == 1:
             parser.print_help()
-
           
-            if options.daemon_start:
-                daemon.start(self.config)
+        if options.daemon_start:
+            daemon.start(self.config)
 
-            if options.daemon_stop:
-                daemon.stop()
+        if options.daemon_stop:
+            daemon.stop()
 
-            if options.daemon_foreground:
-                daemon.start(config=self.config, foreground=True)
+        if options.daemon_foreground:
+            daemon.start(config=self.config, foreground=True)
 
-            if options.add_host:
-                try:
-                    new = host.Host(host=options.add_host, 
-                            host_path=self.config['hosts_path'])
-                    new.create()
-                    print "Added host %s" % options.add_host
-                except Exception, error:
-                    print "Could not complete command: %s" % error 
+        if options.add_host:
+            self.add_host(options.add_host)
 
-            if options.watch:
-                try:
-                    # a hack to have ambiguous optparse behavior 
-                    if len(sys.argv) is 2: #no path
-                        path = os.getcwd()
-                    if len(sys.argv) >=3: #with path
-                        path = sys.argv[2]
-                    mercurial = hg.Hg(path=path, conf=self.config)
-                    mercurial.hgrc()
-                    # we do a first time clone:
-                    mercurial.clone()
-                    # add the path to repos table in database
-                    db = database.Worker()
-                    db.insert(path=path, type='dir')
-                    # now make sure we record permissions metadata
-                    meta = permissions.Tracker(path=path)
-                    meta.walker()
-                except Exception, error:
-                    print "Could not complete command: %s" % error 
+        if options.watch:
+            # a hack to have ambiguous optparse behavior 
+            if len(sys.argv) is 2: #no path
+                path = os.getcwd()
+            if len(sys.argv) >=3: #with path
+                path = sys.argv[2]
+            self.watch(path)
 
 
-            if options.watch_single:
-                if os.path.isfile(options.watch_single):
-                    # can't pass a single file to hg.Hg so 
-                    # convert it to file path without the file here
-                    # whatever we receive (either a full path or a single
-                    # file name 
-                    abspath = os.path.abspath(options.watch_single)
-                    # now we need only the directory name:
-                    dirname = os.path.dirname(abspath)
-                    # get the abs_path and add '.hgignore' and make
-                    # sure it does not exist, 
-                    hgignore = dirname+'/.hgignore'
-                    # permissions metadata
-                    meta = permissions.Tracker(path=abspath)
-                    meta.single_file()
-                    if os.path.isfile(hgignore): # make sure we arent overwriting
-                        # we are already watching unique files here
-                        # so let's add the new guy and commit it
-                        mercurial = hg.Hg(path=dirname, conf=self.config)
-                        mercurial.hg_add(abspath)
-                        mercurial.commit()
+        if options.watch_single:
+            self.watch_single(options.watch_single)
 
-                    # if it does not exist then this should be the first 
-                    # time this is being run here 
-                    else:
-                        mercurial = hg.Hg(path=dirname, conf=self.config)
-                        # then ignore everything within the path
-                        mercurial.hgignore()
-                        mercurial.initialize()
-                        mercurial.hg_add(single=abspath)
-                        mercurial.commit()
-                        mercurial.clone()
-                        #at the end of everything we put the hgrc method in
-                        mercurial.hgrc()
 
-                    # now insert the whole path into the database to 
-                    # check for it here. DB can figure out if
-                    # it is a duplicate so no double checking
-                    # before inserting
-                    db = database.Worker()
-                    db.insert(path=abspath, type='single')
 
-                else:
-                    print "You have provided a wrong or non-existent path\
-        to a file"
+        if options.rebuild and options.ssh_server and options.ssh_user\
+                and options.host:
+            print "SSH Server: \t\t%s" % options.ssh_server
+            print "SSH User: \t\t%s" % options.ssh_user
+            print "Host to rebuild: \t%s" % options.host
+            
+            try:
+                confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
 
-            if options.rebuild and options.ssh_server and options.ssh_user\
-                    and options.host:
-                print "SSH Server: \t\t%s" % options.ssh_server
-                print "SSH User: \t\t%s" % options.ssh_user
-                print "Host to rebuild: \t%s" % options.host
-                
-                try:
-                    confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
+                run = rebuild.Rebuild(options.ssh_server,
+                        options.ssh_user,
+                        options.host)
+                run.retrieve_files()
+                run.install()
+                run.replace_manager()
 
-                    run = rebuild.Rebuild(options.ssh_server,
-                            options.ssh_user,
-                            options.host)
-                    run.retrieve_files()
-                    run.install()
-                    run.replace_manager()
-
-                except KeyboardInterrupt:
-                    print "\nExiting nicely from Pacha"
-                    sys.exit(1)
+            except KeyboardInterrupt:
+                print "\nExiting nicely from Pacha"
+                sys.exit(0)
 
 
 
