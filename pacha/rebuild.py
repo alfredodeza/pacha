@@ -63,7 +63,7 @@ Check your settings and run --rebuild again."""
             sys.exit(1)
 
     def show_directories(self):
-        """Will do a recursive listing of file in a remote server"""
+        """Will do a recursive listing of files in a remote server"""
         command = "ssh %s find %s" % (self.server, self.source)
         run = Popen(command, shell=True, stdout=PIPE)
         for line in run.stdout.readlines():
