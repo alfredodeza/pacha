@@ -188,7 +188,8 @@ class PachaCommands(object):
 to a file", std="err")
 
 
-    def rebuild(self, server, hostname, dryrun=False, directories=False):
+    def rebuild(self, server, hostname, dryrun=False, 
+            directories=False, source_path):
         """
         server  = user@server
         host    = host to rebuild from (must exist in Master Pacha Server) 
@@ -351,7 +352,9 @@ commands as they would happen""")
                         source_path = options.source_path)
 
         if options.rebuild and options.source_path and options.show_directories:
-            self.redbuild(server = options.rebuild, directories = True)
+            self.redbuild(server = options.rebuild, 
+                    directories = True,
+                    source_path = options.source_path)
             
     
 
