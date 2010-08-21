@@ -24,9 +24,8 @@ import logging
 import os
 import sys
 from optparse import OptionParser, OptionGroup
-import hg, host, rebuild,database, permissions
 from pacha.config_options import config_options
-from pacha import daemon
+from pacha import daemon, hg, host, rebuild, database, permissions
 
 WARNING = """ 
      +----------------------------------------------------+
@@ -283,14 +282,16 @@ A systems configuration management engine
  different path""")
 
         group.add_option('--directory',
-                help="""Overrides the default destination of the files to a
- different path""")
+                help="""Specifies a single directory to retrieve from a remote
+ host instance of a Pacha server""")
 
-        group.add_option('--show-directories',
-                help="""Overrides the default destination of the files to a
- different path""")
+        group.add_option('--show-directories', action="store_true",
+                help="""Shows the available directories to retrieve from a
+ given host.""")
 
-
+        group.add_option('--dryrun', action="store_true",
+                help="""Doesn't *actually* do anything, just prints the 
+commands as they would happen""")
 
         parser.add_option_group(group)
 
