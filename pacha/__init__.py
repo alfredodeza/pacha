@@ -188,29 +188,31 @@ class PachaCommands(object):
 to a file", std="err")
 
 
-    def rebuild(self, server, user, host):
+    def rebuild(self, server, hostname, dryrun=False, directories=False):
         """
-        server  = SSH Server
-        user    = SSH User 
-        host    = Host to be rebuilt (must exist in Master Pacha Server)
+        server  = user@server
+        host    = host to rebuild from (must exist in Master Pacha Server) 
+        hostname    = Host to be rebuilt 
         """
-        print "SSH Server: %-15s" % server
-        print "SSH User: %-15s" % user
-        print "Host to rebuild: %-15s" % host
+
+        if not directories:
+            print "SSH Connection: %-15s" % server
+            print "Host to rebuild: %-15s" % hostname
+            
+            try:
+                confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
+                run = rebuild.Rebuild(server,
+                        host)
+                run.retrieve_files()
+                run.install()
+                run.replace_manager()
+
+            except KeyboardInterrupt:
+                print "\nExiting nicely from Pacha"
+                sys.exit(0)
+        if directories:
+
         
-        try:
-            confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
-            run = rebuild.Rebuild(server,
-                    user,
-                    host)
-            run.retrieve_files()
-            run.install()
-            run.replace_manager()
-
-        except KeyboardInterrupt:
-            print "\nExiting nicely from Pacha"
-            sys.exit(0)
-
 
     def parseArgs(self, argv):
         parser = OptionParser(description="""
@@ -263,23 +265,19 @@ A systems configuration management engine
      a host, you will need to pass a few required options to Pacha so it can\
      connect to a remote host via SSH and copy the needed files.")
 
-        group.add_option('--rebuild', action="store_true",
-                help="""Combined with other options it rebuilds the
-     given host with all tracked files. Doesn't take any arguments.""")
+        group.add_option('--rebuild',
+                help="""Receives user and host as arguments [user@host]""")
 
-        group.add_option('--host',
-                help="""Indicates the name of the host you want to rebuild""")
+        group.add_option('--source-path',
+                help="""Specify the absolute path where Pacha should retrieve\
+ file from""")
 
-        group.add_option('--ssh-server', 
-                help="""The server to connect to pull the files from""")
+        group.add_option('--port',
+                help="""Overrides default port 22 for SSH""")
 
-        group.add_option('--ssh-user',
-                help="""User that authenticates to the Pacha server when 
-     rebuilding""")
-
-        group.add_option('--destination',
+        group.add_option('--destination-path',
                 help="""Overrides the default destination of the files to a
- different path""")
+ different absolute path""")
 
         group.add_option('--directory',
                 help="""Specifies a single directory to retrieve from a remote
@@ -316,7 +314,8 @@ commands as they would happen""")
         # Cleanest way to show the help menu if no options are given
         if len(argv) == 1:
             parser.print_help()
-          
+         
+        # Deamon Stuff
         if options.daemon_start:
             daemon.start(self.config)
 
@@ -340,10 +339,21 @@ commands as they would happen""")
         if options.watch_single:
             self.watch_single(options.watch_single)
 
-        if options.rebuild and options.ssh_server and options.ssh_user\
-            and options.host:
-            self.rebuild(options.ssh_server, options.ssh_user, options.host)
+        # Rebuilding Stuff
+        if options.rebuild and options.host and options.source_path:
+            if options.dryrun:
+                self.rebuild(server = options.rebuild, 
+                        hostname = options.host,
+                        source_path = options.source_path)
+            else:
+                self.rebuild(server = options.rebuild, 
+                        hostname = options.host,
+                        source_path = options.source_path)
 
+        if options.rebuild and options.source_path and options.show_directories:
+            self.redbuild(server = options.rebuild, directories = True)
+            
+    
 
 main = PachaCommands
 

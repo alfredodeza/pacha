@@ -8,39 +8,49 @@ from subprocess import call
 import shutil
 from time import strftime
 
-#
-#class Rebuild(object):
-#    """Does all the rebuilding work when a host needs to be reconstructed 
-#    with Pacha. Minimal configurations come from pacha.conf and more complex
-#    executions come from the sh folder.
-#    All executions should be done with Super User powers.
-#    """
-#
-#    def __init__(self,
-#            server = None,
-#            server_user = None,
-#            hostname = None,
-#            ):
-#        self.server = server
-#        self.server_user = server_user
-#        self.hostname = hostname
-#
-#    def retrieve_files(self):
-#        """scp all the files we need to /tmp/pacha"""
-#        # this could probably be much better with a Mercurial Clone command
-#        command = "scp -r %s@%s:/opt/pacha/hosts/%s /tmp/" % (self.server_user,
-#                self.server, self.hostname)
-#        call(command, shell=True)
-#        # if for some reason the above failed let me know:
-#        host_copy = '/tmp/%s' % self.hostname
-#        if os.path.isdir(host_copy):
-#            pass # we are good
-#        else:
-#            print """Pacha was not able to retrieve the files from the 
-#SSH server provided.
-#Check your settings and run --rebuild again."""
-#            sys.exit(1)
-#
+
+class Rebuild(object):
+    """Does all the rebuilding work when a host needs to be reconstructed 
+    with Pacha. Minimal configurations come from pacha.conf and more complex
+    executions come from the sh folder.
+    All executions should be done with Super User powers.
+    """
+
+    def __init__(self,
+            server = None,
+            port = 22,
+            destination = '/tmp/pacha',
+            source = None,
+            hostname = None,
+            directory = None
+            ):
+        self.server = server
+        self.port = int(port)
+        self.destination = destination
+        self.source = source
+        self.directory = directory
+        self.hostname = hostname
+
+    def retrieve_files(self):
+        """scp all the files we need to /tmp"""
+        # this could probably be much better with a Mercurial Clone command
+        if not self.directory:
+            command = "scp -r -P %d %s:%s/%s %s" % (self.port, self.server,
+                    self.source, self.hostname, self.destination)
+        else:
+            command = "scp -r -P %d %s:%s/%s/%s %s" % (self.port, self.server,
+                    self.source, self.hostname, self.directory, self.destination)
+        call(command, shell=True)
+        # if for some reason the above failed let me know:
+        host_copy = '/tmp/%s' % self.hostname
+        if os.path.isdir(host_copy):
+            pass # we are good
+        else:
+            print """Pacha was not able to retrieve the files from the 
+SSH server provided.
+Check your settings and run --rebuild again."""
+            sys.exit(1)
+
 #    def update(self):
 #        """Do a simple update to apt so it won't complain about unreachable
 #        repositories but only if we have packages to install"""
