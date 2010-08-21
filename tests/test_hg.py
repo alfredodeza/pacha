@@ -16,6 +16,8 @@ class TestHg(unittest.TestCase):
 
     def setUp(self):
         """Will setup just once for all tests"""
+        if os.path.isdir('/tmp/test_pacha'):
+            shutil.rmtree('/tmp/test_pacha')
         os.mkdir('/tmp/test_pacha')
         config = open('/tmp/test_pacha/pacha.conf', 'w')
         config.write('[DEFAULT]\n')
