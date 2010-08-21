@@ -40,15 +40,39 @@ class TestRebuild(unittest.TestCase):
             shutil.rmtree('/tmp/test_pacha')
             shutil.rmtree('/tmp/remote_pacha')
             shutil.rmtree('/tmp/localhost')
+            shutil.rmtree('/tmp/single_dir')
         except OSError:
             pass # nevermind if you could not delte this guy
 
 
+    def test_retrieve_files_single(self):
+        """Gets a single directory from a remote host"""
+        os.makedirs('/tmp/remote_pacha/localhost/another_dir')
+        os.makedirs('/tmp/remote_pacha/localhost/single_dir')
+        remote_file = open('/tmp/remote_pacha/localhost/single_dir/remote.txt', 'w')
+        remote_file.write("remote file")
+        remote_file.close()
+        self.assertTrue(os.path.isfile('/tmp/remote_pacha/localhost/single_dir/remote.txt'))
+        server = "%s@%s" % (self.username, host.hostname()) 
+        run = rebuild.Rebuild(server=server,
+                        hostname='localhost', 
+                        source='/tmp/remote_pacha',
+                        directory='single_dir')
+        run.retrieve_files()
+        result = os.path.isfile('/tmp/localhost/single_dir/remote.txt')
+        line = open('/tmp/localhost/single_dir/remote.txt')
+        remote_line = line.readline()
+        self.assertEqual(remote_line, "remote file")
+        self.assertTrue(result)
+
     def test_retrieve_files_all(self):
-        """Gets files from a remote host"""
-        os.mkdir('/tmp/remote_pacha')
-        os.mkdir('/tmp/remote_pacha/localhost')
-        remote_file = open('/tmp/remote_pacha/localhost/remote.txt', 'w')
+        """Gets all files from a remote host"""
+        os.makedirs('/tmp/remote_pacha/localhost/etc')
+        os.mkdir('/tmp/remote_pacha/localhost/home')
+        remote_file = open('/tmp/remote_pacha/localhost/etc/etc.conf', 'w')
+        remote_file.write("remote second file")
+        remote_file.close()
+        remote_file = open('/tmp/remote_pacha/localhost/home/home.conf', 'w')
         remote_file.write("remote file")
         remote_file.close()
         server = "%s@%s" % (self.username, host.hostname()) 
@@ -56,11 +80,13 @@ class TestRebuild(unittest.TestCase):
                         hostname='localhost', 
                         source='/tmp/remote_pacha')
         run.retrieve_files()
-        result = os.path.isfile('/tmp/localhost/remote.txt')
-        line = open('/tmp/localhost/remote.txt')
+        result_1 = os.path.isfile('/tmp/localhost/etc/etc.conf')
+        result_2 = os.path.isfile('/tmp/localhost/home/home.conf')
+        line = open('/tmp/localhost/etc/etc.conf')
         remote_line = line.readline()
-        self.assertEqual(remote_line, "remote file")
-        self.assertTrue(result)
+        self.assertEqual(remote_line, "remote second file")
+        self.assertTrue(result_2)
+        self.assertTrue(result_1)
 
     
 

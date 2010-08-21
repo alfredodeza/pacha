@@ -43,6 +43,9 @@ class Rebuild(object):
                     self.source, self.hostname, self.destination)
             rebuild_log.debug(command)
         else:
+            if self.destination == '/tmp':
+                os.makedirs('/tmp/%s' % (self.hostname))
+                self.destination = '/tmp/%s/%s' % (self.hostname, self.directory) 
             rebuild_log.debug("Getting a single dir")
             command = "scp -r -P %d %s:%s/%s/%s %s" % (self.port, self.server,
                     self.source, self.hostname, self.directory, self.destination)
