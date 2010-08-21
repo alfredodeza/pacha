@@ -188,8 +188,8 @@ class PachaCommands(object):
 to a file", std="err")
 
 
-    def rebuild(self, server, hostname, dryrun=False, 
-            directories=False, source_path):
+    def rebuild(self, server=None, hostname=None, dryrun=False, 
+            directories=False, source_path=None):
         """
         server  = user@server
         host    = host to rebuild from (must exist in Master Pacha Server) 
@@ -211,9 +211,14 @@ to a file", std="err")
             except KeyboardInterrupt:
                 print "\nExiting nicely from Pacha"
                 sys.exit(0)
-        if directories:
 
-        
+        if directories:
+            try:
+                run = rebuild.Rebuild(server=server,
+                        source=source_path)
+                run.show_directories()
+            except Exception, error:
+                self.msg(str(error), std="err")
 
     def parseArgs(self, argv):
         parser = OptionParser(description="""
@@ -268,6 +273,10 @@ A systems configuration management engine
 
         group.add_option('--rebuild',
                 help="""Receives user and host as arguments [user@host]""")
+
+        group.add_option('--host',
+                help="""The host to rebuild from""")
+
 
         group.add_option('--source-path',
                 help="""Specify the absolute path where Pacha should retrieve\
@@ -352,7 +361,7 @@ commands as they would happen""")
                         source_path = options.source_path)
 
         if options.rebuild and options.source_path and options.show_directories:
-            self.redbuild(server = options.rebuild, 
+            self.rebuild(server = options.rebuild, 
                     directories = True,
                     source_path = options.source_path)
             

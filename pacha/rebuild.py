@@ -4,7 +4,7 @@ import os
 import sys
 import pwd
 import grp
-from subprocess import call
+from subprocess import call, Popen, PIPE
 import shutil
 from time import strftime
 
@@ -51,60 +51,14 @@ SSH server provided.
 Check your settings and run --rebuild again."""
             sys.exit(1)
 
-#    def update(self):
-#        """Do a simple update to apt so it won't complain about unreachable
-#        repositories but only if we have packages to install"""
-#        conf = '/tmp/%s/conf/pacha.conf' % self.hostname
-#        parse = confparser.Parse(conf)
-#        parse.options()
-#        try:
-#            parse.packages()
-#            cmd = "sudo apt-get update"
-#            call(cmd, shell=True)
-#            log.append(module='rebuild.update', 
-#                line="updated repositories via apt-get update")
-#        except AttributeError:
-#            log.append(module='rebuild.update',
-#                    line="no packages to install so no update performed")
-#
-#    def install(self):
-#        """Reads the config and install via apt-get any packages that have to 
-#        be in form of a list or a path"""
-#        conf = '/tmp/%s/conf/pacha.conf' % self.hostname
-#        parse = confparser.Parse(conf)
-#        parse.options()
-#        # do an update before everything:
-#        self.update()
-#        try:
-#            packages = parse.packages
-#            if type(packages) == type(list()): # we have a list 
-#                for package in packages:
-#                    log.append(module='rebuild.install', 
-#                            line="installing %s" % package)
-#                    command = "sudo apt-get -y install %s" % package
-#                    call(command, shell=True)
-#            else:
-#                # we have to be flexible and allow a path or a file name
-#                package_file = os.path.basename(package)
-#                package_file_path = '/tmp/%s/conf/%s' % (self.hostname, 
-#                        package_file)
-#                if os.path.isfile(package_file_path): # is it really there?
-#                    txt = open(package_file_path)
-#                    for line in txt.readlines():
-#                        package = line.split('\n')[0]
-#                        log.append(module='rebuild.install', 
-#                                line="installing %s" % package)
-#                        command = "sudo apt-get -y install %s" % package
-#                        call(command, shell=True)
-#                else:
-#                    sys.stderr.write("""Could not find a text file 
-#with packages in: %s\n""" % package_file_path)
-#        except AttributeError, error:
-#            log.append(module='rebuild.install', type='ERROR', 
-#                    line="%s" % error)
-#            sys.stderr.write("""No packages specified for installation 
-#in config\n""")
-#
+    def show_directories(self):
+        """Will do a recursive listing of file in a remote server"""
+        command = "ssh %s find %s" % (self.server, self.source)
+        run = Popen(command, shell=True, stdout=PIPE)
+        for line in run.stdout.readlines():
+            if not ".hg" in line:
+                print line.strip('\n')
+ 
 #    def replace_manager(self):
 #        """Depending on the database information for each path, you may or 
 #        may not have specific files you want to override. This manager method 
