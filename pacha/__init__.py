@@ -189,7 +189,31 @@ class PachaCommands(object):
 to a file", std="err")
 
 
-    def parseArgs(self,argv):
+    def rebuild(self, server, user, host):
+        """
+        server  = SSH Server
+        user    = SSH User 
+        host    = Host to be rebuilt (must exist in Master Pacha Server)
+        """
+        print "SSH Server: %-15s" % server
+        print "SSH User: %-15s" % user
+        print "Host to rebuild: %-15s" % host
+        
+        try:
+            confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
+            run = rebuild.Rebuild(server,
+                    user,
+                    host)
+            run.retrieve_files()
+            run.install()
+            run.replace_manager()
+
+        except KeyboardInterrupt:
+            print "\nExiting nicely from Pacha"
+            sys.exit(0)
+
+
+    def parseArgs(self, argv):
         parser = OptionParser(description="""
 A systems configuration management engine
     """
@@ -254,6 +278,20 @@ A systems configuration management engine
                 help="""User that authenticates to the Pacha server when 
      rebuilding""")
 
+        group.add_option('--destination',
+                help="""Overrides the default destination of the files to a
+ different path""")
+
+        group.add_option('--directory',
+                help="""Overrides the default destination of the files to a
+ different path""")
+
+        group.add_option('--show-directories',
+                help="""Overrides the default destination of the files to a
+ different path""")
+
+
+
         parser.add_option_group(group)
 
         options, arguments = parser.parse_args(argv)
@@ -267,7 +305,7 @@ A systems configuration management engine
         if options.remove_config:
             db = database.Worker()
             db.remove_config()
-            print "Configuration file(s) removed"
+            self.msg("Configuration file(s) removed")
             sys.exit(0)
 
         # important: only config options are allowed before 
@@ -298,32 +336,12 @@ A systems configuration management engine
                 path = sys.argv[2]
             self.watch(path)
 
-
         if options.watch_single:
             self.watch_single(options.watch_single)
 
-
-
         if options.rebuild and options.ssh_server and options.ssh_user\
-                and options.host:
-            print "SSH Server: \t\t%s" % options.ssh_server
-            print "SSH User: \t\t%s" % options.ssh_user
-            print "Host to rebuild: \t%s" % options.host
-            
-            try:
-                confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
-
-                run = rebuild.Rebuild(options.ssh_server,
-                        options.ssh_user,
-                        options.host)
-                run.retrieve_files()
-                run.install()
-                run.replace_manager()
-
-            except KeyboardInterrupt:
-                print "\nExiting nicely from Pacha"
-                sys.exit(0)
-
+            and options.host:
+            self.rebuild(options.ssh_server, options.ssh_user, options.host)
 
 
 main = PachaCommands
