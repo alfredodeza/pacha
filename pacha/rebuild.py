@@ -1,5 +1,6 @@
 """rebuilder that checks for permissions and locations in the datbase, 
 moves files from one places to the other and installs packages if needed"""
+import logging
 import os
 import sys
 import pwd
@@ -8,6 +9,8 @@ from subprocess import call, Popen, PIPE
 import shutil
 from time import strftime
 
+
+rebuild_log = logging.getLogger('pacha.rebuild')
 
 class Rebuild(object):
     """Does all the rebuilding work when a host needs to be reconstructed 
@@ -19,7 +22,7 @@ class Rebuild(object):
     def __init__(self,
             server = None,
             port = 22,
-            destination = '/tmp/pacha',
+            destination = '/tmp',
             source = None,
             hostname = None,
             directory = None
@@ -35,15 +38,20 @@ class Rebuild(object):
         """scp all the files we need to /tmp"""
         # this could probably be much better with a Mercurial Clone command
         if not self.directory:
+            rebuild_log.debug("Getting all files (not single dir)")
             command = "scp -r -P %d %s:%s/%s %s" % (self.port, self.server,
                     self.source, self.hostname, self.destination)
+            rebuild_log.debug(command)
         else:
+            rebuild_log.debug("Getting a single dir")
             command = "scp -r -P %d %s:%s/%s/%s %s" % (self.port, self.server,
                     self.source, self.hostname, self.directory, self.destination)
+            rebuild_log.debug(command)
         call(command, shell=True)
         # if for some reason the above failed let me know:
         host_copy = '/tmp/%s' % self.hostname
         if os.path.isdir(host_copy):
+            return True
             pass # we are good
         else:
             print """Pacha was not able to retrieve the files from the 

@@ -324,7 +324,10 @@ commands as they would happen""")
         # Cleanest way to show the help menu if no options are given
         if len(argv) == 1:
             parser.print_help()
-         
+  
+        # set logging 
+        self.set_logging()
+
         # Deamon Stuff
         if options.daemon_start:
             daemon.start(self.config)
