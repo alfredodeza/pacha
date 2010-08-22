@@ -28,7 +28,7 @@ from pacha.config_options import config_options
 from pacha import daemon, hg, rebuild, permissions
 
 
-from pacha.database import Worker
+from pacha.database import Worker, is_tracked
 from pacha.host import Host
 
 WARNING = """ 
@@ -127,19 +127,41 @@ class PachaCommands(object):
 
 
     def watch(self, path):                
-                try:
-                    mercurial = hg.Hg(path=path, conf=self.config)
-                    mercurial.hgrc()
-                    # we do a first time clone:
-                    mercurial.clone()
-                    # add the path to repos table in database
-                    db = Worker()
-                    db.insert(path=path, type='dir')
-                    # now make sure we record permissions metadata
-                    meta = permissions.Tracker(path=path)
-                    meta.walker()
-                except Exception, error:
-                    print "Could not complete command: %s" % error 
+        """
+        3 things need to happen:
+        *  track whatever we initially were asked for
+        *  check if this is the first time we are run (db not tracked)
+        *  track the db if it is not tracked or push it with the new dir
+        """
+        try:
+            mercurial = hg.Hg(path=path, conf=self.config)
+            mercurial.hgrc()
+            # we do a first time clone:
+            mercurial.clone()
+            # add the path to repos table in database
+            db = Worker()
+            db.insert(path=path, type='dir')
+            # now make sure we record permissions metadata
+            meta = permissions.Tracker(path=path)
+            meta.walker()
+        except Exception, error:
+            print "Could not complete command: %s" % error 
+
+        # db tracking
+        if not is_tracked():
+            try:
+                mercurial = hg.Hg(path=path, conf=self.config)
+                mercurial.hgrc()
+                # we do a first time clone:
+                mercurial.clone()
+                # add the path to repos table in database
+                db = Worker()
+                db.insert(path=path, type='dir')
+                # now make sure we record permissions metadata
+                meta = permissions.Tracker(path=path)
+                meta.walker()
+            except Exception, error:
+                print "Could not complete command: %s" % error 
 
 
     def watch_single(self, s_file):
