@@ -149,8 +149,12 @@ class PachaCommands(object):
 
         # db tracking
         if not is_tracked():
+            pacha_file = os.path.abspath(__file__)
+            pacha_dir = os.path.dirname(pacha_file)
+            db_dir = pacha_dir+'/db'
+
             try:
-                mercurial = hg.Hg(path=path, conf=self.config)
+                mercurial = hg.Hg(path=db_dir, conf=self.config)
                 mercurial.hgrc()
                 # we do a first time clone:
                 mercurial.clone()
