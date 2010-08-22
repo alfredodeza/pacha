@@ -25,7 +25,9 @@ import os
 import sys
 from optparse import OptionParser, OptionGroup
 from pacha.config_options import config_options
-from pacha import daemon, hg, host, rebuild, database, permissions
+from pacha import daemon, hg, host, rebuild, permissions
+
+from pacha.database import Worker
 
 WARNING = """ 
      +----------------------------------------------------+
@@ -44,7 +46,7 @@ class PachaCommands(object):
     it is easier if everything lives under a class rather than
     the widely used main()"""
 
-    def __init__(self, argv=None, test=False, parse=True):
+    def __init__(self, argv=None, test=False, parse=True, db=Worker()):
         if argv is None:
             argv = sys.argv
 
@@ -52,6 +54,8 @@ class PachaCommands(object):
         if parse:
             self.parseArgs(argv)
         self.config = {}
+        self.db = db
+
 
     def msg(self, msg, std="out"):
         if std == "out":
@@ -64,11 +68,10 @@ class PachaCommands(object):
 
     def check_config(self):
         # if any commands are run, check for a MASTER config file Location
-        db = database.Worker()
-        config_db = db.get_config_path()
+        config_db = self.db.get_config_path()
         config_file = None
         try:
-            config_list = [i for i in db.get_config_path()]
+            config_list = [i for i in self.db.get_config_path()]
             config_file = config_list[0][0]
             config = config_options(config_file)
             return config
@@ -77,7 +80,7 @@ class PachaCommands(object):
  
 
     def add_config(self, path):
-        db = database.Worker()
+        db = Worker()
         abspath = os.path.abspath(path)
         db.add_config(abspath)
         self.msg("Configuration file added: %s" % abspath)
@@ -85,7 +88,7 @@ class PachaCommands(object):
 
     def config_values(self):
         try:
-            db = database.Worker()
+            db = Worker()
             config_list = [i for i in db.get_config_path()]
             config_file = config_list[0][0]
             config = config_options(config_file)
@@ -128,7 +131,7 @@ class PachaCommands(object):
                     # we do a first time clone:
                     mercurial.clone()
                     # add the path to repos table in database
-                    db = database.Worker()
+                    db = Worker()
                     db.insert(path=path, type='dir')
                     # now make sure we record permissions metadata
                     meta = permissions.Tracker(path=path)
@@ -180,7 +183,7 @@ class PachaCommands(object):
             # check for it here. DB can figure out if
             # it is a duplicate so no double checking
             # before inserting
-            db = database.Worker()
+            db = Worker()
             db.insert(path=abspath, type='single')
 
         else:
@@ -312,7 +315,7 @@ commands as they would happen""")
             self.config_values()
 
         if options.remove_config:
-            db = database.Worker()
+            db = Worker()
             db.remove_config()
             self.msg("Configuration file(s) removed")
             sys.exit(0)

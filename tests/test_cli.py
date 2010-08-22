@@ -2,6 +2,7 @@ import unittest
 import sys
 
 import pacha 
+from pacha.config_options import config_defaults
 
 WARNING = """ 
      +----------------------------------------------------+
@@ -24,6 +25,14 @@ class MockSys(object):
         self.message = string 
         pass
 
+class MockDatabase(object):
+    """Avoids writing to an existing Database"""
+    def __init__(self, config_path):
+        self.value = ""
+        self.config_path = [(config_path,)]
+
+    def get_config_path(self):
+        return self.config_path
 
 class TestCommandLine(unittest.TestCase):
 
@@ -51,8 +60,11 @@ class TestCommandLine(unittest.TestCase):
         actual = sys.stderr.message 
         self.assertEqual(actual, "snap")
 
-    
-
+    def test_check_config(self):
+        Worker = MockDatabase(config_path="/pacha.conf") 
+        actual = pacha.PachaCommands(parse=False, db=Worker).check_config() 
+        expected = config_defaults()
+        self.assertEqual(actual, expected) 
 
 if __name__ == '__main__':
     unittest.main()

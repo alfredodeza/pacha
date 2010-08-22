@@ -46,7 +46,9 @@ class Watcher(object):
 
 class Runners(object):
     """Handles everything related to Mercurial calls"""
- 
+
+    # TODO This should belong in the HG Class, not here in the Daemon
+
     def __init__(self, location=None):
         self.location = location
         os.chdir(location) # change directory (HG bug)
