@@ -47,6 +47,7 @@ class PachaCommands(object):
     the widely used main()"""
 
     def __init__(self, argv=None, test=False, parse=True, db=Worker()):
+        self.db = db
         if argv is None:
             argv = sys.argv
 
@@ -54,7 +55,6 @@ class PachaCommands(object):
         if parse:
             self.parseArgs(argv)
         self.config = {}
-        self.db = db
 
 
     def msg(self, msg, std="out"):

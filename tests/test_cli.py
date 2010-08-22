@@ -36,6 +36,13 @@ class MockDatabase(object):
 
 class TestCommandLine(unittest.TestCase):
 
+    def test_init(self):
+        actual = pacha.PachaCommands(parse=False)
+        """argv=None, test=False, parse=True, db=Worker())"""
+        self.assertEqual(actual.test, False)
+        self.assertEqual(actual.db.__module__, 'pacha.database' )
+
+
     def test_warning_message(self):
         actual = pacha.WARNING
         expected = WARNING
