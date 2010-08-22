@@ -1,5 +1,5 @@
 include setup.py
 include distribute_setup.py
-include pacha/tests/*
-include docs/*
-include bin/*
+recursive-include tests *
+include pacha/db/.empty
+recursive-include docs *

@@ -128,10 +128,10 @@ Check your settings and run --rebuild again."""
         the directory gets pushed if not specified in the database"""
         rebuild_log.debug('repos path: %s' % path)
         tmp_dir = '/tmp/%s/' % self.hostname
-        rebuild_log('tmp_dir: %s' % tmp_dir)
+        rebuild_log.debug('tmp_dir: %s' % tmp_dir)
         # get list of directories in tmp and do a double loop
         base = os.path.basename(path)
-        rebuild_log('base dir: %s' % base)
+        rebuild_log.debug('base dir: %s' % base)
         if dirname == base: # we have a winner
             rebuild_log.debug('found path with matching dir: %s %s' % (dirname, 
                 base))
