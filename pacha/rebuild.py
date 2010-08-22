@@ -143,8 +143,7 @@ Check your settings and run --rebuild again."""
             try:
                 shutil.rmtree(tmp_dir+dirname+'/.hg')
                 shutil.copytree(tmp_dir+dirname, path)
-                log.append(module='rebuild.default_replace',
-                    line='moving %s to %s' % (tmp_dir+dirname, path))
+                rebuild_log.debug('moving %s to %s' % (tmp_dir+dirname, path))
                 # get ownership and permissions right walking the tree
                 self.walk(path)
                 # we also need to set permissions for the directory
