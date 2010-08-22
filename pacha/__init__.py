@@ -25,9 +25,11 @@ import os
 import sys
 from optparse import OptionParser, OptionGroup
 from pacha.config_options import config_options
-from pacha import daemon, hg, host, rebuild, permissions
+from pacha import daemon, hg, rebuild, permissions
+
 
 from pacha.database import Worker
+from pacha.host import Host
 
 WARNING = """ 
      +----------------------------------------------------+
@@ -116,7 +118,7 @@ class PachaCommands(object):
 
     def add_host(self, host):
         try:
-            new = host.Host(host=host, 
+            new = Host(host=host, 
                     host_path=self.config['hosts_path'])
             new.create()
             print "Added host %s" % host
@@ -205,10 +207,9 @@ to a file", std="err")
             
             try:
                 confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
-                run = rebuild.Rebuild(server,
-                        host)
+                run = rebuild.Rebuild(server=server,
+                        hostname=hostname, source=source_path)
                 run.retrieve_files()
-                run.install()
                 run.replace_manager()
 
             except KeyboardInterrupt:
