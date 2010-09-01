@@ -13,14 +13,17 @@ class Watcher(object):
  
     def __init__(self,
                  path=None):
-        self.path = os.path.normpath(path)
- 
+        self.dir_path = os.path.normpath(path)
+        self.path = os.path.normpath(path) 
+        if not os.path.isdir(path):
+            self.dir_path = os.path.dirname(path)
+
     def report(self):
         """Report if a file changed and the change has not been commited"""
         daemon_log.debug('watching for changes in %s' % self.path)
-        run = Runners(location=self.path)
+        run = Runners(location=self.dir_path)
         if run.modified() is True:
-            mercurial = hg.Hg(path=self.path)
+            mercurial = hg.Hg(path=self.dir_path)
             mercurial.commit()
             mercurial.push()
 
@@ -28,7 +31,8 @@ class Watcher(object):
         """Conect to the database for revision comparison
         and insert a revision hash from Mercurial if it 
         does not exist"""
-        run = Runners(location=self.path)
+    
+        run = Runners(location=self.dir_path)
         if rev == None:  #a path without a revision so insert one
             daemon_log.debug('No revision recorded in DB - so adding it')
             revision = run.hg_revision()[0]
@@ -80,12 +84,6 @@ def run_command(std, cmd):
         out = run.stdout.readlines()
     return out
 
-def check_path(file_path):
-    """We need to always return a path that ends with a directory """ 
-    if os.path.isdir(file_path):
-        return file_path
-    else:
-        return os.path.dirname(file_path)
 
 def start(config, foreground=False):
     if not foreground:
@@ -124,7 +122,7 @@ def start(config, foreground=False):
             for repo in repos:
                 # need to get an abspath from 'repo' and then pass it on
                 # else the daemon will error out
-                repo_path = check_path(repo[1])
+                repo_path = repo[1]
                 if os.path.exists(repo_path): # catches a path no longer there...
                     watch = Watcher(path=repo_path)
                     watch.report()
