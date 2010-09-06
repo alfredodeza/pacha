@@ -1,7 +1,7 @@
 from ConfigParser import ConfigParser
 from os.path import isfile
 
-def config_options(config=None):
+def options(config=None):
     """Instead of calling ConfigParser all over the place
     we gather, read, parse and return valid configuration
     values for any pacha log.utility here, config should
@@ -9,7 +9,7 @@ def config_options(config=None):
     always returns a dictionary with values"""
     
     # If all fails we will always have default values
-    configuration = config_defaults()
+    configuration = defaults()
 
     # Options comming from the config file have
     # longer names, hence the need to map them correctly
@@ -20,6 +20,7 @@ def config_options(config=None):
             'pacha.ssh.user':'ssh_user',
             'pacha.ssh.port':'ssh_port',
             'pacha.hosts.path': 'hosts_path',
+            'pacha.log.enable': 'log_enable',
             'pacha.log.level':'log_level',
             'pacha.log.format':'log_format',
             'pacha.log.datefmt':'log_datefmt'
@@ -27,12 +28,12 @@ def config_options(config=None):
 
     try:
         if config == None or isfile(config) == False:
-            configuration = config_defaults()
+            configuration = defaults()
             return configuration
 
     except TypeError:
         if type(config) is dict:
-            configuration = config_defaults(config)
+            configuration = defaults(config)
     
     else:
         try:
@@ -51,7 +52,7 @@ def config_options(config=None):
                 except KeyError:
                     pass # we will fill any empty values later with config_defaults
             try:
-                configuration = config_defaults(converted_opts)
+                configuration = defaults(converted_opts)
             except Exception, e:
                 print "Couldn't map configuration: %s" % e
 
@@ -61,7 +62,7 @@ def config_options(config=None):
 
     return configuration
 
-def config_defaults(config=None):
+def defaults(config=None):
     """From the config dictionary it checks missing values and
     adds the defaul ones for them if any"""
     if config == None:
@@ -73,6 +74,7 @@ def config_defaults(config=None):
             'ssh_user': 'root',
             'ssh_port': 22,
             'hosts_path': '/opt/pacha',
+            'log_enable': False,
             'log_level': 'DEBUG',
             'log_format': '%(asctime)s %(levelname)s %(name)s %(message)s',
             'log_datefmt' : '%H:%M:%S'
