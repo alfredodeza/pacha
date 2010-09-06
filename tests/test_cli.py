@@ -2,7 +2,7 @@ import unittest
 import sys
 
 import pacha 
-from pacha.config_options import config_defaults
+from pacha.config import defaults
 
 WARNING = """ 
      +----------------------------------------------------+
@@ -70,7 +70,7 @@ class TestCommandLine(unittest.TestCase):
     def test_check_config(self):
         Worker = MockDatabase(config_path="/pacha.conf") 
         actual = pacha.PachaCommands(parse=False, db=Worker).check_config() 
-        expected = config_defaults()
+        expected = defaults()
         self.assertEqual(actual, expected) 
 
 if __name__ == '__main__':

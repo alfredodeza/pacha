@@ -7,7 +7,7 @@ import unittest
 import getpass
 from subprocess import Popen, PIPE
 from pacha import host, hg
-from pacha.config_options import config_options
+from pacha.config import options
 
 
 class TestHg(unittest.TestCase):
@@ -48,7 +48,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
     	        path='/tmp/test_pacha', 
             	test=True, 
-                conf=config_options('/tmp/test_pacha/pacha.conf'))
+                conf=options('/tmp/test_pacha/pacha.conf'))
     
         mercurial.initialize()
         mercurial.hg_add()
@@ -65,7 +65,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+		        conf=options('/tmp/test_pacha/pacha.conf'))
     	mercurial.initialize()
         mercurial.hg_add()
         mercurial.commit()
@@ -79,7 +79,7 @@ class TestHg(unittest.TestCase):
         """We create a file and then we add it"""
         mercurial = hg.Hg(port=22, host=host.hostname(), user=self.username, 
 		path='/tmp/test_pacha', test=True,
-		conf=config_options('/tmp/test_pacha/pacha.conf'))
+		conf=options('/tmp/test_pacha/pacha.conf'))
         mercurial.initialize()
         mercurial.hg_add()
         out = Popen('hg st /tmp/test_pacha', shell=True, stdout=PIPE)
@@ -94,7 +94,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+		        conf=options('/tmp/test_pacha/pacha.conf'))
 
         mercurial.hgrc()
         actual = open('/tmp/test_pacha/.hg/hgrc').readlines()[1]
@@ -108,7 +108,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+		        conf=options('/tmp/test_pacha/pacha.conf'))
 
         mercurial.hgrc()
         self.assertFalse(mercurial.hgrc())
@@ -120,7 +120,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+		        conf=options('/tmp/test_pacha/pacha.conf'))
         mercurial.initialize()
         expected = os.path.isdir('/tmp/test_pacha/.hg')
         self.assertTrue(expected) 
@@ -135,7 +135,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+		        conf=options('/tmp/test_pacha/pacha.conf'))
 
 
         mercurial.hgrc()
@@ -161,7 +161,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+		        conf=options('/tmp/test_pacha/pacha.conf'))
 
         mercurial.initialize()
         expected = mercurial.validate()
@@ -174,7 +174,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+		        conf=options('/tmp/test_pacha/pacha.conf'))
 
         expected = mercurial.validate()
         self.assertFalse(expected)
@@ -189,7 +189,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=config_options('/tmp/test_pacha/pacha.conf'))
+		        conf=options('/tmp/test_pacha/pacha.conf'))
 
         mercurial.initialize()
         mercurial.hg_add()
