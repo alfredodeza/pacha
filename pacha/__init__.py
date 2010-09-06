@@ -24,7 +24,7 @@ import logging
 import os
 import sys
 from optparse import OptionParser, OptionGroup
-from pacha.config_options import config_options
+from pacha.config import options
 from pacha import daemon, hg, rebuild, permissions
 
 
@@ -75,7 +75,7 @@ class PachaCommands(object):
         try:
             config_list = [i for i in self.db.get_config_path()]
             config_file = config_list[0][0]
-            config = config_options(config_file)
+            config = options(config_file)
             return config
         except IndexError:
             self.msg(msg=WARNING, std="err")
@@ -93,7 +93,7 @@ class PachaCommands(object):
             db = Worker()
             config_list = [i for i in db.get_config_path()]
             config_file = config_list[0][0]
-            config = config_options(config_file)
+            config = options(config_file)
             print "\nConfiguration file: %s\n" % config_file
             for i in config.items():
                 print "%-15s= %-4s" % (i[0], i[1])
@@ -102,6 +102,9 @@ class PachaCommands(object):
 
 
     def set_logging(self):
+        enabled = self.config['log_enable']
+        log_path = self.config['log_path']
+
         levels = {
                 'debug': logging.DEBUG,
                'info': logging.INFO
@@ -115,6 +118,8 @@ class PachaCommands(object):
                 format=log_format,
                 datefmt=datefmt)
 
+        if not enabled and log_path is None:
+            logging.disable(logging.CRITICAL)
 
     def add_host(self, host):
         try:

@@ -21,6 +21,7 @@ def options(config=None):
             'pacha.ssh.port':'ssh_port',
             'pacha.hosts.path': 'hosts_path',
             'pacha.log.enable': 'log_enable',
+            'pacha.log.path' : 'log_path',
             'pacha.log.level':'log_level',
             'pacha.log.format':'log_format',
             'pacha.log.datefmt':'log_datefmt'
@@ -75,6 +76,7 @@ def defaults(config=None):
             'ssh_port': 22,
             'hosts_path': '/opt/pacha',
             'log_enable': False,
+            'log_path': None,
             'log_level': 'DEBUG',
             'log_format': '%(asctime)s %(levelname)s %(name)s %(message)s',
             'log_datefmt' : '%H:%M:%S'

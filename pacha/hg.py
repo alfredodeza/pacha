@@ -9,7 +9,7 @@ import sys
 from time import strftime
 from mercurial import commands, ui, hg
 
-from pacha.config_options import config_defaults
+from pacha.config import defaults
 from pacha.host import hostname
 
 hg_log = logging.getLogger('pacha.hg')
@@ -22,7 +22,7 @@ class Hg(object):
             host = None,
             user = None,
             path = None,
-            conf = config_defaults(),
+            conf = defaults(),
             log = True,
             test = False
             ):
