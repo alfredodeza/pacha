@@ -31,6 +31,19 @@ from pacha import daemon, hg, rebuild, permissions
 from pacha.database import Worker, is_tracked
 from pacha.host import Host
 
+CONFIG_GONE = """
+    +-----------------------------------------------------+
+    |                   ** WARNING **                     |
+    |                                                     |
+    |  The config file supplied does not exist. Try       |
+    |  adding a new valid path by running:                |
+    |                                                     |      
+    |    pacha --add-config /path/to/config               |
+    |                                                     | 
+    +-----------------------------------------------------+
+"""
+
+
 WARNING = """ 
      +----------------------------------------------------+
      |                 ** WARNING **                      |
@@ -93,10 +106,14 @@ class PachaCommands(object):
             db = Worker()
             config_list = [i for i in db.get_config_path()]
             config_file = config_list[0][0]
-            config = options(config_file)
-            print "\nConfiguration file: %s\n" % config_file
-            for i in config.items():
-                print "%-15s= %-4s" % (i[0], i[1])
+            if os.path.isfile(config_file):
+                config = options(config_file)
+                print "\nConfiguration file: %s\n" % config_file
+                for i in config.items():
+                    print "%-15s= %-4s" % (i[0], i[1])
+            else:
+                print "\nConfiguration file: %s\n" % config_file
+                print CONFIG_GONE 
         except Exception, error:
             print "Could not complete command: %s" % error 
 
@@ -259,7 +276,7 @@ to a file", std="err")
         parser = OptionParser(description="""
 A systems configuration management engine
     """
-        ,version='0.2.3')
+        ,version='0.2.4')
 
         parser.add_option('--config-values', action="store_true",
                 help="""Displays the current configuration values used""")
