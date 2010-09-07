@@ -8,7 +8,7 @@ setup(
     name = "pacha",
     version = "0.2.4",
     packages = ['pacha'],
-    install_requires = ['supay>=0.0.6', 'mercurial==1.5.3'],
+    install_requires = ['supay>=0.0.7', 'mercurial==1.5.3'],
     entry_points = {
         'console_scripts': [
             'pacha = pacha:main_'

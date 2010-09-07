@@ -373,6 +373,9 @@ commands as they would happen""")
         if options.daemon_foreground:
             daemon.start(config=self.config, foreground=True)
 
+        if options.daemon_status:
+            daemon.status()
+
         if options.add_host:
             self.add_host(options.add_host)
 

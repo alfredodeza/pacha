@@ -147,3 +147,7 @@ def stop():
     daemon.stop()
     daemon_log.debug("daemon stopped")
 
+def status():
+    daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+    daemon.status()
+
