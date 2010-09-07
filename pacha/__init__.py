@@ -106,14 +106,12 @@ class PachaCommands(object):
             db = Worker()
             config_list = [i for i in db.get_config_path()]
             config_file = config_list[0][0]
-            if os.path.isfile(config_file):
-                config = options(config_file)
-                print "\nConfiguration file: %s\n" % config_file
-                for i in config.items():
-                    print "%-15s= %-4s" % (i[0], i[1])
-            else:
-                print "\nConfiguration file: %s\n" % config_file
+            if not os.path.isfile(config_file):
                 print CONFIG_GONE 
+            config = options(config_file)
+            print "\nConfiguration file: %s\n" % config_file
+            for i in config.items():
+                print "%-15s= %-4s" % (i[0], i[1])
         except Exception, error:
             print "Could not complete command: %s" % error 
 
