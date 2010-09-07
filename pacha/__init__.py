@@ -133,7 +133,7 @@ class PachaCommands(object):
                 format=log_format,
                 datefmt=datefmt)
 
-        if not enabled and log_path is None:
+        if not enabled or log_path is None:
             logging.disable(logging.CRITICAL)
 
     def add_host(self, host):

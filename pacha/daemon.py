@@ -87,7 +87,13 @@ def run_command(std, cmd):
 
 def start(config, foreground=False):
     if not foreground:
-        daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+        log_path = config['log_path']
+        log_enable = config['log_enable']
+        if not log_enable or log_path is None:
+            daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+        if log_enable and log_enable:
+            daemon = supay.Daemon(name='pacha', catch_all_log=log_path, pid_dir=os.path.dirname(__file__))
+
         daemon.start()
     daemon_log.debug('Daemon started')
 
@@ -145,7 +151,6 @@ def start(config, foreground=False):
 def stop():
     daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
     daemon.stop()
-    daemon_log.debug("daemon stopped")
 
 def status():
     daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
