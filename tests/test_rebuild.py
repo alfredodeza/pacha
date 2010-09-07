@@ -88,28 +88,6 @@ class TestRebuild(unittest.TestCase):
         self.assertTrue(result_2)
         self.assertTrue(result_1)
 
-    def test_show_directories(self):
-        """Get a list of files in the remote server"""
-        os.makedirs('/tmp/remote_pacha/localhost/etc')
-        os.mkdir('/tmp/remote_pacha/localhost/home')
-        remote_file = open('/tmp/remote_pacha/localhost/etc/etc.conf', 'w')
-        remote_file.write("remote second file")
-        remote_file.close()
-        remote_file = open('/tmp/remote_pacha/localhost/home/home.conf', 'w')
-        remote_file.write("remote file")
-        remote_file.close()
-        server = "%s@%s" % (self.username, host.hostname()) 
-        sys.stdout = MockSys()
-        run = rebuild.Rebuild(server=server,
-                        source='/tmp/remote_pacha')
-        run.show_directories()
-        actual = sys.stdout.message
-        expected = ['/tmp/remote_pacha', '\n', '/tmp/remote_pacha/localhost', 
-                '\n', '/tmp/remote_pacha/localhost/etc', '\n', 
-                '/tmp/remote_pacha/localhost/etc/etc.conf', '\n', 
-                '/tmp/remote_pacha/localhost/home', '\n', 
-                '/tmp/remote_pacha/localhost/home/home.conf', '\n']
-        self.assertEqual(actual, expected) 
 
 if __name__ == '__main__':
     unittest.main()

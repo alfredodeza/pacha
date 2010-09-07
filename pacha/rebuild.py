@@ -38,6 +38,7 @@ class Rebuild(object):
     def retrieve_files(self):
         """scp all the files we need to /tmp"""
         # this could probably be much better with a Mercurial Clone command
+        os.chdir('/') # avoids being in a dir that will no longer exist
         if not self.directory:
             rebuild_log.debug("Getting all files (not single dir)")
             command = "scp -r -P %d %s:%s/%s %s" % (self.port, self.server,
@@ -62,14 +63,6 @@ class Rebuild(object):
 SSH server provided.
 Check your settings and run --rebuild again."""
             sys.exit(1)
-
-    def show_directories(self):
-        """Will do a recursive listing of files in a remote server"""
-        command = "ssh %s find %s" % (self.server, self.source)
-        run = Popen(command, shell=True, stdout=PIPE)
-        for line in run.stdout.readlines():
-            if not ".hg" in line:
-                print line.strip('\n')
 
     def replace_manager(self):
         """Depending on the database information for each path, you may or 
