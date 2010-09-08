@@ -43,7 +43,7 @@ class Watcher(object):
             revision = run.hg_revision()[0]
             if rev != revision:
                 daemon_log.debug('found a new revision: %s at %s' % (rev,self.path))
-                mercurial = hg.Hg(path=self.path)
+                mercurial = hg.Hg(path=self.dir_path)
                 mercurial.push()
                 db = database.Worker()
                 db.update_rev(self.path, revision) 
