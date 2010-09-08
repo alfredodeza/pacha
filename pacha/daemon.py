@@ -84,6 +84,19 @@ def run_command(std, cmd):
         out = run.stdout.readlines()
     return out
 
+def frecuency(seconds):
+    """Deal with frecuency and thresholds"""
+    try:
+        freq = int(seconds)
+        if freq < 10:
+            freq = 60
+    except ValueError: # if we do not get a number
+        freq = 60
+    except Exception:  # we catch anything always
+        freq = 60
+    
+    return freq 
+
 
 def start(config, foreground=False):
     if not foreground:
@@ -95,25 +108,15 @@ def start(config, foreground=False):
             daemon = supay.Daemon(name='pacha', catch_all_log=log_path, pid_dir=os.path.dirname(__file__))
 
         daemon.start()
-    daemon_log.debug('Daemon started')
+        daemon_log.debug('Daemon started')
 
     while True:
         try:
-            daemon_log.debug('Starting while True')
             db = database.Worker()
-            repos = []
-            for i in db.get_repos():
-                repos.append(i)
-            db.closedb()
             daemon_log.debug('reading repos from database')
-            try:
-                freq = int(config['frequency'])
-                if freq < 10:
-                    freq = 60
-            except ValueError: # if we do not get a number
-                freq = 60
-            except AttributeError:
-                freq = 60
+            repos = [i for i in db.get_repos()]
+            db.closedb()
+            freq = frecuency(config['frequency'])
             try:
                 master = config['master']
                 if master == 'True':
@@ -124,8 +127,8 @@ def start(config, foreground=False):
                 # but annoying if you see this INFO all over
                 # your log files, so nothing to see here
                 pass
-                daemon_log.debug('looping over repos in db')
             for repo in repos:
+                daemon_log.debug('looping over repos in db')
                 # need to get an abspath from 'repo' and then pass it on
                 # else the daemon will error out
                 repo_path = repo[1]
@@ -136,7 +139,7 @@ def start(config, foreground=False):
                 else:
                     pass
                     daemon_log.warning('path %s does not exist' % repo_path)
-            daemon_log.debug('daemon going to sleep')
+            daemon_log.debug('daemon going to sleep for %s seconds' % freq)
             time.sleep(freq)
 
         except KeyboardInterrupt:
