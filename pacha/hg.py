@@ -11,8 +11,21 @@ from mercurial import commands, ui, hg
 
 from pacha.config import defaults
 from pacha.host import hostname
+from pacha.util import run_command
 
 hg_log = logging.getLogger('pacha.hg')
+
+HGRC_ERROR =  """
+Pacha searched for a Mercurial username in the $HOME directory
+and /etc/mercurial/hgrc but could not find one.
+Mercurial needs a username provided:
+But no username was supplied (see "hg help config")
+      [ui]
+      username = Firstname Lastname <firstname.lastname@example.net>
+      verbose = True
+"""
+
+
 
 class Hg(object):
     """Does local commits and pushes to a central Pacha Master location"""
@@ -49,14 +62,7 @@ class Hg(object):
             sys.exit(1)
         if not test:
             if hg_user() is False:
-                print """
-Pacha searched for a Mercurial username in the $HOME directory
-and /etc/mercurial/hgrc but could not find one.
-Mercurial needs a username provided:
-But no username was supplied (see "hg help config")
-      [ui]
-      username = Firstname Lastname <firstname.lastname@example.net>
-      verbose = True"""
+                print HGRC_ERROR 
                 hg_log.error('No hgrc found with username')
                 sys.exit(1)
 
@@ -159,6 +165,24 @@ But no username was supplied (see "hg help config")
         ignore = open(self.path+'/.hgignore', 'w')
         ignore.write("syntax: glob\n*\n")
         ignore.close
+
+    def is_modified(self):
+        """Checks if a file has been modified and not commited"""
+        out = run_command(std="stdout", cmd="hg st")
+        for line in out:
+            file_name = line[2:].split('\n')[0] # get a nice file name
+            if line.startswith('M'):
+                hg_log.debug('found modified file: %s' % file_name)
+                return True
+            else:
+                return False
+                hg_log.debug('no changes with: %s' % file_name)
+
+    def revision(self):
+        """Gets the revision ID from the path"""
+        changeset = run_command(std="stdout", cmd="hg head")[0]
+        return changeset[-13:].split('\n')
+
 
 def update(hosts_path):
     """Updates a mercurial repository pluging in directly into Mercurial

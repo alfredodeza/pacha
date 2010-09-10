@@ -1,7 +1,6 @@
 import os
 import sys
 import time
-from subprocess import Popen, PIPE
 import supay
 from pacha import hg, database
 import logging
@@ -18,29 +17,34 @@ class Watcher(object):
         if not os.path.isdir(path):
             self.dir_path = os.path.dirname(path)
 
+        self.mercurial = hg.Hg(path=self.dir_path)
+
     def report(self):
         """Report if a file changed and the change has not been commited"""
         daemon_log.debug('watching for changes in %s' % self.path)
-        run = Runners(location=self.dir_path)
-        if run.modified() is True:
-            mercurial = hg.Hg(path=self.dir_path)
-            mercurial.commit()
-            mercurial.push()
+        #run = Runners(location=self.dir_path)
+        #if run.modified() is True:
+        if self.mercurial.is_modified():
+            #mercurial = hg.Hg(path=self.dir_path)
+            self.mercurial.commit()
+            self.mercurial.push()
 
     def revision_compare(self, path, rev):
         """Conect to the database for revision comparison
         and insert a revision hash from Mercurial if it 
         does not exist"""
     
-        run = Runners(location=self.dir_path)
+        #run = Runners(location=self.dir_path)
         if rev == None:  #a path without a revision so insert one
             daemon_log.debug('No revision recorded in DB - so adding it')
-            revision = run.hg_revision()[0]
+            #revision = run.hg_revision()[0]
+            revision = self.mercurial.revision()[0]
             db = database.Worker()
             db.update_rev(self.path, revision)
             daemon_log.debug('added revision %s for path %s' % (revision, self.path))
         else: # we have a hash there so:
-            revision = run.hg_revision()[0]
+            #revision = run.hg_revision()[0]
+            revision = self.mercurial.revision()[0]
             if rev != revision:
                 daemon_log.debug('found a new revision: %s at %s' % (rev,self.path))
                 mercurial = hg.Hg(path=self.dir_path)
@@ -48,41 +52,6 @@ class Watcher(object):
                 db = database.Worker()
                 db.update_rev(self.path, revision) 
 
-class Runners(object):
-    """Handles everything related to Mercurial calls"""
-
-    # TODO This should belong in the HG Class, not here in the Daemon
-
-    def __init__(self, location=None):
-        self.location = location
-        os.chdir(location) # change directory (HG bug)
-
-    def hg_revision(self):
-        """Gets the revision ID from the path"""
-        changeset = run_command(std="stdout", cmd="hg head")[0]
-        return changeset[-13:].split('\n')
-
-    def modified(self):
-        """Checks if a file has been modified and not commited"""
-        out = run_command(std="stdout", cmd="hg st")
-        for line in out:
-            file_name = line[2:].split('\n')[0] # get a nice file name
-            if line.startswith('M'):
-                daemon_log.debug('found modified file: %s' % file_name)
-                return True
-            else:
-                return False
-                daemon_log.debug('no changes with: %s' % file_name)
-
-def run_command(std, cmd):
-    """Runs a command via Popen"""
-    if std == "stderr":
-        run = Popen(cmd, shell=True, stderr=PIPE)
-        out = run.stderr.readlines()
-    if std == "stdout":
-        run = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        out = run.stdout.readlines()
-    return out
 
 def frecuency(seconds):
     """Deal with frecuency and thresholds"""
