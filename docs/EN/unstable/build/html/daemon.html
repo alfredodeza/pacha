@@ -67,7 +67,7 @@ do this automatically in your environment.</p>
 # Licence: MIT
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/opt/pacha/lib/daemon/pachad
+DAEMON=/usr/bin/pacha
 NAME=pacha
 DESC="Pacha daemon"
 LOGDIR=/var/log/pacha.log
@@ -76,13 +76,13 @@ test -f $DAEMON || exit 0
 
 case "$1" in
   start)
-    $DAEMON --start
+    $DAEMON --daemon-start
     ;;
   stop)
-    $DAEMON --stop
+    $DAEMON --daemon-stop
     ;;
   restart|force-reload)
-    $DAEMON --stop &amp;&amp; $DAEMON --start
+    $DAEMON --daemon-stop &amp;&amp; $DAEMON --daemon-start
 
     ;;
   *)
@@ -94,6 +94,29 @@ esac
 
 exit 0</pre>
 </div>
+<div class="section" id="foreground">
+<h2>Foreground<a class="headerlink" href="#foreground" title="Permalink to this headline">¶</a></h2>
+<p>The daemon process can also run on the foreground. This will effectively output all information to the
+terminal and the daemon itself will never detach from the console.</p>
+<p>Having a <tt class="docutils literal"><span class="pre">foreground</span></tt> option enables a user to be able to run Pacha with tools such as
+<a class="reference external" href="http://supervisord.org/">Supervisor</a> where the daemonization process is taken care of.</p>
+<p>To exit from the foreground process you can issue a <tt class="docutils literal"><span class="pre">KeyboardInterrupt</span></tt> by doing <tt class="docutils literal"><span class="pre">Ctrl-C</span></tt></p>
+<p>It is safe to exit from the foreground process that way.</p>
+</div>
+<div class="section" id="daemon-status">
+<h2>Daemon Status<a class="headerlink" href="#daemon-status" title="Permalink to this headline">¶</a></h2>
+<p>A nice way to tell if the Pacha daemon is running, is to issue the <tt class="docutils literal"><span class="pre">--daemon-status</span></tt> command.
+What this does, is to check the <em>PID</em> file where the process ID is normally stored. If the file
+is not found (this usually is the case when the process is not running) or if the PID that is in a file
+is no longer there a message displays the information about it.</p>
+</div>
+<div class="section" id="permissions">
+<h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
+<p>No <tt class="docutils literal"><span class="pre">root</span></tt> permissions are needed in order to run Pacha processes. However, when you are trying to
+control files that have higher permissions than the user you are trying to run the Pacha daemon with, you
+might get into a situation where the daemon can&#8217;t interact with that file because of lack of permissions.</p>
+<p>Try starting the daemon with enough permissions to work with the files you want.</p>
+</div>
 </div>
 
 
@@ -102,6 +125,16 @@ exit 0</pre>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Daemonization</a><ul>
+<li><a class="reference internal" href="#foreground">Foreground</a></li>
+<li><a class="reference internal" href="#daemon-status">Daemon Status</a></li>
+<li><a class="reference internal" href="#permissions">Permissions</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="getting_started.html"
                         title="previous chapter">GettingStarted</a></p>
