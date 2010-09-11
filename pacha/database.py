@@ -7,6 +7,42 @@ FILE_CWD =  os.path.abspath(__file__)
 FILE_DIR = os.path.dirname(FILE_CWD)
 DB_FILE = FILE_DIR+'/db/pacha.db'
 
+
+CONFIG_TABLE = """CREATE TABLE config(
+    path            TEXT, 
+    frequency       INT, 
+    master          BOOLEAN, 
+    ssh_user        VARCHAR(32),
+    ssh_port        INT,
+    hosts_path      TEXT,
+    hg_autocorrect  BOOLEAN,
+    log_enable      BOOLEAN,
+    log_path        BOOLEAN,
+    log_level       VARCHAR(12),
+    log_format      TEXT,
+    log_datefmt     TEXT 
+)"""
+
+
+REPOS_TABLE = """CREATE TABLE repos(
+    id              integer primary key, 
+    path            TEXT,  
+    permissions     TEXT, 
+    type            TEXT, 
+    revision        TEXT
+)"""
+
+
+METADATA_TABLE = """CREATE TABLE metadata(
+    id          integer primary key, 
+    path        TEXT,
+    owner       TEXT, 
+    grp         TEXT, 
+    permissions INT, 
+    ftype       TEXT
+)""" #sqlite does not like 'group'
+
+
 def is_tracked():
     """Is this database being tracked?"""
     hg_dir = FILE_DIR+'/db/.hg'
@@ -26,15 +62,10 @@ class Worker(object):
             self.c = self.conn.cursor()
         else:
             self.conn = sqlite3.connect(self.db)
-            table = """CREATE TABLE repos(id integer primary key, path TEXT, 
- permissions TEXT, type TEXT, revision TEXT)"""
-            table2 = """CREATE TABLE metadata(id integer primary key, path TEXT,
- owner TEXT, grp TEXT, permissions INT, ftype TEXT)""" #sqlite does not like 'group'
-            table3 = """CREATE TABLE config(path TEXT)"""
             self.c = self.conn.cursor()
-            self.c.execute(table)
-            self.c.execute(table2)
-            self.c.execute(table3)
+            self.c.execute(REPOS_TABLE)
+            self.c.execute(METADATA_TABLE)
+            self.c.execute(CONFIG_TABLE)
             self.conn.commit()
 
 
@@ -109,6 +140,7 @@ class Worker(object):
         create = "CREATE TABLE config(path TEXT)"
         self.c.execute(drop)
         self.c.execute(create)
+
 
     def get_config_path(self):
         """Returns the first entry for the config path"""
