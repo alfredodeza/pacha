@@ -1,10 +1,7 @@
 """Manages storing a host config file, like locations and creating directory 
 structures."""
 
-import logging
 import os
-
-host_log = logging.getLogger('pacha.host')
 
 class Host(object):
     """Main class for managing host config file structure"""
@@ -24,11 +21,9 @@ class Host(object):
         if os.path.isdir(self.host_dir) is not True:
             os.mkdir(self.host_dir)
             info = 'created host directory %s' % self.host_dir
-            host_log.debug(info)
         else:
             info = '%s already present' % self.host
             print info
-            host_log.debug(info)
             return False
 
 def hostname():

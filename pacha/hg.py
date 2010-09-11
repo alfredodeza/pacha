@@ -26,7 +26,6 @@ But no username was supplied (see "hg help config")
 """
 
 
-
 class Hg(object):
     """Does local commits and pushes to a central Pacha Master location"""
 
@@ -125,6 +124,24 @@ class Hg(object):
             self.hg_add()
             self.commit()
             self.hgrc()
+
+    def hgrc_user(self):
+        """Verifies the hgrc default user against what we expect"""
+        try:
+            hgrc = open(self.path+'/.hg/hgrc', 'w')
+            hgrc.write('[paths]\n')
+            ssh_line = "default = ssh://%s@%s%s" % (self.conf['ssh_user'],
+                    self.conf['host'], self.dest_path)
+            hgrc.write(ssh_line)
+            hgrc.close()
+            hg_log.debug("wrote hgrc in %s" % self.path)
+            hg_log.debug("default is %s" % ssh_line)
+
+        except Exception, error:
+            hg_log.error(error)
+            return False
+
+
 
     def clone(self):
         """Clones a given repository to the remote Pacha server
