@@ -44,6 +44,10 @@ Below is how a configuration file for Pacha would look like with default values:
     # Pacha will push its files
     pacha.hosts.path = /opt/pacha/hosts
 
+    # HG Autocorrect will try to match changes in the config with 
+    # hgrc mismatches
+    pacha.hg.autocorrect = True
+
     # Logging Stuff
     # Set this to True and add a log_path to enable logging 
     pacha.log.enable = False
@@ -113,4 +117,21 @@ However, you might not want that name for your log file. If you want something e
 that information as a full path to that file (e.g: ``pacha.log.path = '/home/alfredo/my_daemon.log'``)
 And in that case the logging module would accept that as a valid path and there would not be any 
 path modification.
+
+
+HG Autocorrect
+----------------
+There are sometimes where Pacha might be running and watching some files and directories with a 
+``.hgrc`` configuration that points to a ssh connection, user and host like::
+
+    default = ssh://alfredo@localhost//opt/pacha/hosts/mbp.local/foo 
+
+What happens if one day you change your ``pacha.ssh.user`` in your config to something else?
+
+Pacha will no longer be able to push correctly when a change is found. Here is where the autocorrect 
+option comes in to play.
+
+By default is set to ``True`` and will check what you have in the ``.hgrc`` file and rewrite it 
+if a mismatch is found to mirror your changes in the Pacha config file.
+
 

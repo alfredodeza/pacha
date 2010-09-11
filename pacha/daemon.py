@@ -24,6 +24,9 @@ class Watcher(object):
         daemon_log.debug('watching for changes in %s' % self.path)
         #run = Runners(location=self.dir_path)
         #if run.modified() is True:
+
+        # make sure hgrc users match 
+        self.mercurial.hgrc_user()
         if self.mercurial.is_modified():
             #mercurial = hg.Hg(path=self.dir_path)
             self.mercurial.commit()
@@ -33,7 +36,7 @@ class Watcher(object):
         """Conect to the database for revision comparison
         and insert a revision hash from Mercurial if it 
         does not exist"""
-    
+   
         #run = Runners(location=self.dir_path)
         if rev == None:  #a path without a revision so insert one
             daemon_log.debug('No revision recorded in DB - so adding it')

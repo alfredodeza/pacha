@@ -127,21 +127,31 @@ class Hg(object):
 
     def hgrc_user(self):
         """Verifies the hgrc default user against what we expect"""
+        user = None
         try:
-            hgrc = open(self.path+'/.hg/hgrc', 'w')
-            hgrc.write('[paths]\n')
-            ssh_line = "default = ssh://%s@%s%s" % (self.conf['ssh_user'],
-                    self.conf['host'], self.dest_path)
-            hgrc.write(ssh_line)
-            hgrc.close()
-            hg_log.debug("wrote hgrc in %s" % self.path)
-            hg_log.debug("default is %s" % ssh_line)
+            hg_log.debug('verifying hgrc username')
+            hgrc = open(self.path+'/.hg/hgrc')
+            for line in hgrc.readlines():
+                if 'default' and 'ssh:' in line:
+                    try:
+                        user = line.split('@')[0].split('//')[1]
+                        hg_log.debug('found username in hgrc: %s' % user)
+                    except IndexError:
+                        pass # we can use None later 
+                else:
+                    pass 
 
         except Exception, error:
             hg_log.error(error)
-            return False
 
-
+        if user != self.conf['ssh_user']:
+            hg_log.critical('.hgrc ssh user (%s) does not match config user: %s at %s' % (user, 
+                self.conf['ssh_user']), 
+                self.path)  
+            if self.conf['hg_autocorrect'] == True:
+                self.hgrc() # rewrites the hgrc 
+            else:
+                hg_log.critical('hg_autocorrect is set to False so not rewriting hgrc')
 
     def clone(self):
         """Clones a given repository to the remote Pacha server
