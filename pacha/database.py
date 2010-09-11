@@ -126,10 +126,39 @@ class Worker(object):
         return self.c.execute(command, values)
 
 
-    def add_config(self, path):
+    def add_config(self, config, path):
         """Adds a MASTER config for Pacha"""
-        values = (path,path)
-        command = 'INSERT INTO config(path) select ? WHERE NOT EXISTS(SELECT 1 FROM config WHERE path=?)' 
+        values = (path, 
+                config['frequency'], 
+                config['master'],
+                config['host'],
+                config['ssh_user'],
+                config['ssh_port'],
+                config['hosts_path'],
+                config['hg_autocorrect'],
+                config['log_enable'],
+                config['log_path'],
+                config['log_level'],
+                config['log_format'],
+                config['log_datefmt'],
+                path)
+        command = """INSERT INTO config(
+        path, 
+        frequency, 
+        master, 
+        host,
+        ssh_user,
+        ssh_port,
+        hosts_path,
+        hg_autocorrect,
+        log_enable,
+        log_path,
+        log_level,
+        log_format,
+        log_datefmt) 
+        SELECT ? ? ? ? ? ? ? ? ? ? ? ? ? WHERE NOT EXISTS(
+            SELECT 1 FROM config WHERE path=?
+)""" 
         self.c.execute(command, values)
         self.conn.commit()
 

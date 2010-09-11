@@ -97,7 +97,8 @@ class PachaCommands(object):
     def add_config(self, path):
         db = Worker()
         abspath = os.path.abspath(path)
-        db.add_config(abspath)
+        config = options(abspath)
+        db.add_config(config, abspath)
         self.msg("Configuration file added: %s" % abspath)
 
 
