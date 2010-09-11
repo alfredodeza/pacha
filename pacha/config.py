@@ -1,5 +1,6 @@
 from ConfigParser import ConfigParser
 from os.path import isfile
+from pacha.database import Worker
 
 def options(config=None):
     """Instead of calling ConfigParser all over the place
@@ -91,3 +92,7 @@ def defaults(config=None):
             config[key] = defaults[key]
     return config
 
+def stored_conf():
+    db = Worker()
+    db_config = db.get_full_config() 
+    return defaults(db_config)

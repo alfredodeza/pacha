@@ -12,6 +12,7 @@ CONFIG_TABLE = """CREATE TABLE config(
     path            TEXT, 
     frequency       INT, 
     master          BOOLEAN, 
+    host            VARCHAR(32),
     ssh_user        VARCHAR(32),
     ssh_port        INT,
     hosts_path      TEXT,
@@ -156,7 +157,7 @@ class Worker(object):
         log_level,
         log_format,
         log_datefmt) 
-        SELECT ? ? ? ? ? ? ? ? ? ? ? ? ? WHERE NOT EXISTS(
+        SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS(
             SELECT 1 FROM config WHERE path=?
 )""" 
         self.c.execute(command, values)
@@ -175,3 +176,25 @@ class Worker(object):
         """Returns the first entry for the config path"""
         command = "SELECT * FROM config limit 1"
         return self.c.execute(command)
+
+    def get_full_config(self):
+        """Returns all the stored config values as a dictionary"""
+        command = "SELECT * FROM config limit 1"
+        values = self.c.execute(command)
+        return dict(
+                path            = values[0],
+                frequency       = values[1],
+                master          = values[2],
+                host            = values[3],
+                ssh_user        = values[4],
+                ssh_port        = values[5],
+                hosts_path      = values[6],
+                hg_autocorrect  = values[7],
+                log_enable      = values[8],
+                log_path        = values[9],
+                log_level       = values[10],
+                log_format      = values[11],
+                log_datefmt     = values[12]
+                )
+
+
