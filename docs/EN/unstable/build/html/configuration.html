@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &mdash; pacha v0.2.4 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pacha v0.2.4 documentation" href="index.html" />
+    <link rel="next" title="Testing" href="testing.html" />
+    <link rel="prev" title="Daemonization" href="daemon.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="daemon.html" title="Daemonization"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>Pacha has some defaults and some needed configuration. Since an automatic
+push of data needs to happen every time a configuration change is done, it needs
+to know about where it can push that data.</p>
+<div class="section" id="config-file">
+<h2>Config File<a class="headerlink" href="#config-file" title="Permalink to this headline">¶</a></h2>
+<p>Below is how a configuration file for Pacha would look like with default values:</p>
+<div class="highlight-python"><pre>[DEFAULT]
+# Pacha onfiguration file
+
+###################################
+# Pacha Server Configuration
+###################################
+
+# Frequency check in seconds. Add a number to the frequency Pacha
+# should check for different revision numbers. Do not add anything
+# lower than 10 seconds. By default Pacha runs every 60 seconds
+pacha.frequency = 60
+
+# Tell Pacha if this machine is a Master Pacha Server
+# It will default to False
+pacha.master = False
+
+# Pacha master server (if using the standalone version, you still need
+# to edit this). Values can be IP's or FQDN:
+pacha.host = localhost
+
+# Change the SSH port if the master is not running a
+# standard (22) port:
+pacha.ssh.port = 22
+
+# Username for the SSH connection:
+pacha.ssh.user = root
+
+# Path for the hosts config file directory
+# usually in /opt/pacha/hosts
+# Pacha will use this path to either store the configurations locally
+# (if this is set as a Master server) or the remote path where
+# Pacha will push its files
+pacha.hosts.path = /opt/pacha/hosts
+
+# Logging Stuff
+# Set this to True and add a log_path to enable logging
+pacha.log.enable = False
+
+# this can be a file path or a directory path
+pacha.log.path = None
+
+# Below options set Logging formatting
+pacha.log.format = %(asctime)s %(levelname)s %(name)s %(message)s
+pacha.log.datefmt = %H:%M:S</pre>
+</div>
+</div>
+<div class="section" id="defaults">
+<h2>Defaults<a class="headerlink" href="#defaults" title="Permalink to this headline">¶</a></h2>
+<p>All the values that you see in the above example configuration file are just the default ones. If nothing is set, Pacha will enable default values and will try to run with those.</p>
+</div>
+<div class="section" id="config-file-gone">
+<h2>Config File Gone<a class="headerlink" href="#config-file-gone" title="Permalink to this headline">¶</a></h2>
+<p>When a configuration file that was previously added is no longer present (or Pacha is unable to access it) a
+warning message will display alerting of this.
+This is useful because since Pacha tries to get values and feeds defaults to the ones it can&#8217;t find, it can
+be tricky to spot if you are reading default values or not.</p>
+<p>This is how the warning message should look in the command line prompt:</p>
+<div class="highlight-python"><pre>+-----------------------------------------------------+
+|                   ** WARNING **                     |
+|                                                     |
+|  The config file supplied does not exist. Try       |
+|  adding a new valid path by running:                |
+|                                                     |
+|    pacha --add-config /path/to/config               |
+|                                                     |
++-----------------------------------------------------+</pre>
+</div>
+</div>
+<div class="section" id="logging-configuration">
+<h2>Logging Configuration<a class="headerlink" href="#logging-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Starting on version 0.2.4, you need to add some specifics to logging to be able to have it play
+nicely with Pacha.</p>
+<p>You have 4 options to control logging but 2 that are absolutely needed in order to have logging
+working:</p>
+<div class="highlight-python"><pre># Both needed to enable logging
+pacha.log.enable = False
+pacha.log.path = None
+
+# Optional logging configuration
+pacha.log.format = %(asctime)s %(levelname)s %(name)s %(message)s
+pacha.log.datefmt = %H:%M:S</pre>
+</div>
+<p>The reason behind <tt class="docutils literal"><span class="pre">pacha.log.enable</span></tt> is that we wanted to give more control to turn on or off
+logging even if you have the <tt class="docutils literal"><span class="pre">pacha.log.path</span></tt> option set.</p>
+<p>Pacha <em>needs</em> to log to a file, so adding a log path is also required.</p>
+<p>The logging path should be absolute and it can be in the form of a directory or a file.</p>
+<p>If a directory is given (e.g: <tt class="docutils literal"><span class="pre">pacha.log.path</span> <span class="pre">=</span> <span class="pre">'/var/log'</span></tt>) Then the log file would be created
+with this full path:</p>
+<div class="highlight-python"><pre>/var/log/pacha.log</pre>
+</div>
+<p>However, you might not want that name for your log file. If you want something else you can pass
+that information as a full path to that file (e.g: <tt class="docutils literal"><span class="pre">pacha.log.path</span> <span class="pre">=</span> <span class="pre">'/home/alfredo/my_daemon.log'</span></tt>)
+And in that case the logging module would accept that as a valid path and there would not be any
+path modification.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#config-file">Config File</a></li>
+<li><a class="reference internal" href="#defaults">Defaults</a></li>
+<li><a class="reference internal" href="#config-file-gone">Config File Gone</a></li>
+<li><a class="reference internal" href="#logging-configuration">Logging Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="daemon.html"
+                        title="previous chapter">Daemonization</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="testing.html"
+                        title="next chapter">Testing</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="daemon.html" title="Daemonization"
+             >previous</a> |</li>
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Alfredo Deza.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>
