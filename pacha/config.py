@@ -88,6 +88,8 @@ def defaults(config=None):
     for key in defaults:
         try:
             config[key]
+            if config[key] == '':
+                config[key] = defaults[key]
         except KeyError:
             config[key] = defaults[key]
     return config
@@ -96,3 +98,4 @@ def stored_conf():
     db = Worker()
     db_config = db.get_full_config() 
     return defaults(db_config)
+
