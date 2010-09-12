@@ -188,6 +188,7 @@ class Worker(object):
         command = "SELECT * FROM config limit 1"
         response =  self.c.execute(command)
         values = response.fetchone()
+
         # Python 2.5 can't use keys so we supply them here:
         keys = ['path', 'frequency', 'master', 'host', 
                 'ssh_user', 'ssh_port', 'hosts_path', 
@@ -200,3 +201,35 @@ class Worker(object):
             except Exception:
                 response_dict[key] = ''
         return response_dict
+
+    def update_config(self, parsed_config):
+        """Updates any item(s) that may have changed in the config"""
+        values = (parsed_config['frequency'], 
+                parsed_config['master'],
+                parsed_config['host'],
+                parsed_config['ssh_user'],
+                parsed_config['ssh_port'],
+                parsed_config['hosts_path'],
+                parsed_config['hg_autocorrect'],
+                parsed_config['log_enable'],
+                parsed_config['log_path'],
+                parsed_config['log_level'],
+                parsed_config['log_format'],
+                parsed_config['log_datefmt'])
+
+        command = """UPDATE config SET
+        frequency = ?, 
+        master = ?, 
+        host = ?,
+        ssh_user = ?,
+        ssh_port = ?,
+        hosts_path = ?,
+        hg_autocorrect = ?,
+        log_enable = ?,
+        log_path = ?,
+        log_level = ?,
+        log_format = ?,
+        log_datefmt = ?
+        """ 
+        self.c.execute(command, values)
+        self.conn.commit()

@@ -41,6 +41,7 @@ CONFIG_GONE = """
     |    pacha --add-config /path/to/config               |
     |                                                     | 
     +-----------------------------------------------------+
+
 """
 
 
@@ -54,6 +55,7 @@ WARNING = """
      |    pacha --add-config /path/to/config              |
      |                                                    |
      +----------------------------------------------------+
+
 """
  
 class PachaCommands(object):
@@ -88,18 +90,14 @@ class PachaCommands(object):
         if config_file == '':
             self.msg(msg=WARNING, std="err")
         else:
-           return conf
+            # lets update whatever we parse 
+            # parse the conf file first:
+            parsed_conf = options(config_file)
+            # pass it on to the db 
+            db = Worker()
+            db.update_config(parsed_conf)
+            return parsed_conf
 
-       # config_db = self.db.get_config_path()
-       # config_file = None
-       # try:
-       #     config_list = [i for i in self.db.get_config_path()]
-       #     config_file = config_list[0][0]
-       #     config = options(config_file)
-       #     return config
-       # except IndexError:
-       #     self.msg(msg=WARNING, std="err")
- 
 
     def add_config(self, path):
         db = Worker()
@@ -141,6 +139,7 @@ class PachaCommands(object):
 
         if not enabled or log_path is None:
             logging.disable(logging.CRITICAL)
+
 
     def add_host(self, host):
         try:
