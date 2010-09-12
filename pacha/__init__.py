@@ -83,15 +83,22 @@ class PachaCommands(object):
 
     def check_config(self):
         # if any commands are run, check for a MASTER config file Location
-        config_db = self.db.get_config_path()
-        config_file = None
-        try:
-            config_list = [i for i in self.db.get_config_path()]
-            config_file = config_list[0][0]
-            config = options(config_file)
-            return config
-        except IndexError:
+        conf = stored_conf()
+        config_file = conf['path']
+        if config_file == '':
             self.msg(msg=WARNING, std="err")
+        else:
+           return conf
+
+       # config_db = self.db.get_config_path()
+       # config_file = None
+       # try:
+       #     config_list = [i for i in self.db.get_config_path()]
+       #     config_file = config_list[0][0]
+       #     config = options(config_file)
+       #     return config
+       # except IndexError:
+       #     self.msg(msg=WARNING, std="err")
  
 
     def add_config(self, path):
@@ -114,10 +121,6 @@ class PachaCommands(object):
         except Exception, error:
             print "Could not complete command: %s" % error 
 
-
-
-        for i in conf.items():
-             print "%-15s= %-4s" % (i[0], i[1])
 
     def set_logging(self):
         enabled = self.config['log_enable']
@@ -361,9 +364,6 @@ commands as they would happen""")
         if options.add_config:
             self.add_config(options.add_config)
 
-        if options.config_values:
-            self.config_values()
-
         if options.remove_config:
             db = Worker()
             db.remove_config()
@@ -373,6 +373,9 @@ commands as they would happen""")
         # important: only config options are allowed before 
         # actually checking for valid conf files stored 
         self.config = self.check_config()       
+
+        if options.config_values:
+            self.config_values()
 
         # Cleanest way to show the help menu if no options are given
         if len(argv) == 1:
