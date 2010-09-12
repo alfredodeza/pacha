@@ -9,7 +9,7 @@ import sys
 from time import strftime
 from mercurial import commands, ui, hg
 
-from pacha.config import defaults
+from pacha.config import stored_conf
 from pacha.host import hostname
 from pacha.util import run_command
 
@@ -34,7 +34,7 @@ class Hg(object):
             host = None,
             user = None,
             path = None,
-            conf = defaults(),
+            conf = stored_conf(),
             log = True,
             test = False
             ):

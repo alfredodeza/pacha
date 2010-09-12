@@ -3,6 +3,7 @@ import sys
 import time
 import supay
 from pacha import hg, database
+from pacha.config import stored_conf
 import logging
 
 daemon_log = logging.getLogger('pacha.daemon')
@@ -67,7 +68,7 @@ def frecuency(seconds):
     return freq 
 
 
-def start(config, foreground=False):
+def start(config=stored_conf(), foreground=False):
     if not foreground:
         log_path = config['log_path']
         log_enable = config['log_enable']
