@@ -24,7 +24,7 @@ import logging
 import os
 import sys
 from optparse import OptionParser, OptionGroup
-from pacha.config import options
+from pacha.config import options, stored_conf
 from pacha import daemon, hg, rebuild, permissions
 
 
@@ -103,19 +103,21 @@ class PachaCommands(object):
 
 
     def config_values(self):
+        conf = stored_conf()
+        config_file = conf['path']
+        if not os.path.isfile(config_file):
+             print CONFIG_GONE 
         try:
-            db = Worker()
-            config_list = [i for i in db.get_config_path()]
-            config_file = config_list[0][0]
-            if not os.path.isfile(config_file):
-                print CONFIG_GONE 
-            config = options(config_file)
             print "\nConfiguration file: %s\n" % config_file
-            for i in config.items():
+            for i in conf.items():
                 print "%-15s= %-4s" % (i[0], i[1])
         except Exception, error:
             print "Could not complete command: %s" % error 
 
+
+
+        for i in conf.items():
+             print "%-15s= %-4s" % (i[0], i[1])
 
     def set_logging(self):
         enabled = self.config['log_enable']

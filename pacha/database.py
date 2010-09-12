@@ -1,4 +1,6 @@
 """Simple database work. We do not need an ORM to do this for us."""
+
+from sqlite3 import Row
 import sqlite3
 import os
 
@@ -11,14 +13,14 @@ DB_FILE = FILE_DIR+'/db/pacha.db'
 CONFIG_TABLE = """CREATE TABLE config(
     path            TEXT, 
     frequency       INT, 
-    master          BOOLEAN, 
+    master          VARCHAR(12), 
     host            VARCHAR(32),
     ssh_user        VARCHAR(32),
     ssh_port        INT,
     hosts_path      TEXT,
-    hg_autocorrect  BOOLEAN,
-    log_enable      BOOLEAN,
-    log_path        BOOLEAN,
+    hg_autocorrect  VARCHAR(12),
+    log_enable      VARCHAR(12),
+    log_path        VARCHAR(12),
     log_level       VARCHAR(12),
     log_format      TEXT,
     log_datefmt     TEXT 
@@ -60,9 +62,11 @@ class Worker(object):
         self.db = db 
         if os.path.isfile(self.db):
             self.conn = sqlite3.connect(self.db)
+            self.conn.row_factory = Row
             self.c = self.conn.cursor()
         else:
             self.conn = sqlite3.connect(self.db)
+            self.conn.row_factory = Row
             self.c = self.conn.cursor()
             self.c.execute(REPOS_TABLE)
             self.c.execute(METADATA_TABLE)
@@ -129,6 +133,9 @@ class Worker(object):
 
     def add_config(self, config, path):
         """Adds a MASTER config for Pacha"""
+        # destroy anything we have
+        self.remove_config()
+
         values = (path, 
                 config['frequency'], 
                 config['master'],
@@ -167,9 +174,8 @@ class Worker(object):
     def remove_config(self):
         """Removes the MASTER config path"""
         drop = "DROP TABLE config"
-        create = "CREATE TABLE config(path TEXT)"
         self.c.execute(drop)
-        self.c.execute(create)
+        self.c.execute(CONFIG_TABLE)
 
 
     def get_config_path(self):
@@ -180,21 +186,17 @@ class Worker(object):
     def get_full_config(self):
         """Returns all the stored config values as a dictionary"""
         command = "SELECT * FROM config limit 1"
-        values = self.c.execute(command)
-        return dict(
-                path            = values[0],
-                frequency       = values[1],
-                master          = values[2],
-                host            = values[3],
-                ssh_user        = values[4],
-                ssh_port        = values[5],
-                hosts_path      = values[6],
-                hg_autocorrect  = values[7],
-                log_enable      = values[8],
-                log_path        = values[9],
-                log_level       = values[10],
-                log_format      = values[11],
-                log_datefmt     = values[12]
-                )
-
-
+        response =  self.c.execute(command)
+        values = response.fetchone()
+        # Python 2.5 can't use keys so we supply them here:
+        keys = ['path', 'frequency', 'master', 'host', 
+                'ssh_user', 'ssh_port', 'hosts_path', 
+                'hg_autocorrect', 'log_enable', 'log_path', 
+                'log_level', 'log_format', 'log_datefmt']
+        response_dict = {}
+        for key in keys:
+            try:
+                response_dict[key] = values[key]
+            except Exception:
+                response_dict[key] = ''
+        return response_dict

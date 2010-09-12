@@ -72,14 +72,14 @@ def defaults(config=None):
         config = {}
     defaults = {
             'frequency': 60,
-            'master': False,
+            'master': 'False',
             'host': 'localhost',
             'ssh_user': 'root',
             'ssh_port': 22,
             'hosts_path': '/opt/pacha',
-            'hg_autocorrect': True,
-            'log_enable': False,
-            'log_path': None,
+            'hg_autocorrect': 'True',
+            'log_enable': 'False',
+            'log_path': 'False',
             'log_level': 'DEBUG',
             'log_format': '%(asctime)s %(levelname)s %(name)s %(message)s',
             'log_datefmt' : '%H:%M:%S'
