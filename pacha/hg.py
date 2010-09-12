@@ -148,7 +148,7 @@ class Hg(object):
             hg_log.critical('.hgrc ssh user (%s) does not match config user: %s at %s' % (user, 
                 self.conf['ssh_user'], 
                 self.path))  
-            if self.conf['hg_autocorrect'] == True:
+            if self.conf['hg_autocorrect'] == u'True':
                 self.hgrc() # rewrites the hgrc 
             else:
                 hg_log.critical('hg_autocorrect is set to False so not rewriting hgrc')
