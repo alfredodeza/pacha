@@ -35,16 +35,13 @@ class Watcher(object):
         and insert a revision hash from Mercurial if it 
         does not exist"""
    
-        #run = Runners(location=self.dir_path)
         if rev == None:  #a path without a revision so insert one
             daemon_log.debug('No revision recorded in DB - so adding it')
-            #revision = run.hg_revision()[0]
             revision = self.mercurial.revision()[0]
             db = database.Worker()
             db.update_rev(self.path, revision)
             daemon_log.debug('added revision %s for path %s' % (revision, self.path))
         else: # we have a hash there so:
-            #revision = run.hg_revision()[0]
             revision = self.mercurial.revision()[0]
             if rev != revision:
                 daemon_log.debug('found a new revision: %s at %s' % (rev,self.path))
