@@ -1,5 +1,3 @@
-"""Simple database work. We do not need an ORM to do this for us."""
-
 from sqlite3 import Row
 import sqlite3
 import os
@@ -44,6 +42,7 @@ METADATA_TABLE = """CREATE TABLE metadata(
     permissions INT, 
     ftype       TEXT
 )""" #sqlite does not like 'group'
+
 
 
 def is_tracked():

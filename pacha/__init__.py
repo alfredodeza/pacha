@@ -24,10 +24,10 @@ import logging
 import os
 import sys
 from optparse import OptionParser, OptionGroup
-from pacha.config import options, stored_conf
+from guachi import ConfigMapper
+
+from pacha.config import set_mappings, DB_FILE
 from pacha import daemon, hg, rebuild, permissions
-
-
 from pacha.database import Worker, is_tracked
 from pacha.host import Host
 
@@ -85,30 +85,29 @@ class PachaCommands(object):
 
     def check_config(self):
         # if any commands are run, check for a MASTER config file Location
-        conf = stored_conf()
-        config_file = conf['path']
+        db_conf = ConfigMapper(DB_FILE)
+        conf = db_conf.stored_config()
+        try:
+            config_file = conf['path']
+        except KeyError:
+            self.msg(msg=WARNING, std="err")
         if config_file == '':
             self.msg(msg=WARNING, std="err")
         else:
-            # lets update whatever we parse 
-            # parse the conf file first:
-            parsed_conf = options(config_file)
-            # pass it on to the db 
-            db = Worker()
-            db.update_config(parsed_conf)
-            return parsed_conf
+            db_conf.set_config(config_file)
+            return db_conf.stored_config()
 
 
     def add_config(self, path):
-        db = Worker()
+        conf = ConfigMapper(DB_FILE).stored_config()
         abspath = os.path.abspath(path)
-        config = options(abspath)
-        db.add_config(config, abspath)
+        conf['path'] = abspath
+        set_mappings()
         self.msg("Configuration file added: %s" % abspath)
 
 
     def config_values(self):
-        conf = stored_conf()
+        conf = ConfigMapper(DB_FILE).stored_config()
         config_file = conf['path']
         if not os.path.isfile(config_file):
              print CONFIG_GONE 
