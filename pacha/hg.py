@@ -1,6 +1,3 @@
-"""Plugs into Mercurial and matches Pacha's need to commit, push, clone and
-other commands. """
-
 import logging
 from subprocess import call, PIPE
 from getpass import getuser
@@ -9,7 +6,9 @@ import sys
 from time import strftime
 from mercurial import commands, ui, hg
 
-from pacha.config import stored_conf
+from guachi import ConfigMapper
+
+from pacha.database import DB_FILE
 from pacha.host import hostname
 from pacha.util import run_command
 
@@ -34,7 +33,7 @@ class Hg(object):
             host = None,
             user = None,
             path = None,
-            conf = stored_conf(),
+            conf = ConfigMapper(DB_FILE).stored_config(),
             log = True,
             test = False
             ):

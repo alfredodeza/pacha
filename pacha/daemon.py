@@ -2,9 +2,11 @@ import os
 import sys
 import time
 import supay
-from pacha import hg, database
-from pacha.config import stored_conf
 import logging
+
+from guachi import ConfigMapper
+from pacha import hg 
+from pacha.database import DB_FILE, Worker
 
 daemon_log = logging.getLogger('pacha.daemon')
 
@@ -38,7 +40,7 @@ class Watcher(object):
         if rev == None:  #a path without a revision so insert one
             daemon_log.debug('No revision recorded in DB - so adding it')
             revision = self.mercurial.revision()[0]
-            db = database.Worker()
+            db = Worker()
             db.update_rev(self.path, revision)
             daemon_log.debug('added revision %s for path %s' % (revision, self.path))
         else: # we have a hash there so:
@@ -47,7 +49,7 @@ class Watcher(object):
                 daemon_log.debug('found a new revision: %s at %s' % (rev,self.path))
                 mercurial = hg.Hg(path=self.dir_path)
                 mercurial.push()
-                db = database.Worker()
+                db = Worker()
                 db.update_rev(self.path, revision) 
 
 
@@ -65,7 +67,7 @@ def frecuency(seconds):
     return freq 
 
 
-def start(config=stored_conf(), foreground=False):
+def start(config=ConfigMapper(DB_FILE).stored_config(), foreground=False):
     if not foreground:
         log_path = config['log_path']
         log_enable = config['log_enable']
@@ -79,7 +81,7 @@ def start(config=stored_conf(), foreground=False):
 
     while True:
         try:
-            db = database.Worker()
+            db = Worker()
             daemon_log.debug('reading repos from database')
             repos = [i for i in db.get_repos()]
             db.closedb()
