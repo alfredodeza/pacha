@@ -9,6 +9,11 @@ from pacha import host, hg
 class TestHg(unittest.TestCase):
 
     username = getpass.getuser()
+    dict_conf = dict(
+            ssh_user = username,
+            host = host.hostname(),
+            hosts_path = '/tmp/remote_pacha/hosts'
+            )
 
     def setUp(self):
         """Will setup just once for all tests"""
@@ -44,7 +49,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
     	        path='/tmp/test_pacha', 
             	test=True, 
-                conf=options('/tmp/test_pacha/pacha.conf'))
+                conf=self.dict_conf)
     
         mercurial.initialize()
         mercurial.hg_add()
@@ -61,7 +66,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=options('/tmp/test_pacha/pacha.conf'))
+		        conf=self.dict_conf)
     	mercurial.initialize()
         mercurial.hg_add()
         mercurial.commit()
@@ -75,7 +80,7 @@ class TestHg(unittest.TestCase):
         """We create a file and then we add it"""
         mercurial = hg.Hg(port=22, host=host.hostname(), user=self.username, 
 		path='/tmp/test_pacha', test=True,
-		conf=options('/tmp/test_pacha/pacha.conf'))
+		conf=self.dict_conf)
         mercurial.initialize()
         mercurial.hg_add()
         out = Popen('hg st /tmp/test_pacha', shell=True, stdout=PIPE)
@@ -90,7 +95,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=options('/tmp/test_pacha/pacha.conf'))
+		        conf=self.dict_conf)
 
         mercurial.hgrc()
         actual = open('/tmp/test_pacha/.hg/hgrc').readlines()[1]
@@ -104,7 +109,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=options('/tmp/test_pacha/pacha.conf'))
+		        conf=self.dict_conf)
 
         mercurial.hgrc()
         self.assertFalse(mercurial.hgrc())
@@ -116,7 +121,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=options('/tmp/test_pacha/pacha.conf'))
+		        conf=self.dict_conf)
         mercurial.initialize()
         expected = os.path.isdir('/tmp/test_pacha/.hg')
         self.assertTrue(expected) 
@@ -131,7 +136,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=options('/tmp/test_pacha/pacha.conf'))
+		        conf=self.dict_conf)
 
 
         mercurial.hgrc()
@@ -157,7 +162,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=options('/tmp/test_pacha/pacha.conf'))
+		        conf=self.dict_conf)
 
         mercurial.initialize()
         expected = mercurial.validate()
@@ -170,7 +175,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=options('/tmp/test_pacha/pacha.conf'))
+		        conf=self.dict_conf)
 
         expected = mercurial.validate()
         self.assertFalse(expected)
@@ -185,7 +190,7 @@ class TestHg(unittest.TestCase):
                 user=self.username, 
 		        path='/tmp/test_pacha', 
                 test=True,
-		        conf=options('/tmp/test_pacha/pacha.conf'))
+		        conf=self.dict_conf)
 
         mercurial.initialize()
         mercurial.hg_add()

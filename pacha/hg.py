@@ -41,7 +41,8 @@ class Hg(object):
         self.host = host
         self.user = user
         self.log = log
-        if conf == None:
+        self.conf = conf
+        if self.conf == None:
             self.conf = ConfigMapper(DB_FILE).stored_config()
         
         if os.path.exists(path):
