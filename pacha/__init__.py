@@ -266,13 +266,6 @@ to a file", std="err")
                 print "\nExiting nicely from Pacha"
                 sys.exit(0)
 
-        if directories:
-            try:
-                run = rebuild.Rebuild(server=server,
-                        source=source_path)
-                run.show_directories()
-            except Exception, error:
-                self.msg(str(error), std="err")
 
     def parseArgs(self, argv):
         parser = OptionParser(description="""
@@ -420,12 +413,6 @@ commands as they would happen""")
                         hostname = options.host,
                         source_path = options.source_path)
 
-        if options.rebuild and options.source_path and options.show_directories:
-            self.rebuild(server = options.rebuild, 
-                    directories = True,
-                    source_path = options.source_path)
-            
-    
 
 main = PachaCommands
 

@@ -1,5 +1,6 @@
 """rebuilder that checks for permissions and locations in the datbase, 
 moves files from one places to the other and installs packages if needed"""
+import mercurial
 import logging
 import os
 import sys
@@ -10,6 +11,7 @@ import shutil
 from time import strftime
 
 from pacha import database
+from pacha.hg import update
 
 rebuild_log = logging.getLogger('pacha.rebuild')
 
@@ -53,6 +55,11 @@ class Rebuild(object):
                     self.source, self.hostname, self.directory, self.destination)
             rebuild_log.debug(command)
         call(command, shell=True)
+        # update everything making sure we have the latest rev:
+        try:
+            update(self.update)
+        except mercurial.error.RepoError:
+            pass
         # if for some reason the above failed let me know:
         host_copy = '/tmp/%s' % self.hostname
         if os.path.isdir(host_copy):

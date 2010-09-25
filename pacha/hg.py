@@ -213,10 +213,7 @@ class Hg(object):
 
 
 def update(hosts_path):
-    """Updates a mercurial repository pluging in directly into Mercurial
-    This update() function will be used as a trial to later plug
-    all of Pacha into Mercurial, instead of doing subprocess calls"""
-    
+    """Updates a mercurial repository pluging in directly into Mercurial"""
     for dirs in os.listdir(hosts_path):
         sub_dir = os.path.join(hosts_path, dirs)
         if os.path.isdir(sub_dir):
