@@ -8,7 +8,7 @@ FILE_DIR = os.path.dirname(FILE_CWD)
 DB_FILE = FILE_DIR+'/db/pacha.db'
 
 
-CONFIG_TABLE = """CREATE TABLE config(
+CONFIG_TABLE = """CREATE TABLE IF NOT EXISTS config(
     path            TEXT, 
     frequency       INT, 
     master          VARCHAR(12), 
@@ -25,7 +25,7 @@ CONFIG_TABLE = """CREATE TABLE config(
 )"""
 
 
-REPOS_TABLE = """CREATE TABLE repos(
+REPOS_TABLE = """CREATE TABLE IF NOT EXISTS repos(
     id              integer primary key, 
     path            TEXT,  
     permissions     TEXT, 
@@ -34,7 +34,7 @@ REPOS_TABLE = """CREATE TABLE repos(
 )"""
 
 
-METADATA_TABLE = """CREATE TABLE metadata(
+METADATA_TABLE = """CREATE TABLE IF NOT EXISTS metadata(
     id          integer primary key, 
     path        TEXT,
     owner       TEXT, 
@@ -59,18 +59,12 @@ class Worker(object):
     def __init__(self,
             db = DB_FILE):
         self.db = db 
-        if os.path.isfile(self.db):
-            self.conn = sqlite3.connect(self.db)
-            self.conn.row_factory = Row
-            self.c = self.conn.cursor()
-        else:
-            self.conn = sqlite3.connect(self.db)
-            self.conn.row_factory = Row
-            self.c = self.conn.cursor()
-            self.c.execute(REPOS_TABLE)
-            self.c.execute(METADATA_TABLE)
-            self.c.execute(CONFIG_TABLE)
-            self.conn.commit()
+        self.conn = sqlite3.connect(self.db)
+        self.conn.row_factory = Row
+        self.c = self.conn.cursor()
+        self.c.execute(REPOS_TABLE)
+        self.c.execute(METADATA_TABLE)
+        self.c.execute(CONFIG_TABLE)
 
 
     def closedb(self):
@@ -130,105 +124,105 @@ class Worker(object):
         return self.c.execute(command, values)
 
 
-    def add_config(self, config, path):
-        """Adds a MASTER config for Pacha"""
-        # destroy anything we have
-        self.remove_config()
-
-        values = (path, 
-                config['frequency'], 
-                config['master'],
-                config['host'],
-                config['ssh_user'],
-                config['ssh_port'],
-                config['hosts_path'],
-                config['hg_autocorrect'],
-                config['log_enable'],
-                config['log_path'],
-                config['log_level'],
-                config['log_format'],
-                config['log_datefmt'],
-                path)
-        command = """INSERT INTO config(
-        path, 
-        frequency, 
-        master, 
-        host,
-        ssh_user,
-        ssh_port,
-        hosts_path,
-        hg_autocorrect,
-        log_enable,
-        log_path,
-        log_level,
-        log_format,
-        log_datefmt) 
-        SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS(
-            SELECT 1 FROM config WHERE path=?
-)""" 
-        self.c.execute(command, values)
-        self.conn.commit()
-
-
-    def remove_config(self):
-        """Removes the MASTER config path"""
-        drop = "DROP TABLE config"
-        self.c.execute(drop)
-        self.c.execute(CONFIG_TABLE)
-
-
-    def get_config_path(self):
-        """Returns the first entry for the config path"""
-        command = "SELECT * FROM config limit 1"
-        return self.c.execute(command)
-
-    def get_full_config(self):
-        """Returns all the stored config values as a dictionary"""
-        command = "SELECT * FROM config limit 1"
-        response =  self.c.execute(command)
-        values = response.fetchone()
-
-        # Python 2.5 can't use keys so we supply them here:
-        keys = ['path', 'frequency', 'master', 'host', 
-                'ssh_user', 'ssh_port', 'hosts_path', 
-                'hg_autocorrect', 'log_enable', 'log_path', 
-                'log_level', 'log_format', 'log_datefmt']
-        response_dict = {}
-        for key in keys:
-            try:
-                response_dict[key] = values[key]
-            except Exception:
-                response_dict[key] = ''
-        return response_dict
-
-    def update_config(self, parsed_config):
-        """Updates any item(s) that may have changed in the config"""
-        values = (parsed_config['frequency'], 
-                parsed_config['master'],
-                parsed_config['host'],
-                parsed_config['ssh_user'],
-                parsed_config['ssh_port'],
-                parsed_config['hosts_path'],
-                parsed_config['hg_autocorrect'],
-                parsed_config['log_enable'],
-                parsed_config['log_path'],
-                parsed_config['log_level'],
-                parsed_config['log_format'],
-                parsed_config['log_datefmt'])
-
-        command = """UPDATE config SET
-        frequency = ?, 
-        master = ?, 
-        host = ?,
-        ssh_user = ?,
-        ssh_port = ?,
-        hosts_path = ?,
-        hg_autocorrect = ?,
-        log_enable = ?,
-        log_path = ?,
-        log_level = ?,
-        log_format = ?,
-        log_datefmt = ?
-        """ 
-        self.c.execute(command, values)
-        self.conn.commit()
+#    def add_config(self, config, path):
+#        """Adds a MASTER config for Pacha"""
+#        # destroy anything we have
+#        self.remove_config()
+#
+#        values = (path, 
+#                config['frequency'], 
+#                config['master'],
+#                config['host'],
+#                config['ssh_user'],
+#                config['ssh_port'],
+#                config['hosts_path'],
+#                config['hg_autocorrect'],
+#                config['log_enable'],
+#                config['log_path'],
+#                config['log_level'],
+#                config['log_format'],
+#                config['log_datefmt'],
+#                path)
+#        command = """INSERT INTO config(
+#        path, 
+#        frequency, 
+#        master, 
+#        host,
+#        ssh_user,
+#        ssh_port,
+#        hosts_path,
+#        hg_autocorrect,
+#        log_enable,
+#        log_path,
+#        log_level,
+#        log_format,
+#        log_datefmt) 
+#        SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS(
+#            SELECT 1 FROM config WHERE path=?
+#)""" 
+#        self.c.execute(command, values)
+#        self.conn.commit()
+#
+#
+#    def remove_config(self):
+#        """Removes the MASTER config path"""
+#        drop = "DROP TABLE config"
+#        self.c.execute(drop)
+#        self.c.execute(CONFIG_TABLE)
+#
+#
+#    def get_config_path(self):
+#        """Returns the first entry for the config path"""
+#        command = "SELECT * FROM config limit 1"
+#        return self.c.execute(command)
+#
+#    def get_full_config(self):
+#        """Returns all the stored config values as a dictionary"""
+#        command = "SELECT * FROM config limit 1"
+#        response =  self.c.execute(command)
+#        values = response.fetchone()
+#
+#        # Python 2.5 can't use keys so we supply them here:
+#        keys = ['path', 'frequency', 'master', 'host', 
+#                'ssh_user', 'ssh_port', 'hosts_path', 
+#                'hg_autocorrect', 'log_enable', 'log_path', 
+#                'log_level', 'log_format', 'log_datefmt']
+#        response_dict = {}
+#        for key in keys:
+#            try:
+#                response_dict[key] = values[key]
+#            except Exception:
+#                response_dict[key] = ''
+#        return response_dict
+#
+#    def update_config(self, parsed_config):
+#        """Updates any item(s) that may have changed in the config"""
+#        values = (parsed_config['frequency'], 
+#                parsed_config['master'],
+#                parsed_config['host'],
+#                parsed_config['ssh_user'],
+#                parsed_config['ssh_port'],
+#                parsed_config['hosts_path'],
+#                parsed_config['hg_autocorrect'],
+#                parsed_config['log_enable'],
+#                parsed_config['log_path'],
+#                parsed_config['log_level'],
+#                parsed_config['log_format'],
+#                parsed_config['log_datefmt'])
+#
+#        command = """UPDATE config SET
+#        frequency = ?, 
+#        master = ?, 
+#        host = ?,
+#        ssh_user = ?,
+#        ssh_port = ?,
+#        hosts_path = ?,
+#        hg_autocorrect = ?,
+#        log_enable = ?,
+#        log_path = ?,
+#        log_level = ?,
+#        log_format = ?,
+#        log_datefmt = ?
+#        """ 
+#        self.c.execute(command, values)
+#        self.conn.commit()

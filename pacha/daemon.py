@@ -67,7 +67,9 @@ def frecuency(seconds):
     return freq 
 
 
-def start(config=ConfigMapper(DB_FILE).stored_config(), foreground=False):
+def start(config=None, foreground=False):
+    if config == None:
+        config=ConfigMapper(DB_FILE).stored_config()
     if not foreground:
         log_path = config['log_path']
         log_enable = config['log_enable']
