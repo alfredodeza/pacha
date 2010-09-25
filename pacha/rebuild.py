@@ -5,7 +5,7 @@ import os
 import sys
 import pwd
 import grp
-from subprocess import call, Popen, PIPE
+from subprocess import call
 import shutil
 from time import strftime
 

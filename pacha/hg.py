@@ -164,7 +164,7 @@ class Hg(object):
             self.dest_path)
         hg_log.debug('destination command for clone: %s' % dest)
         try:
-            commands.clone(ui.ui(), source, dest, pull=False, uncompressed=False, rev=False,
+            commands.clone(ui.ui(), source, str(dest), pull=False, uncompressed=False, rev=False,
                  noupdate=False)
             hg_log.debug('cloning %s' % dest )
         except Exception, error:
