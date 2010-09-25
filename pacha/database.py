@@ -1,4 +1,3 @@
-from sqlite3 import Row
 import sqlite3
 import os
 
