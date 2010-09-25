@@ -60,7 +60,6 @@ class Worker(object):
             db = DB_FILE):
         self.db = db 
         self.conn = sqlite3.connect(self.db)
-        self.conn.row_factory = Row
         self.c = self.conn.cursor()
         self.c.execute(REPOS_TABLE)
         self.c.execute(METADATA_TABLE)

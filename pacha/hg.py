@@ -33,15 +33,16 @@ class Hg(object):
             host = None,
             user = None,
             path = None,
-            conf = ConfigMapper(DB_FILE).stored_config(),
+            conf = None,
             log = True,
             test = False
             ):
         self.port = port
         self.host = host
         self.user = user
-        self.conf = conf
         self.log = log
+        if conf == None:
+            self.conf = ConfigMapper(DB_FILE).stored_config()
         
         if os.path.exists(path):
             hg_log.debug('verified path exists: %s' % path)

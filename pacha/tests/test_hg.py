@@ -1,13 +1,9 @@
-import sys
-if '../' not in sys.path:
-    sys.path.append('../')
 import os
 import shutil
 import unittest
 import getpass
 from subprocess import Popen, PIPE
 from pacha import host, hg
-from pacha.config import options
 
 
 class TestHg(unittest.TestCase):

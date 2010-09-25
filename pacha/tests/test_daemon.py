@@ -5,16 +5,16 @@ import sys
 from pacha import daemon
 from mock import MockSys
 
-class TestWatcher(unittest.TestCase):
-
-    def test_init(self):
-        """Should get a normpath from a path"""
-        path = "/tmp/"
-        watch = daemon.Watcher(path)
-        actual = watch.path 
-        expected = "/tmp"
-        self.assertEqual(actual, expected) 
-
+#class TestWatcher(unittest.TestCase):
+#
+#    def test_init(self):
+#        """Should get a normpath from a path"""
+#        path = "/tmp/"
+#        watch = daemon.Watcher(path)
+#        actual = watch.path 
+#        expected = "/tmp"
+#        self.assertEqual(actual, expected) 
+#
 class TestFrecuency(unittest.TestCase):
 
     def test_freq_string(self):
