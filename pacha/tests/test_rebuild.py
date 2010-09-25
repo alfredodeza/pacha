@@ -1,19 +1,9 @@
 import unittest
-import sys
 import os
 import shutil
 import getpass
 
 from pacha import rebuild, host 
-
-class MockSys(object):
-    """Can grab messages sent to stdout or stderr"""
-    def __init__(self):
-        self.message = []
-
-    def write(self, string):
-        self.message.append(string)
-        pass
 
 
 class TestRebuild(unittest.TestCase):

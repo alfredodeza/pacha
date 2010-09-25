@@ -84,7 +84,7 @@ class PachaCommands(object):
 
 
     def check_config(self):
-        # if any commands are run, check for a MASTER config file Location
+        """if any commands are run, check for a MASTER config file Location"""
         db_conf = ConfigMapper(DB_FILE)
         conf = db_conf.stored_config()
         try:
