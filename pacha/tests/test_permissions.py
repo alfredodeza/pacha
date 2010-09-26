@@ -1,6 +1,3 @@
-import sys
-if '../' not in sys.path:
-    sys.path.append('../')
 import os
 import stat
 import pwd
@@ -8,7 +5,7 @@ import grp
 import unittest
 import shutil
 
-from pacha  import hg, database, permissions
+from pacha  import database, permissions
 
 class TestPermissions(unittest.TestCase):
 
@@ -94,18 +91,6 @@ class TestTracker(unittest.TestCase):
             actual = i[4]
         info = permissions.Permissions('/tmp/tracker/db')
         expected = int(info.rwx())
-        self.assertEqual(actual, expected)
-
-    def test_walker_owner(self):
-        """Walker should insert the owner for path"""
-        meta = permissions.Tracker(path='/tmp/tracker',
-                database = '/tmp/tracker/db')
-        meta.walker()
-        data = database.Worker('/tmp/tracker/db')
-        for i in data.get_meta('/tmp/tracker/db'):
-            actual = i[2]
-        info = permissions.Permissions('/tmp/tracker/db')
-        expected = info.owner()
         self.assertEqual(actual, expected)
 
     def test_walker_single(self):

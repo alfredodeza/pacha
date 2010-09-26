@@ -7,23 +7,6 @@ FILE_DIR = os.path.dirname(FILE_CWD)
 DB_FILE = FILE_DIR+'/db/pacha.db'
 
 
-CONFIG_TABLE = """CREATE TABLE IF NOT EXISTS config(
-    path            TEXT, 
-    frequency       INT, 
-    master          VARCHAR(12), 
-    host            VARCHAR(32),
-    ssh_user        VARCHAR(32),
-    ssh_port        INT,
-    hosts_path      TEXT,
-    hg_autocorrect  VARCHAR(12),
-    log_enable      VARCHAR(12),
-    log_path        VARCHAR(12),
-    log_level       VARCHAR(12),
-    log_format      TEXT,
-    log_datefmt     TEXT 
-)"""
-
-
 REPOS_TABLE = """CREATE TABLE IF NOT EXISTS repos(
     id              integer primary key, 
     path            TEXT,  
@@ -62,7 +45,6 @@ class Worker(object):
         self.c = self.conn.cursor()
         self.c.execute(REPOS_TABLE)
         self.c.execute(METADATA_TABLE)
-        self.c.execute(CONFIG_TABLE)
 
 
     def closedb(self):

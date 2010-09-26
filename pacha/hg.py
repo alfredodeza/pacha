@@ -212,22 +212,28 @@ class Hg(object):
         return changeset[-13:].split('\n')
 
 
-def update(hosts_path):
-    """Updates a mercurial repository pluging in directly into Mercurial"""
+def update(hosts_path, rebuild=False):
     for dirs in os.listdir(hosts_path):
         sub_dir = os.path.join(hosts_path, dirs)
         if os.path.isdir(sub_dir):
-            for dir in os.listdir(os.path.join(hosts_path, dirs)):
-                directory = os.path.join(sub_dir, dir)
-                if os.path.isdir(directory):
-                    u = ui.ui()
-                    repo = hg.repository(u, directory)
-                    repo.ui.pushbuffer()
-                    commands.update(ui.ui(), repo)
-                    hg_log.debug('updating host %s directory: %s' % (dirs, directory))
-                    hg_log.debug(repo.ui.popbuffer().split('\n')[0])
-                else:
-                    hg_log.error('%s is not a directory' % directory)
+            if rebuild:
+                hg_push_update(os.path.join(hosts_path, dirs))
+            else:
+                for dir in os.listdir(os.path.join(hosts_path, dirs)):
+                    directory = os.path.join(sub_dir, dir)
+                    if os.path.isdir(directory):
+                        hg_push_update(directory)
+                    else:
+                        hg_log.error('%s is not a directory' % directory)
+
+def hg_push_update(repo):
+    u = ui.ui()
+    repo = hg.repository(u, repo)
+    repo.ui.pushbuffer()
+    commands.update(ui.ui(), repo)
+    hg_log.debug("updating repo: %s" % repo)
+    hg_log.debug(repo.ui.popbuffer().split('\n')[0])
+
 
 def hg_user():
     """In charge of checking if you have a username set in either 

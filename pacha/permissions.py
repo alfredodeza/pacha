@@ -1,16 +1,12 @@
-"""Will attempt to get the owner and permissions of a file to be able to 
-set them correctly when rebuilding"""
-
+import logging
 import pwd
 import grp
 import os
 import stat
-import database
+from database import Worker, DB_FILE
 
-# Fixes Database Absolute Location
-FILE_CWD =  os.path.abspath(__file__)
-FILE_DIR = os.path.dirname(FILE_CWD)
-DB_FILE = FILE_DIR+'/pacha.db'
+
+rwx_log = logging.getLogger('pacha.permissions')
 
 class Permissions(object):
     """Gathers the exact metadata we need for every file or given
@@ -56,6 +52,9 @@ class Tracker(object):
         dir_meta = Permissions(self.path)
         self.insert(self.path, dir_meta.owner(), dir_meta.group(),
                 dir_meta.rwx(), 'dir')
+        rwx_log.debug("%s has %s %s %s" % (self.path, dir_meta.owner(),
+            dir_meta.group(), dir_meta.rwx()))
+        rwx_log.debug("directory stat inserted into database")
 
         for root, directories, files in os.walk(self.path):
             # do the directories first:
@@ -63,31 +62,36 @@ class Tracker(object):
                 try:
                     absolute = os.path.join(root, dirs)
                     metadata = Permissions(absolute)
+                    rwx_log.debug("stat on subdir %s" % absolute)
                     if os.path.isdir(absolute):
                         own = metadata.owner()
                         grp = metadata.group()
                         permissions = metadata.rwx()
                         self.insert(absolute, own, grp, permissions, 'dir')
-                except IOError:
-                    pass # we are ok if it does not get recorded
+                except IOError, error:
+                    rwx_log.error("grabbing permissions on dir %s" % self.path) 
+                    rwx_log.error(error)
 
             for f in files:
                 try:
                     absolute = os.path.join(root, f)
                     metadata = Permissions(absolute)
+                    rwx_log.debug("stat on subdir %s" % absolute)
                     if os.path.isfile(absolute):
                         own = metadata.owner()
                         grp = metadata.group()
                         permissions = metadata.rwx()
                         self.insert(absolute, own, grp, permissions, 'file')
                 except IOError:
-                    pass # we are ok if it does not get recorded
+                    rwx_log.error("grabbing permissions on file %s" % self.path) 
+                    rwx_log.error(error)
 
     def single_file(self):
         """If we are given a single file we get the information without
         trying to walk the whole tree"""
 
         if os.path.isfile(self.path):
+            rwx_log.debug("single file metadata for %s" % self.path)
             metadata = Permissions(self.path)
             own = metadata.owner()
             grp = metadata.group()
@@ -97,8 +101,9 @@ class Tracker(object):
 
     def insert(self, path, own, grp, permissions, ftype):
         """For every file, sends the info to the database"""
-        db = database.Worker(self.database)
+        db = Worker(self.database)
         db.insert_meta(path, own, grp, permissions, ftype)
+        rwx_log.debug("inserting path to database: %s" % path)
 
 
 

@@ -57,7 +57,7 @@ class Rebuild(object):
         call(command, shell=True)
         # update everything making sure we have the latest rev:
         try:
-            update(self.update)
+            update(self.destination)
         except mercurial.error.RepoError:
             pass
         # if for some reason the above failed let me know:
