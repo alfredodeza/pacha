@@ -243,13 +243,16 @@ class PachaCommands(object):
 to a file", std="err")
 
 
-    def rebuild(self, server=None, hostname=None, port=22, dryrun=False, 
-            directory=False, source=None):
+    def rebuild(self, hostname, directory=None):
         """
         server  = user@server
         host    = host to rebuild from (must exist in Master Pacha Server) 
         hostname    = Host to be rebuilt 
         """
+        server = "%s@%s" % (self.config['ssh_user'], self.config['host'])
+        port = self.config['ssh_port']
+        source = self.config['hosts_path']
+ 
 
         print "SSH Connection: %-15s" % server
         print "SSH Port:       %-15s" % port
@@ -411,16 +414,7 @@ A systems configuration management engine
             directory = None
             if options.directory:
                 directory = options.directory
-            server = "%s@%s" % (self.config['ssh_user'], self.config['host'])
-            port = self.config['ssh_port']
-            source = self.config['hosts_path']
-            self.rebuild(
-                    server      = server, 
-                    port        = port,
-                    hostname    = options.rebuild,
-                    source      = source,
-                    directory   = directory
-                )
+            self.rebuild(hostname=options.rebuild, directory=directory)
 
 main = PachaCommands
 
