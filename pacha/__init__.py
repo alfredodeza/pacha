@@ -404,7 +404,7 @@ A systems configuration management engine
                 path = os.getcwd()
             if len(sys.argv) >=3: #with path
                 path = sys.argv[2]
-            self.watch(path)
+            self.watch(os.abspath(path))
 
         if options.watch_single:
             self.watch_single(options.watch_single)
