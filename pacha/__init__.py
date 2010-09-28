@@ -243,28 +243,32 @@ class PachaCommands(object):
 to a file", std="err")
 
 
-    def rebuild(self, server=None, hostname=None, dryrun=False, 
-            directories=False, source_path=None):
+    def rebuild(self, server=None, hostname=None, port=22, dryrun=False, 
+            directory=False, source=None):
         """
         server  = user@server
         host    = host to rebuild from (must exist in Master Pacha Server) 
         hostname    = Host to be rebuilt 
         """
 
-        if not directories:
-            print "SSH Connection: %-15s" % server
-            print "Host to rebuild: %-15s" % hostname
-            
-            try:
-                confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
-                run = rebuild.Rebuild(server=server,
-                        hostname=hostname, source=source_path)
-                run.retrieve_files()
-                run.replace_manager()
+        print "SSH Connection: %-15s" % server
+        print "SSH Port:       %-15s" % port
+        print "Host to rebuild: %-15s" % hostname
+        
+        try:
+            confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
+            run = rebuild.Rebuild(
+                    server=server,
+                    hostname=hostname, 
+                    source=source,
+                    directory=directory,
+                    port=port)
+            run.retrieve_files()
+            run.replace_manager()
 
-            except KeyboardInterrupt:
-                print "\nExiting nicely from Pacha"
-                sys.exit(0)
+        except KeyboardInterrupt:
+            print "\nExiting nicely from Pacha"
+            sys.exit(0)
 
 
     def parseArgs(self, argv):
@@ -319,35 +323,35 @@ A systems configuration management engine
      connect to a remote host via SSH and copy the needed files.")
 
         group.add_option('--rebuild',
-                help="""Receives user and host as arguments [user@host]""")
+                help="""Pass the hostname of the host you want to rebuild.""")
 
-        group.add_option('--host',
-                help="""The host to rebuild from""")
-
-
-        group.add_option('--source-path',
-                help="""Specify the absolute path where Pacha should retrieve\
- file from""")
-
-        group.add_option('--port',
-                help="""Overrides default port 22 for SSH""")
-
-        group.add_option('--destination-path',
-                help="""Overrides the default destination of the files to a
- different absolute path""")
-
+#        group.add_option('--host',
+#                help="""The host to rebuild from""")
+#
+#
+#        group.add_option('--source-path',
+#                help="""Specify the absolute path where Pacha should retrieve\
+# file from""")
+#
+#        group.add_option('--port',
+#                help="""Overrides default port 22 for SSH""")
+#
+#        group.add_option('--destination-path',
+#                help="""Overrides the default destination of the files to a
+# different absolute path""")
+#
         group.add_option('--directory',
                 help="""Specifies a single directory to retrieve from a remote
  host instance of a Pacha server""")
 
-        group.add_option('--show-directories', action="store_true",
-                help="""Shows the available directories to retrieve from a
- given host.""")
-
-        group.add_option('--dryrun', action="store_true",
-                help="""Doesn't *actually* do anything, just prints the 
-commands as they would happen""")
-
+#        group.add_option('--show-directories', action="store_true",
+#                help="""Shows the available directories to retrieve from a
+# given host.""")
+#
+#        group.add_option('--dryrun', action="store_true",
+#                help="""Doesn't *actually* do anything, just prints the 
+#commands as they would happen""")
+#
         parser.add_option_group(group)
 
         options, arguments = parser.parse_args(argv)
@@ -403,16 +407,20 @@ commands as they would happen""")
             self.watch_single(options.watch_single)
 
         # Rebuilding Stuff
-        if options.rebuild and options.host and options.source_path:
-            if options.dryrun:
-                self.rebuild(server = options.rebuild, 
-                        hostname = options.host,
-                        source_path = options.source_path)
-            else:
-                self.rebuild(server = options.rebuild, 
-                        hostname = options.host,
-                        source_path = options.source_path)
-
+        if options.rebuild:
+            directory = None
+            if options.directory:
+                directory = options.directory
+            server = "%s@%s" % (self.config['ssh_user'], self.config['host'])
+            port = self.config['ssh_port']
+            source = self.config['hosts_path']
+            self.rebuild(
+                    server      = server, 
+                    port        = port,
+                    hostname    = options.rebuild,
+                    source      = source,
+                    directory   = directory
+                )
 
 main = PachaCommands
 
