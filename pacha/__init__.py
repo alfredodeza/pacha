@@ -93,8 +93,10 @@ class PachaCommands(object):
             self.msg(msg=WARNING, std="err")
         if config_file == '':
             self.msg(msg=WARNING, std="err")
-        else:
+        elif os.path.isfile(config_file):
             db_conf.set_config(config_file)
+            return db_conf.stored_config()
+        else:
             return db_conf.stored_config()
 
 
@@ -115,6 +117,7 @@ class PachaCommands(object):
             print "\nConfiguration file: %s\n" % config_file
             for i in conf.items():
                 print "%-15s= %-4s" % (i[0], i[1])
+            print ''
         except Exception, error:
             print "Could not complete command: %s" % error 
 
