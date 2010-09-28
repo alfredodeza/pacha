@@ -219,12 +219,16 @@ def update(hosts_path, rebuild=False):
             if rebuild:
                 hg_push_update(os.path.join(hosts_path, dirs))
             else:
-                for dir in os.listdir(os.path.join(hosts_path, dirs)):
-                    directory = os.path.join(sub_dir, dir)
-                    if os.path.isdir(directory):
-                        hg_push_update(directory)
-                    else:
-                        hg_log.error('%s is not a directory' % directory)
+                try:
+                    for dir in os.listdir(os.path.join(hosts_path, dirs)):
+                        directory = os.path.join(sub_dir, dir)
+                        if os.path.isdir(directory):
+                            hg_push_update(directory)
+                        else:
+                            hg_log.error('%s is not a directory' % directory)
+                except OSError, error:
+                    # avoid permission denied
+                    hg_log.error("couldn't update %s. Error: %s" % (directory, error)) 
 
 def hg_push_update(repo):
     u = ui.ui()
