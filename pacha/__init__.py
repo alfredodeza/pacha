@@ -122,7 +122,7 @@ class PachaCommands(object):
             print "Could not complete command: %s" % error 
 
 
-    def set_logging(self):
+    def set_logging(self, verbose=False):
         enabled = self.config['log_enable']
         log_path = self.config['log_path']
 
@@ -142,6 +142,8 @@ class PachaCommands(object):
         if not enabled or log_path is None:
             logging.disable(logging.CRITICAL)
 
+        if not verbose:
+            logging.disable(logging.CRITICAL)
 
     def add_host(self, host):
         try:
@@ -323,6 +325,9 @@ A systems configuration management engine
  Also used to add more individual files to track within the same\
  directory (e.g. like tracking .vimrc in $HOME)") 
 
+        parser.add_option('--verbose', '-v', action='store_true',
+                help="Enables verbosity in terminal")
+
         # Daemon Group
         daemon_group = OptionGroup(parser, "Daemon Options", "Pacha is able to\
     run in the background, these options will help you manage the daemon")
@@ -400,18 +405,23 @@ A systems configuration management engine
         if len(argv) == 1:
             parser.print_help()
   
-        # set logging 
-        self.set_logging()
 
         # Deamon Stuff
         if options.daemon_start:
+            self.set_logging(verbose=True)
             daemon.start(self.config)
 
         if options.daemon_stop:
             daemon.stop()
 
         if options.daemon_foreground:
+            self.set_logging(verbose=True)
             daemon.start(config=self.config, foreground=True)
+
+        if options.verbose:
+            self.set_logging(verbose=True)
+        if not options.verbose:
+            self.set_logging()
 
         if options.daemon_status:
             daemon.status()
