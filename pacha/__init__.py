@@ -293,17 +293,17 @@ A systems configuration management engine
                 help="""Removes the stored configuration file""")
 
         parser.add_option('--add-host',
-                help="""Creates structure for saving host configs
-     only meant for Pacha server""")
+                help="""Creates structure for saving host configs\
+ only meant for Pacha server""")
 
         parser.add_option('--watch', action="store_true",
                help="Provide a path for Pacha to watch and keep track of")  
 
         parser.add_option('--watch-single',
                help="Provide a single file for Pacha to watch in a given\
-     directory. Everything else in the directory will be ignored.\
-     Also used to add more individual files to track within the same\
-     directory (e.g. like tracking .vimrc in $HOME)") 
+ directory. Everything else in the directory will be ignored.\
+ Also used to add more individual files to track within the same\
+ directory (e.g. like tracking .vimrc in $HOME)") 
 
         # Daemon Group
         daemon_group = OptionGroup(parser, "Daemon Options", "Pacha is able to\
@@ -325,8 +325,8 @@ A systems configuration management engine
 
         # Rebuilding Group
         group = OptionGroup(parser, "Rebuilding Options", "When rebuilding\
-     a host, you will need to pass a few required options to Pacha so it can\
-     connect to a remote host via SSH and copy the needed files.")
+ a host, you will need to pass a few required options to Pacha so it can\
+ connect to a remote host via SSH and copy the needed files.")
 
         group.add_option('--rebuild',
                 help="""Pass the hostname of the host you want to rebuild.""")
@@ -407,7 +407,7 @@ A systems configuration management engine
                 path = os.getcwd()
             if len(sys.argv) >=3: #with path
                 path = sys.argv[2]
-            self.watch(os.abspath(path))
+            self.watch(os.path.abspath(path))
 
         if options.watch_single:
             self.watch_single(options.watch_single)
