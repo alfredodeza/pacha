@@ -1,16 +1,16 @@
 import logging
-from subprocess import call, PIPE
-from getpass import getuser
 import os
 import sys
-from time import strftime
-from mercurial import commands, ui, hg
-
-from guachi import ConfigMapper
+from subprocess     import call, PIPE
+from getpass        import getuser
+from time           import strftime
+from mercurial      import commands, ui, hg
+from ConfigParser   import ConfigParser, NoOptionError
+from guachi         import ConfigMapper
 
 from pacha.database import DB_FILE
-from pacha.host import hostname
-from pacha.util import run_command
+from pacha.host     import hostname
+from pacha.util     import run_command
 
 hg_log = logging.getLogger('pacha.hg')
 
@@ -173,6 +173,24 @@ class Hg(object):
             print """Have you added this host in the Pacha server?"""
         # TODO: need to add trusted USERS in the global .hgrc 
         
+    def hgrc_validate(self):
+        """Returns False if it can't find an hgrc and returns 
+        the full ssh path if found"""
+        hg_log.debug("validating hgrc file at %s" % self.path)
+        hgrc = "%s/.hg/hgrc" % self.path
+        if os.path.exists(hgrc):
+            hg_log.debug("hgrc found at %s" % self.path)
+            parser = ConfigParser()
+            parser.read(hgrc)
+            try:
+                default_path = parser.get('paths', 'default')
+                return default_path
+            except NoOptionError:
+                return False
+        else:
+            hg_log.debug("hgrc not found at %s" % self.path)
+            return False
+
     def validate(self):
         """Validates a working HG path"""
         hg_log.debug("validating repository at %s" % self.path)

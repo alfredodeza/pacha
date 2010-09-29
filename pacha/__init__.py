@@ -23,13 +23,13 @@
 import logging
 import os
 import sys
-from optparse import OptionParser, OptionGroup
-from guachi import ConfigMapper
 
-from pacha.config import set_mappings, DB_FILE
-from pacha import daemon, hg, rebuild, permissions
+from optparse       import OptionParser, OptionGroup
+from guachi         import ConfigMapper
+from pacha.config   import set_mappings, DB_FILE
+from pacha          import daemon, hg, rebuild, permissions
 from pacha.database import Worker, is_tracked
-from pacha.host import Host
+from pacha.host     import Host
 
 CONFIG_GONE = """
     +-----------------------------------------------------+
@@ -161,10 +161,27 @@ class PachaCommands(object):
         *  track the db if it is not tracked or push it with the new dir
         """
         try:
+            taking_over = False
             mercurial = hg.Hg(path=path, conf=self.config)
-            mercurial.hgrc()
-            # we do a first time clone:
-            mercurial.clone()
+            default_path = mercurial.hgrc_validate()
+            if default_path:
+                print """
+Found an existing repository with a default path:
+%s
+""" % default_path     
+                try:
+                    confirm = raw_input("""
+Enter  \t = use that same path
+Ctrl-C \t = abort
+""")
+                    taking_over = True
+                except KeyboardInterrupt:
+                    print "\nExiting nicely from Pacha"
+                    sys.exit(0)
+            if not taking_over:    
+                mercurial.hgrc()
+                # we do a first time clone:
+                mercurial.clone()
             # add the path to repos table in database
             db = Worker()
             db.insert(path=path, type='dir')
@@ -173,6 +190,7 @@ class PachaCommands(object):
             meta.walker()
         except Exception, error:
             print "Could not complete command: %s" % error 
+            sys.exit(1)
 
         # db tracking
         if not is_tracked():
