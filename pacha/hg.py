@@ -169,9 +169,7 @@ class Hg(object):
             hg_log.debug('cloning %s' % dest )
         except Exception, error:
             hg_log.error('could not clone repo: %s' % error)
-            print "Could not clone this repository: %s" % error
-            print """Have you added this host in the Pacha server?"""
-        # TODO: need to add trusted USERS in the global .hgrc 
+            return False
         
     def hgrc_validate(self):
         """Returns False if it can't find an hgrc and returns 
@@ -237,16 +235,16 @@ def update(hosts_path, rebuild=False):
             if rebuild:
                 hg_push_update(os.path.join(hosts_path, dirs))
             else:
-                try:
-                    for dir in os.listdir(os.path.join(hosts_path, dirs)):
-                        directory = os.path.join(sub_dir, dir)
+                for dir in os.listdir(os.path.join(hosts_path, dirs)):
+                    directory = os.path.join(sub_dir, dir)
+                    try:
                         if os.path.isdir(directory):
                             hg_push_update(directory)
                         else:
                             hg_log.error('%s is not a directory' % directory)
-                except OSError, error:
-                    # avoid permission denied
-                    hg_log.error("couldn't update %s. Error: %s" % (directory, error)) 
+                    except OSError, error:
+                        # avoid permission denied
+                        hg_log.error("couldn't update %s. Error: %s" % (sub_dir, error)) 
 
 def hg_push_update(repo):
     u = ui.ui()

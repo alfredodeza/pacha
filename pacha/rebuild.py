@@ -60,15 +60,17 @@ class Rebuild(object):
         if os.path.isdir(host_copy):
             # update everything making sure we have the latest rev:
             try:
-                update(self.destination)
+                update(host_copy)
             except mercurial.error.RepoError:
                 pass
-            return True
-            pass # we are good
+
+            # run pre-hooks
+            self.pre_hooks()
+
         else:
-            print """Pacha was not able to retrieve the files from the 
-SSH server provided.
-Check your settings and run --rebuild again."""
+            print """
+Pacha was not able to retrieve the files from the SSH server provided.
+Check your configuration file settings and run --rebuild again."""
             sys.exit(1)
 
     def replace_manager(self):
@@ -89,6 +91,8 @@ Check your settings and run --rebuild again."""
                     if path[3] == 'single': # a single file tracking
                         rebuild_log.debug('single file in self.tracked: %s' % dirname)
                         self.single_tracking(path[1])
+            # run post hooks 
+            self.post_hooks()
         else:
             print "Could not find DB at /tmp/%s/db/pacha.db" % self.hostname
             sys.exit(1)
@@ -222,4 +226,25 @@ path: %s""" % path
             print "Could not find matching ownership info for path: %s" % path
 
 
+    def pre_hooks(self):
+        """Anything that we find in the pacha_pre directory gets executed"""
+        pre_dir = '/tmp/%s/pacha_pre'
+        if os.path.exists(pre_dir):
+            for hook in os.listdir(pre_dir):
+                abspath = '%s/%s' % (pre_dir, hook)
+                # make sure it is executable 
+                os.chmod(abspath, 0755)
+                # now execute it!
+                call(abspath, shell=True)
+
+    def post_hooks(self):
+        """Anything in the pacha_post directory gets executed""" 
+        post_dir = '/tmp/%s/pacha_post'
+        if os.path.exists(post_dir):
+            for hook in os.listdir(post_dir):
+                abspath = '%s/%s' % (post_dir, hook)
+                # make sure it is executable 
+                os.chmod(abspath, 0755)
+                # now execute it!
+                call(abspath, shell=True)
 

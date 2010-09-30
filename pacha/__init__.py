@@ -96,6 +96,9 @@ class PachaCommands(object):
         elif os.path.isfile(config_file):
             db_conf.set_config(config_file)
             return db_conf.stored_config()
+        elif len(conf) <= 1: # config might not be set 
+            db_conf.set_config(config_file)
+            return db_conf.stored_config()
         else:
             return db_conf.stored_config()
 
@@ -178,8 +181,10 @@ Ctrl-C \t = abort
 """)
                     taking_over = True
                 except KeyboardInterrupt:
+                    print confirm
                     print "\nExiting nicely from Pacha"
                     sys.exit(0)
+            import pdb; pdb.set_trace() 
             if not taking_over:    
                 mercurial.hgrc()
                 # we do a first time clone:
@@ -200,15 +205,15 @@ Ctrl-C \t = abort
             pacha_dir = os.path.dirname(pacha_file)
             db_dir = pacha_dir+'/db'
 
+            mercurial = hg.Hg(path=db_dir, conf=self.config)
+            mercurial.hgrc()
+            # we do a first time clone:
+            mercurial.clone()
+            # add the path to repos table in database
+            db = Worker()
+            db.insert(path=path, type='dir')
+            # now make sure we record permissions metadata
             try:
-                mercurial = hg.Hg(path=db_dir, conf=self.config)
-                mercurial.hgrc()
-                # we do a first time clone:
-                mercurial.clone()
-                # add the path to repos table in database
-                db = Worker()
-                db.insert(path=path, type='dir')
-                # now make sure we record permissions metadata
                 meta = permissions.Tracker(path=path)
                 meta.walker()
             except Exception, error:
@@ -420,6 +425,7 @@ A systems configuration management engine
 
         if options.verbose:
             self.set_logging(verbose=True)
+
         if not options.verbose:
             self.set_logging()
 
