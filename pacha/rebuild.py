@@ -228,21 +228,23 @@ path: %s""" % path
 
     def pre_hooks(self):
         """Anything that we find in the pacha_pre directory gets executed"""
-        pre_dir = '/tmp/%s/pacha_pre'
+        pre_dir = '/tmp/%s/pacha_pre' % self.hostname
         if os.path.exists(pre_dir):
             for hook in os.listdir(pre_dir):
                 abspath = '%s/%s' % (pre_dir, hook)
                 # make sure it is executable 
+                rebuild_log.debug("chmod on %s" % abspath)
                 os.chmod(abspath, 0755)
                 # now execute it!
                 call(abspath, shell=True)
 
     def post_hooks(self):
         """Anything in the pacha_post directory gets executed""" 
-        post_dir = '/tmp/%s/pacha_post'
+        post_dir = '/tmp/%s/pacha_post' % self.hostname
         if os.path.exists(post_dir):
             for hook in os.listdir(post_dir):
                 abspath = '%s/%s' % (post_dir, hook)
+                rebuild_log.debug("chmod on %s" % abspath)
                 # make sure it is executable 
                 os.chmod(abspath, 0755)
                 # now execute it!
