@@ -96,9 +96,8 @@ class PachaCommands(object):
             self.db.set_config(config_file)
             return self.db.stored_config()
         elif not os.path.isfile(config_file) and len(conf.items()) > 3: # Meaning already parsed
-            self.msg(CONFIG_GONE) 
+            print CONFIG_GONE 
             return self.db.stored_config()
-
         elif len(conf.items()) <= 1: # config might not be set 
             self.db.set_config(config_file)
             return self.db.stored_config()
