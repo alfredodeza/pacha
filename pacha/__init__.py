@@ -117,8 +117,6 @@ class PachaCommands(object):
     def config_values(self):
         conf = ConfigMapper(DB_FILE).stored_config()
         config_file = conf['path']
-        if not os.path.isfile(config_file):
-             print CONFIG_GONE 
         try:
             print "\nConfiguration file: %s\n" % config_file
             for i in conf.items():
