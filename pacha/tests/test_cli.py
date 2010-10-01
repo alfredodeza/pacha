@@ -2,14 +2,15 @@ import unittest
 import sys
 import os
 
-from mock import MockSys
-from guachi import ConfigMapper
-from pacha import config
+from mock           import MockSys
+from guachi         import ConfigMapper
+from pacha          import config
+from pacha.util     import YELLOW, ENDS
 import pacha 
 
 
 
-CONFIG_GONE = """
+CONFIG_GONE = YELLOW+"""
     +-----------------------------------------------------+
     |                   ** WARNING **                     |
     |                                                     |
@@ -20,12 +21,11 @@ CONFIG_GONE = """
     |                                                     | 
     +-----------------------------------------------------+
 
-
-"""
-
+"""+ENDS+'\n'
 
 
-WARNING = """ 
+
+WARNING = YELLOW+""" 
      +----------------------------------------------------+
      |                 ** WARNING **                      |
      |                                                    |
@@ -36,7 +36,7 @@ WARNING = """
      |                                                    |
      +----------------------------------------------------+
 
-"""
+"""+ENDS
 
 
 class MockDatabase(object):

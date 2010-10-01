@@ -30,8 +30,9 @@ from pacha.config   import set_mappings
 from pacha          import daemon, hg, rebuild, permissions
 from pacha.database import Worker, is_tracked, DB_FILE
 from pacha.host     import Host
+from pacha.util     import YELLOW, ENDS
 
-CONFIG_GONE = """
+CONFIG_GONE = YELLOW+"""
     +-----------------------------------------------------+
     |                   ** WARNING **                     |
     |                                                     |
@@ -42,10 +43,10 @@ CONFIG_GONE = """
     |                                                     | 
     +-----------------------------------------------------+
 
-"""
+"""+ENDS
 
 
-WARNING = """ 
+WARNING = YELLOW+""" 
      +----------------------------------------------------+
      |                 ** WARNING **                      |
      |                                                    |
@@ -56,7 +57,7 @@ WARNING = """
      |                                                    |
      +----------------------------------------------------+
 
-"""
+"""+ENDS
  
 class PachaCommands(object):
     """A lot of complicated options can happen with Pacha, so 
