@@ -1,12 +1,4 @@
 from guachi import ConfigMapper
-import os
-
-
-# Fixes Database Absolute Location
-FILE_CWD =  os.path.abspath(__file__)
-FILE_DIR = os.path.dirname(FILE_CWD)
-DB_FILE = FILE_DIR+'/db/pacha.db'
-
 
 INI_MAPPINGS = {
         'pacha.frequency':'frequency',
@@ -39,7 +31,7 @@ DEFAULT_MAPPINGS = {
         }
 
 
-def set_mappings():
+def set_mappings(DB_FILE):
     """Sets the INI and default mappings in the database"""
     conf = ConfigMapper(DB_FILE)
     conf.set_default_options(DEFAULT_MAPPINGS)

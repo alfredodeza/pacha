@@ -1,6 +1,8 @@
 import unittest
 import sys
 
+from guachi import ConfigMapper
+from pacha import config
 import pacha 
 
 WARNING = """ 
@@ -40,14 +42,12 @@ class TestCommandLine(unittest.TestCase):
         actual = pacha.PachaCommands(parse=False)
         """argv=None, test=False, parse=True, db=Worker())"""
         self.assertEqual(actual.test, False)
-        self.assertEqual(actual.db.__module__, 'pacha.database' )
-
+        self.assertEqual(actual.db.__module__, 'guachi' )
 
     def test_warning_message(self):
         actual = pacha.WARNING
         expected = WARNING
         self.assertEqual(actual, expected) 
-
 
     def test_display_message_out(self):
         # For this test, turn off stderr:
@@ -67,11 +67,15 @@ class TestCommandLine(unittest.TestCase):
         actual = sys.stderr.message 
         self.assertEqual(actual, "snap")
 
-#    def test_check_config(self):
-#        Worker = MockDatabase(config_path="/pacha.conf") 
-#        actual = pacha.PachaCommands(parse=False, db=Worker).check_config() 
-#        expected = defaults()
-#        self.assertEqual(actual, expected) 
-#
+    def test_check_config(self):
+        pacha.DB_FILE = '/tmp/pacha_test.db'
+        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test.db')) 
+        conf = commands.check_config() 
+        commands.add_config('/tmp')
+        actual = len(conf.keys())
+        config.DEFAULT_MAPPINGS['path'] = '/tmp'
+        expected = len(config.DEFAULT_MAPPINGS.keys())
+        self.assertEqual(actual, expected) 
+
 if __name__ == '__main__':
     unittest.main()

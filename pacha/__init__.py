@@ -63,7 +63,7 @@ class PachaCommands(object):
     it is easier if everything lives under a class rather than
     the widely used main()"""
 
-    def __init__(self, argv=None, test=False, parse=True, db=Worker()):
+    def __init__(self, argv=None, test=False, parse=True, db=ConfigMapper(DB_FILE)):
         self.db = db
         if argv is None:
             argv = sys.argv
@@ -85,8 +85,7 @@ class PachaCommands(object):
 
     def check_config(self):
         """if any commands are run, check for a MASTER config file Location"""
-        db_conf = ConfigMapper(DB_FILE)
-        conf = db_conf.stored_config()
+        conf = self.db.stored_config()
         try:
             config_file = conf['path']
         except KeyError:
@@ -94,20 +93,23 @@ class PachaCommands(object):
         if config_file == '':
             self.msg(msg=WARNING, std="err")
         elif os.path.isfile(config_file):
-            db_conf.set_config(config_file)
-            return db_conf.stored_config()
+            self.db.set_config(config_file)
+            return self.db.stored_config()
+
         elif len(conf) <= 1: # config might not be set 
-            db_conf.set_config(config_file)
-            return db_conf.stored_config()
+            self.db.set_config(config_file)
+            print "returning full set_config"
+            return self.db.stored_config()
         else:
-            return db_conf.stored_config()
+            print "returning empty cnofgi"
+            return self.db.stored_config()
 
 
     def add_config(self, path):
-        conf = ConfigMapper(DB_FILE).stored_config()
+        conf = self.db.stored_config()
         abspath = os.path.abspath(path)
         conf['path'] = abspath
-        set_mappings()
+        set_mappings(DB_FILE)
         self.msg("Configuration file added: %s" % abspath)
 
 
