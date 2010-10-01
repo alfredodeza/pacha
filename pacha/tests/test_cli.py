@@ -122,8 +122,17 @@ class TestCommandLine(unittest.TestCase):
         expected = CONFIG_GONE
         self.assertEqual(actual, expected) 
 
-
-
+    def test_add_config(self):
+        """Add a configuration file to the config db"""
+        pacha.DB_FILE = '/tmp/pacha_test.db'
+        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test.db')) 
+        sys.stdout = MockSys()
+        commands.add_config('/non/existent/path')
+        conf = ConfigMapper('/tmp/pacha_test.db')
+        db_conf = conf.stored_config()
+        
+        self.assertEqual(db_conf['path'], '/non/existent/path')
+        self.assertEqual(sys.stdout.captured(), 'Configuration file added: /non/existent/path')
 
 
 if __name__ == '__main__':
