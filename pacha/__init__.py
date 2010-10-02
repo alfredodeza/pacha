@@ -158,7 +158,7 @@ class PachaCommands(object):
             created = new.create()
             if created:
                 print "Added host %s" % host
-            elif not created:
+            else:
                 print "Host %s has been already created" % host
         except Exception, error:
             print "Could not complete command: %s" % error 
@@ -190,7 +190,6 @@ Ctrl-C \t = abort
                     print confirm
                     print "\nExiting nicely from Pacha"
                     sys.exit(0)
-         
             if not taking_over:    
                 mercurial.hgrc()
                 # we do a first time clone:
