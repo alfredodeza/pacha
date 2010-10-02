@@ -6,7 +6,7 @@ import getpass
 
 from mock           import MockSys
 from guachi         import ConfigMapper
-from pacha          import config, host
+from pacha          import config, host, hg
 from pacha.util     import YELLOW, ENDS
 import pacha 
 
@@ -77,7 +77,7 @@ class TestCommandLine(unittest.TestCase):
 
         os.makedirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
         os.mkdir(test_dir)
-        conf = open('/tmp/test_pacha/pacha.conf', 'w')
+        conf = open('/tmp/pacha_test/pacha.conf', 'w')
         conf.write('[DEFAULT]\n')
         conf.write('pacha.ssh.user = %s\n' % self.username)
         conf.write('pacha.host = %s\n' % host.hostname())
@@ -99,7 +99,7 @@ class TestCommandLine(unittest.TestCase):
 
         os.makedirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
         os.mkdir(test_dir)
-        conf = open('/tmp/test_pacha/pacha.conf', 'w')
+        conf = open('/tmp/pacha_test/pacha.conf', 'w')
         conf.write('[DEFAULT]\n')
         conf.write('pacha.ssh.user = %s\n' % self.username)
         conf.write('pacha.host = %s\n' % host.hostname())
@@ -292,10 +292,12 @@ class TestCommandLine(unittest.TestCase):
 
     def test_watch(self):
         """Watch a directory for changes"""
+        hg.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        conf = ConfigMapper('/tmp/pacha_test/pacha_test.db').stored_config()
+        conf['path'] = '/tmp/pacha_test/pacha.conf'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
-        conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
-        
+        commands.config = commands.check_config()
         os.mkdir('/tmp/pacha_test/foo')
         commands.watch('/tmp/pacha_test/foo')
         actual = os.path.isdir('/tmp/pacha_test/foo/.hg')
