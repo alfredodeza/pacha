@@ -64,7 +64,29 @@ class TestCommandLine(unittest.TestCase):
 
     def setUp(self):
         # make sure we do not have db file 
-        test_dir = '/tmp/test_pacha'
+        test_dir = '/tmp/pacha_test'
+        remote_dir = '/tmp/remote_pacha'
+        pacha_host = '/tmp/pacha_test_host'
+        if os.path.isdir(test_dir):
+            shutil.rmtree(test_dir)
+        if os.path.isdir(remote_dir):
+            shutil.rmtree(remote_dir)
+        if os.path.isdir(pacha_host):
+            shutil.rmtree(pacha_host)
+
+
+        os.makedirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
+        os.mkdir(test_dir)
+        conf = open('/tmp/test_pacha/pacha.conf', 'w')
+        conf.write('[DEFAULT]\n')
+        conf.write('pacha.ssh.user = %s\n' % self.username)
+        conf.write('pacha.host = %s\n' % host.hostname())
+        conf.write('pacha.hosts.path = /tmp/remote_pacha/hosts\n')
+        conf.close()
+
+    def tearDown(self):
+        # make sure we do not have db file 
+        test_dir = '/tmp/pacha_test'
         remote_dir = '/tmp/remote_pacha'
         pacha_host = '/tmp/pacha_test_host'
         if os.path.isdir(test_dir):
@@ -129,6 +151,8 @@ class TestCommandLine(unittest.TestCase):
         """Don't set a path and get an error message"""
         sys.stderr = MockSys()
         pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        #os.remove(pacha.DB_FILE)
+        #self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         commands.check_config() 
         actual  = sys.stderr.captured()
@@ -244,7 +268,7 @@ class TestCommandLine(unittest.TestCase):
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         commands.config['hosts_path'] = '/tmp/pacha_test'
 
-        os.mkdir('/tmp/pacha_test_host')
+        os.mkdir('/tmp/pacha_test/pacha_test_host')
         commands.add_host(new_host)
         actual  = sys.stdout.captured()
         expected = "Host pacha_test_host has been already created\n"
