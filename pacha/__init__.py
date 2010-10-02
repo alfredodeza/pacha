@@ -30,34 +30,8 @@ from pacha.config   import set_mappings
 from pacha          import daemon, hg, rebuild, permissions
 from pacha.database import Worker, is_tracked, DB_FILE
 from pacha.host     import Host
-from pacha.util     import YELLOW, ENDS
+from pacha.util     import WARNING, CONFIG_GONE
 
-CONFIG_GONE = YELLOW+"""
-    +-----------------------------------------------------+
-    |                   ** WARNING **                     |
-    |                                                     |
-    |  The config file supplied does not exist. Try       |
-    |  adding a new valid path by running:                |
-    |                                                     |      
-    |    pacha --add-config /path/to/config               |
-    |                                                     | 
-    +-----------------------------------------------------+
-
-"""+ENDS
-
-
-WARNING = YELLOW+""" 
-     +----------------------------------------------------+
-     |                 ** WARNING **                      |
-     |                                                    |
-     |  You have not set a configuration file for Pacha.  |
-     |  To add a configuration file, run:                 |
-     |                                                    |
-     |    pacha --add-config /path/to/config              |
-     |                                                    |
-     +----------------------------------------------------+
-
-"""+ENDS
  
 class PachaCommands(object):
     """A lot of complicated options can happen with Pacha, so 
@@ -202,15 +176,14 @@ Ctrl-C \t = abort
             meta.walker()
         except Exception, error:
             print "Could not complete command: %s" % error 
-            sys.exit(1)
 
         # db tracking
         if not is_tracked():
-            pacha_file = os.path.abspath(__file__)
-            pacha_dir = os.path.dirname(pacha_file)
-            db_dir = pacha_dir+'/db'
+            #pacha_file = os.path.abspath(__file__)
+            #pacha_dir = os.path.dirname(pacha_file)
+            db_dir = os.path.dirname(DB_FILE)
 
-            mercurial = hg.Hg(path=db_dir, conf=self.config)
+            mercurial = hg.Hg(path=db_dir, conf=self.db.stored_config())
             mercurial.hgrc()
             # we do a first time clone:
             mercurial.clone()

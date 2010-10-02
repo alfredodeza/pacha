@@ -6,7 +6,7 @@ import getpass
 
 from mock           import MockSys
 from guachi         import ConfigMapper
-from pacha          import config, host, hg
+from pacha          import config, host, hg, database
 from pacha.util     import YELLOW, ENDS
 import pacha 
 
@@ -283,8 +283,6 @@ class TestCommandLine(unittest.TestCase):
         new_host = 'pacha_test_host'
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         commands.config['hosts_path'] = '/no/path/here/'
-
-        #os.mkdir('/tmp/pacha_test/pacha_test_host')
         commands.add_host(new_host)
         actual  = sys.stdout.captured()
         expected = "Could not complete command: [Errno 2] No such file or directory: '/no/path/here/pacha_test_host'\n"
@@ -293,13 +291,15 @@ class TestCommandLine(unittest.TestCase):
     def test_watch(self):
         """Watch a directory for changes"""
         hg.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        database.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db').stored_config()
-        conf['path'] = '/tmp/pacha_test/pacha.conf'
-        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
-        commands.config = commands.check_config()
+        
+        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
+        cmd.add_config('/tmp/pacha_test/pacha.conf')
+        cmd.check_config()
         os.mkdir('/tmp/pacha_test/foo')
-        commands.watch('/tmp/pacha_test/foo')
+        cmd.watch('/tmp/pacha_test/foo')
         actual = os.path.isdir('/tmp/pacha_test/foo/.hg')
         self.assertTrue(actual)
 

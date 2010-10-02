@@ -12,6 +12,32 @@ YELLOW = '\033[93m'
 RED = '\033[91m'
 ENDS = '\033[0m'
 
+CONFIG_GONE = YELLOW+"""
+    +-----------------------------------------------------+
+    |                   ** WARNING **                     |
+    |                                                     |
+    |  The config file supplied does not exist. Try       |
+    |  adding a new valid path by running:                |
+    |                                                     |      
+    |    pacha --add-config /path/to/config               |
+    |                                                     | 
+    +-----------------------------------------------------+
+
+"""+ENDS
+
+
+WARNING = YELLOW+""" 
+     +----------------------------------------------------+
+     |                 ** WARNING **                      |
+     |                                                    |
+     |  You have not set a configuration file for Pacha.  |
+     |  To add a configuration file, run:                 |
+     |                                                    |
+     |    pacha --add-config /path/to/config              |
+     |                                                    |
+     +----------------------------------------------------+
+
+"""+ENDS
 
 def run_command(std, cmd):
     """Runs a command via Popen"""

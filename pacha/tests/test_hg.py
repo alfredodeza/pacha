@@ -17,6 +17,8 @@ class TestHg(unittest.TestCase):
 
     def setUp(self):
         """Will setup just once for all tests"""
+        if os.path.isdir('/tmp/remote_pacha'):
+            shutil.rmtree('/tmp/remote_pacha')
         if os.path.isdir('/tmp/test_pacha'):
             shutil.rmtree('/tmp/test_pacha')
         os.mkdir('/tmp/test_pacha')
