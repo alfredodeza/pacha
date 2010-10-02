@@ -5,7 +5,7 @@ import shutil
 
 from mock           import MockSys
 from guachi         import ConfigMapper
-from pacha          import config
+from pacha          import config, host
 from pacha.util     import YELLOW, ENDS
 import pacha 
 
@@ -54,9 +54,22 @@ class TestCommandLine(unittest.TestCase):
     def setUp(self):
         # make sure we do not have db file 
         test_dir = '/tmp/pacha_test'
+        remote_dir = '/tmp/remote_pacha'
         if os.path.isdir(test_dir):
             shutil.rmtree(test_dir)
+        if os.path.isdir(remote_dir):
+            shutil.rmtree(remote_dir)
+
+        os.mkdirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
         os.mkdir(test_dir)
+        conf = open('/tmp/test_pacha/pacha.conf', 'w')
+        conf.write('[DEFAULT]\n')
+        conf.write('pacha.ssh.user = %s\n' % self.username)
+        conf.write('pacha.host = %s\n' % host.hostname())
+        conf.write('pacha.hosts.path = /tmp/remote_pacha/hosts\n')
+        conf.close()
+
+
 
     def test_init(self):
         actual = pacha.PachaCommands(parse=False)
@@ -243,7 +256,9 @@ class TestCommandLine(unittest.TestCase):
         pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
-
+        
+        os.mkdir('/tmp/pacha_test/foo')
+        commands.watch('/tmp/pacha_test/foo')
 
 
 if __name__ == '__main__':

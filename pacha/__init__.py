@@ -173,7 +173,7 @@ class PachaCommands(object):
         """
         try:
             taking_over = False
-            mercurial = hg.Hg(path=path, conf=self.config)
+            mercurial = hg.Hg(path=path)
             default_path = mercurial.hgrc_validate()
             if default_path:
                 print """

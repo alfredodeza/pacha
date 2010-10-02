@@ -10,11 +10,11 @@ from guachi         import ConfigMapper
 
 from pacha.database import DB_FILE
 from pacha.host     import hostname
-from pacha.util     import run_command
+from pacha.util     import run_command, YELLOW, ENDS
 
 hg_log = logging.getLogger('pacha.hg')
 
-HGRC_ERROR =  """
+HGRC_ERROR =  YELLOW+"""
 Pacha searched for a Mercurial username in the $HOME directory
 and /etc/mercurial/hgrc but could not find one.
 Mercurial needs a username provided:
@@ -22,7 +22,7 @@ But no username was supplied (see "hg help config")
       [ui]
       username = Firstname Lastname <firstname.lastname@example.net>
       verbose = True
-"""
+"""+ENDS
 
 
 class Hg(object):
