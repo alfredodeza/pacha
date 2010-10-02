@@ -115,16 +115,18 @@ class PachaCommands(object):
 
 
     def config_values(self):
-        conf = ConfigMapper(DB_FILE).stored_config()
-        config_file = conf['path']
+        conf = self.db.stored_config()
         try:
+            config_file = conf['path']
+            if not os.path.isfile(config_file):
+                print CONFIG_GONE 
             print "\nConfiguration file: %s\n" % config_file
             for i in conf.items():
                 print "%-15s= %-4s" % (i[0], i[1])
             print ''
         except Exception, error:
-            print "Could not complete command: %s" % error 
-
+            # sometimes we can't catch the error
+            print "Could not complete command %s" % error
 
     def set_logging(self, verbose=False):
         enabled = self.config['log_enable']
