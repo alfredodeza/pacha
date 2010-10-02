@@ -1,6 +1,7 @@
 import unittest
 import sys
 import os
+import shutil
 
 from mock           import MockSys
 from guachi         import ConfigMapper
@@ -54,12 +55,27 @@ class TestCommandLine(unittest.TestCase):
         # make sure we do not have db file 
         test_db = '/tmp/pacha_test.db'
         test_conf = '/tmp/pacha_test.conf'
+        test_host = '/tmp/pacha_test_host'
         if os.path.isfile(test_conf):
             os.remove(test_conf)
-
         if os.path.isfile(test_db):
             os.remove(test_db)
+        if os.path.isdir(test_host):
+            shutil.rmtree(test_host)
 
+
+#    def tearDown(self):
+#        # make sure we do not have db file 
+#        test_db = '/tmp/pacha_test.db'
+#        test_conf = '/tmp/pacha_test.conf'
+#        test_host = '/tmp/pacha_test_host'
+#        if os.path.isfile(test_conf):
+#            os.remove(test_conf)
+#        if os.path.isfile(test_db):
+#            os.remove(test_db)
+#        if os.path.isdir(test_host):
+#            os.remove(test_host)
+#
     def test_init(self):
         actual = pacha.PachaCommands(parse=False)
         """argv=None, test=False, parse=True, db=Worker())"""
@@ -192,6 +208,22 @@ class TestCommandLine(unittest.TestCase):
         actual = stdout 
         expected = "Could not complete command \n"
         self.assertEqual(actual, expected) 
+
+    def test_add_host(self):
+        """Adds a host and displays a message"""
+        sys.stdout = MockSys()
+        pacha.DB_FILE = '/tmp/pacha_test.db'
+        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test.db')) 
+        conf = ConfigMapper('/tmp/pacha_test.db')
+        new_host = 'pacha_test_host'
+        conf = ConfigMapper('/tmp/pacha_test.db')
+        commands.config['hosts_path'] = '/tmp'
+
+        commands.add_host(new_host)
+        actual  = sys.stdout.captured()
+        expected = "Added host pacha_test_host\n"
+        self.assertEqual(actual, expected) 
+
 
 
 if __name__ == '__main__':

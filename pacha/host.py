@@ -8,23 +8,19 @@ class Host(object):
 
     def __init__(self,
             host = None,
-            host_path = None,
-            package = None
+            host_path = None
             ):
         self.host = host
         self.host_path = os.path.abspath(host_path)
-        self.package = package
         self.host_dir = self.host_path+'/'+self.host
 
     def create(self):
         """Builds the initial structure for a host"""
-        if os.path.isdir(self.host_dir) is not True:
-            os.mkdir(self.host_dir)
-            info = 'created host directory %s' % self.host_dir
-        else:
-            info = '%s already present' % self.host
-            print info
+        if os.path.isdir(self.host_dir):
             return False
+        else:
+            os.mkdir(self.host_dir)
+            return True
 
 def hostname():
     """Return the hostname of this machine"""

@@ -155,8 +155,11 @@ class PachaCommands(object):
         try:
             new = Host(host=host, 
                     host_path=self.config['hosts_path'])
-            new.create()
-            print "Added host %s" % host
+            created = new.create()
+            if created:
+                print "Added host %s" % host
+            elif not created:
+                print "Host %s has been already created" % host
         except Exception, error:
             print "Could not complete command: %s" % error 
 
