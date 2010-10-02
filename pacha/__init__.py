@@ -190,7 +190,7 @@ Ctrl-C \t = abort
                     print confirm
                     print "\nExiting nicely from Pacha"
                     sys.exit(0)
-            import pdb; pdb.set_trace() 
+         
             if not taking_over:    
                 mercurial.hgrc()
                 # we do a first time clone:
