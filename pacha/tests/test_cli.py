@@ -224,6 +224,37 @@ class TestCommandLine(unittest.TestCase):
         expected = "Added host pacha_test_host\n"
         self.assertEqual(actual, expected) 
 
+    def test_add_host_already_created(self):
+        """When a host has already been created let me know"""
+        sys.stdout = MockSys()
+        pacha.DB_FILE = '/tmp/pacha_test.db'
+        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test.db')) 
+        conf = ConfigMapper('/tmp/pacha_test.db')
+        new_host = 'pacha_test_host'
+        conf = ConfigMapper('/tmp/pacha_test.db')
+        commands.config['hosts_path'] = '/tmp'
+
+        os.mkdir('/tmp/pacha_test_host')
+        commands.add_host(new_host)
+        actual  = sys.stdout.captured()
+        expected = "Host pacha_test_host has been already created\n"
+        self.assertEqual(actual, expected) 
+
+    def test_add_host_exception(self):
+        """When an exception occurs creating a host let me know"""
+        sys.stdout = MockSys()
+        pacha.DB_FILE = '/tmp/pacha_test.db'
+        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test.db')) 
+        conf = ConfigMapper('/tmp/pacha_test.db')
+        new_host = 'pacha_test_host'
+        conf = ConfigMapper('/tmp/pacha_test.db')
+        commands.config['hosts_path'] = '/no/path/here/'
+
+        os.mkdir('/tmp/pacha_test_host')
+        commands.add_host(new_host)
+        actual  = sys.stdout.captured()
+        expected = "Could not complete command: [Errno 2] No such file or directory: '/no/path/here/pacha_test_host'\n"
+        self.assertEqual(actual, expected) 
 
 
 if __name__ == '__main__':
