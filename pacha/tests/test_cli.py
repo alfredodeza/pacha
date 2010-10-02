@@ -2,6 +2,7 @@ import unittest
 import sys
 import os
 import shutil
+import getpass
 
 from mock           import MockSys
 from guachi         import ConfigMapper
@@ -51,16 +52,30 @@ class MockDatabase(object):
 
 class TestCommandLine(unittest.TestCase):
 
+
+    username = getpass.getuser()
+    dict_conf = dict(
+            ssh_user = username,
+            host = host.hostname(),
+            hosts_path = '/tmp/remote_pacha/hosts'
+            )
+
+
+
     def setUp(self):
         # make sure we do not have db file 
-        test_dir = '/tmp/pacha_test'
+        test_dir = '/tmp/test_pacha'
         remote_dir = '/tmp/remote_pacha'
+        pacha_host = '/tmp/pacha_test_host'
         if os.path.isdir(test_dir):
             shutil.rmtree(test_dir)
         if os.path.isdir(remote_dir):
             shutil.rmtree(remote_dir)
+        if os.path.isdir(pacha_host):
+            shutil.rmtree(pacha_host)
 
-        os.mkdirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
+
+        os.makedirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
         os.mkdir(test_dir)
         conf = open('/tmp/test_pacha/pacha.conf', 'w')
         conf.write('[DEFAULT]\n')
@@ -212,7 +227,7 @@ class TestCommandLine(unittest.TestCase):
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         new_host = 'pacha_test_host'
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
-        commands.config['hosts_path'] = '/tmp/pacha_test'
+        commands.config['hosts_path'] = '/tmp'
 
         commands.add_host(new_host)
         actual  = sys.stdout.captured()
@@ -229,7 +244,7 @@ class TestCommandLine(unittest.TestCase):
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         commands.config['hosts_path'] = '/tmp/pacha_test'
 
-        os.mkdir('/tmp/pacha_test/pacha_test_host')
+        os.mkdir('/tmp/pacha_test_host')
         commands.add_host(new_host)
         actual  = sys.stdout.captured()
         expected = "Host pacha_test_host has been already created\n"
@@ -245,7 +260,7 @@ class TestCommandLine(unittest.TestCase):
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         commands.config['hosts_path'] = '/no/path/here/'
 
-        os.mkdir('/tmp/pacha_test/pacha_test_host')
+        #os.mkdir('/tmp/pacha_test/pacha_test_host')
         commands.add_host(new_host)
         actual  = sys.stdout.captured()
         expected = "Could not complete command: [Errno 2] No such file or directory: '/no/path/here/pacha_test_host'\n"
@@ -259,6 +274,8 @@ class TestCommandLine(unittest.TestCase):
         
         os.mkdir('/tmp/pacha_test/foo')
         commands.watch('/tmp/pacha_test/foo')
+        actual = os.path.isdir('/tmp/pacha_test/foo/.hg')
+        self.assertTrue(actual)
 
 
 if __name__ == '__main__':
