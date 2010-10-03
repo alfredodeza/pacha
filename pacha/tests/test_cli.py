@@ -310,7 +310,8 @@ class TestCommandLine(unittest.TestCase):
         db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
         repos = [i for i in db.get_repos()] 
 
-        self.assertEqual(len(repos), 1)
+        self.assertEqual(len(repos), 2)
+        self.assertEqual(repos[1], (2, u'/tmp/pacha_test', None, u'dir', None))
         self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
         self.assertTrue(os.path.isdir('/tmp/pacha_test/.hg'))
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
@@ -358,7 +359,7 @@ class TestCommandLine(unittest.TestCase):
         db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
         repos = [i for i in db.get_repos()] 
 
-        self.assertEqual(len(repos), 1)
+        self.assertEqual(len(repos), 2)
         self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
         self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
         self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
