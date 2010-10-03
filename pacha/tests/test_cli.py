@@ -293,19 +293,49 @@ class TestCommandLine(unittest.TestCase):
         self.assertEqual(actual, expected) 
 
     def test_watch(self):
-        """Watch a directory for changes"""
+        """Watch a directory for changes and watch the db if not watched"""
+        pacha.DB_DIR = '/tmp/pacha_test'
         pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.database.DB_DIR = '/tmp/pacha_test'
         cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
             db_file='/tmp/pacha_test/pacha_test.db')
         cmd.add_config('/tmp/pacha_test/pacha.conf')
         cmd.check_config()
         os.mkdir('/tmp/pacha_test/foo')
         cmd.watch('/tmp/pacha_test/foo')
-    
-         
+        db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
+        repos = [i for i in db.get_repos()] 
+
+        self.assertEqual(len(repos), 1)
+        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
+        self.assertTrue(os.path.isdir('/tmp/pacha_test/.hg'))
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
         self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
-        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/mbp.local/foo/.hg'))
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
+        self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
+        
+    def test_watch_db_tracked(self):
+        """Watch a directory for changes and do not watch the db if tracked"""
+        pacha.DB_DIR = '/tmp/pacha_test'
+        pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        os.mkdir('/tmp/pacha_test/.hg')
+        pacha.database.DB_DIR = '/tmp/pacha_test'
+        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
+            db_file='/tmp/pacha_test/pacha_test.db')
+        cmd.add_config('/tmp/pacha_test/pacha.conf')
+        cmd.check_config()
+        os.mkdir('/tmp/pacha_test/foo')
+        cmd.watch('/tmp/pacha_test/foo')
+        db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
+        repos = [i for i in db.get_repos()] 
+
+        self.assertEqual(len(repos), 1)
+        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
+        self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
+        self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
         self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
         
 

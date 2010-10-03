@@ -33,6 +33,7 @@ from pacha.host     import Host
 from pacha.util     import WARNING, CONFIG_GONE, get_db_file, get_db_dir
 
 DB_FILE = get_db_file()
+DB_DIR = get_db_dir()
  
 class PachaCommands(object):
     """A lot of complicated options can happen with Pacha, so 
@@ -174,7 +175,7 @@ class PachaCommands(object):
                 # we do a first time clone:
                 mercurial.clone()
             # add the path to repos table in database
-            db = Worker()
+            db = Worker(DB_FILE)
             db.insert(path=path, type='dir')
             # now make sure we record permissions metadata
             meta = permissions.Tracker(path=path)
@@ -184,9 +185,7 @@ class PachaCommands(object):
 
         # db tracking
         if not is_tracked():
-            db_dir = get_db_dir()
-
-            mercurial = hg.Hg(path=db_dir, conf=self.db.stored_config())
+            mercurial = hg.Hg(path=DB_DIR, conf=self.db.stored_config())
             mercurial.hgrc()
             # we do a first time clone:
             mercurial.clone()

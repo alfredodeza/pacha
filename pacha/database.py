@@ -22,11 +22,12 @@ METADATA_TABLE = """CREATE TABLE IF NOT EXISTS metadata(
     ftype       TEXT
 )""" #sqlite does not like 'group'
 
-
+DB_FILE = get_db_file()
+DB_DIR = get_db_dir()
 
 def is_tracked():
     """Is this database being tracked?"""
-    hg_dir = get_db_dir()
+    hg_dir = DB_DIR+'/.hg'
     if os.path.isdir(hg_dir):
         return True
     return False
@@ -36,7 +37,7 @@ class Worker(object):
     """All database operations happen here"""
 
     def __init__(self,
-            db = get_db_file()):
+            db = DB_FILE):
         self.db = db 
         self.conn = sqlite3.connect(self.db)
         self.c = self.conn.cursor()
