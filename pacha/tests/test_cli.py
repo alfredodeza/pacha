@@ -298,6 +298,7 @@ class TestCommandLine(unittest.TestCase):
         """Watch a directory for changes and watch the db if not watched"""
         pacha.DB_DIR = '/tmp/pacha_test'
         pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.database.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         pacha.database.DB_DIR = '/tmp/pacha_test'
@@ -323,6 +324,7 @@ class TestCommandLine(unittest.TestCase):
         """Watch a directory for changes and do not watch the db if tracked"""
         pacha.DB_DIR = '/tmp/pacha_test'
         pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         os.mkdir('/tmp/pacha_test/.hg')
         pacha.database.DB_DIR = '/tmp/pacha_test'
@@ -346,6 +348,7 @@ class TestCommandLine(unittest.TestCase):
         """if we find there is an .hg repo do not overwrite and simply take over"""
         pacha.DB_DIR = '/tmp/pacha_test'
         pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.database.DB_DIR = '/tmp/pacha_test'
         cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),

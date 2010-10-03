@@ -40,11 +40,8 @@ class Tracker(object):
     """with the information coming from the Permissions class, Tracker
     inserts the correct information to the database"""
 
-    def __init__(self,
-            path,
-            database = DB_FILE):
+    def __init__(self, path):
         self.path = path
-        self.database = database
 
     def walker(self):
         """If we have a directory, walk every file in it"""
@@ -102,7 +99,7 @@ class Tracker(object):
 
     def insert(self, path, own, grp, permissions, ftype):
         """For every file, sends the info to the database"""
-        db = Worker(self.database)
+        db = Worker(DB_FILE)
         db.insert_meta(path, own, grp, permissions, ftype)
         rwx_log.debug("inserting path to database: %s" % path)
 
