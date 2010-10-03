@@ -32,6 +32,7 @@ from pacha.database import Worker, is_tracked
 from pacha.host     import Host
 from pacha.util     import WARNING, CONFIG_GONE, get_db_file, get_db_dir
 
+DB_FILE = get_db_file()
  
 class PachaCommands(object):
     """A lot of complicated options can happen with Pacha, so 
@@ -42,8 +43,8 @@ class PachaCommands(object):
             argv=None, 
             test=False, 
             parse=True, 
-            db=ConfigMapper(get_db_file()),
-            db_file=get_db_file()):
+            db=ConfigMapper(DB_FILE),
+            db_file=DB_FILE):
         self.db = db 
         self.db_file = db_file
         if argv is None:
@@ -98,8 +99,6 @@ class PachaCommands(object):
         conf = self.db.stored_config()
         try:
             config_file = conf['path']
-            if not os.path.isfile(config_file):
-                print CONFIG_GONE 
             print "\nConfiguration file: %s\n" % config_file
             for i in conf.items():
                 print "%-15s= %-4s" % (i[0], i[1])
@@ -151,37 +150,37 @@ class PachaCommands(object):
         *  check if this is the first time we are run (db not tracked)
         *  track the db if it is not tracked or push it with the new dir
         """
-        try:
-            taking_over = False
-            mercurial = hg.Hg(path=path)
-            default_path = mercurial.hgrc_validate()
-            if default_path:
-                print """
+#        try:
+        taking_over = False
+        mercurial = hg.Hg(path=path)
+        default_path = mercurial.hgrc_validate()
+        if default_path:
+            print """
 Found an existing repository with a default path:
 %s
 """ % default_path     
-                try:
-                    confirm = raw_input("""
+            try:
+                confirm = raw_input("""
 Enter  \t = use that same path
 Ctrl-C \t = abort
 """)
-                    taking_over = True
-                except KeyboardInterrupt:
-                    print confirm
-                    print "\nExiting nicely from Pacha"
-                    sys.exit(0)
-            if not taking_over:    
-                mercurial.hgrc()
-                # we do a first time clone:
-                mercurial.clone()
-            # add the path to repos table in database
-            db = Worker()
-            db.insert(path=path, type='dir')
-            # now make sure we record permissions metadata
-            meta = permissions.Tracker(path=path)
-            meta.walker()
-        except Exception, error:
-            print "Could not complete command: %s" % error 
+                taking_over = True
+            except KeyboardInterrupt:
+                print confirm
+                print "\nExiting nicely from Pacha"
+                sys.exit(0)
+        if not taking_over:    
+            mercurial.hgrc()
+            # we do a first time clone:
+            mercurial.clone()
+        # add the path to repos table in database
+        db = Worker()
+        db.insert(path=path, type='dir')
+        # now make sure we record permissions metadata
+        meta = permissions.Tracker(path=path)
+        meta.walker()
+#        except Exception, error:
+#            print "Could not complete command: %s" % error 
 
         # db tracking
         if not is_tracked():

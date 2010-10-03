@@ -27,7 +27,6 @@ METADATA_TABLE = """CREATE TABLE IF NOT EXISTS metadata(
 def is_tracked():
     """Is this database being tracked?"""
     hg_dir = get_db_dir()
-    #hg_dir = FILE_DIR+'/db/.hg'
     if os.path.isdir(hg_dir):
         return True
     return False

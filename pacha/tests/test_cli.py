@@ -6,7 +6,7 @@ import getpass
 
 from mock           import MockSys
 from guachi         import ConfigMapper
-from pacha          import config, host, hg, database
+from pacha          import config, host
 from pacha.util     import YELLOW, ENDS
 import pacha 
 
@@ -41,8 +41,10 @@ WARNING = YELLOW+"""
 """+ENDS
 
 
-class MockDatabase(object):
-    """Avoids writing to an existing Database"""
+def mock_get_db_file():
+    return False
+
+class MockGetDBFile(object):
     def __init__(self, config_path):
         self.value = ""
         self.config_path = [(config_path,)]
@@ -211,14 +213,15 @@ class TestCommandLine(unittest.TestCase):
     def test_config_values_config_gone(self):
         """When the config is gone show the config_gone message"""
         pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
-        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
+        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         db_conf = conf.stored_config()
         # force a config push/parse:
         for k,v in config.DEFAULT_MAPPINGS.items():
             db_conf[k] = v
         sys.stdout = MockSys()
-        commands.config_values() 
+        cmd.check_config()
+        cmd.config_values() 
         stdout  = sys.stdout.captured()
         message = "The config file supplied does not exist"
         warning_message = False
@@ -241,7 +244,7 @@ class TestCommandLine(unittest.TestCase):
         commands.config_values() 
         stdout  = sys.stdout.captured()
         actual = stdout 
-        expected = "Could not complete command \n"
+        expected = """Could not complete command "key \'path\' not found in persistent dictionary"\n"""
         self.assertEqual(actual, expected) 
 
     def test_add_host(self):
@@ -291,8 +294,8 @@ class TestCommandLine(unittest.TestCase):
 
     def test_watch(self):
         """Watch a directory for changes"""
-        pacha.util.get_db_file ='/tmp/pacha_test/pacha_test.db' 
-        conf = ConfigMapper('/tmp/pacha_test/pacha_test.db').stored_config()
+        pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
             db_file='/tmp/pacha_test/pacha_test.db')
         cmd.add_config('/tmp/pacha_test/pacha.conf')

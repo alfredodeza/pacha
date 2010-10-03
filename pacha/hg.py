@@ -23,6 +23,7 @@ But no username was supplied (see "hg help config")
       verbose = True
 """+ENDS
 
+DB_FILE = get_db_file()
 
 class Hg(object):
     """Does local commits and pushes to a central Pacha Master location"""
@@ -32,21 +33,18 @@ class Hg(object):
             host = None,
             user = None,
             path = None,
-            conf = None,
             log = True,
-            db = None,
+            conf = None,
             test = False
             ):
         self.port = port
         self.host = host
         self.user = user
         self.log = log
-        self.conf = conf
-        if not db:
-            self.db = get_db_file
-        if self.conf == None:
-            self.conf = ConfigMapper(self.db).stored_config()
-        
+        if conf == None:
+            self.conf = ConfigMapper(DB_FILE).stored_config()
+        else:
+            self.conf = conf 
         if os.path.exists(path):
             hg_log.debug('verified path exists: %s' % path)
             self.path = os.path.normpath(path)
