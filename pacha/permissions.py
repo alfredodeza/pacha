@@ -3,7 +3,8 @@ import pwd
 import grp
 import os
 import stat
-from database import Worker, DB_FILE
+from pacha.database     import Worker 
+from pacha.util         import get_db_file
 
 
 rwx_log = logging.getLogger('pacha.permissions')
@@ -41,7 +42,7 @@ class Tracker(object):
 
     def __init__(self,
             path,
-            database = DB_FILE):
+            database = get_db_file()):
         self.path = path
         self.database = database
 

@@ -4,9 +4,10 @@ import time
 import supay
 import logging
 
-from guachi import ConfigMapper
-from pacha import hg 
-from pacha.database import DB_FILE, Worker
+from guachi             import ConfigMapper
+from pacha              import hg 
+from pacha.database     import Worker
+from pacha.util         import get_db_file
 
 daemon_log = logging.getLogger('pacha.daemon')
 
@@ -69,7 +70,7 @@ def frecuency(seconds):
 
 def start(config=None, foreground=False):
     if config == None:
-        config=ConfigMapper(DB_FILE).stored_config()
+        config=ConfigMapper(get_db_file()).stored_config()
     if not foreground:
         log_path = config['log_path']
         log_enable = config['log_enable']

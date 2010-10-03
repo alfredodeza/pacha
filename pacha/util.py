@@ -1,4 +1,5 @@
-from subprocess import Popen, PIPE
+from os             import path
+from subprocess     import Popen, PIPE
 
 
 # Easy way to implement colors in the terminal
@@ -48,4 +49,21 @@ def run_command(std, cmd):
         run = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out = run.stdout.readlines()
     return out
+
+def get_db_file():
+    """Returns the absolute path of the database"""
+    # Fixes Database Absolute Location
+    file_cwd =  path.abspath(__file__)
+    file_dir = path.dirname(file_cwd)
+    db_file = file_dir+'/db/pacha.db'
+    return db_file 
+
+def get_db_dir():
+    """Returns the absolute path  of the db directory"""
+    # Fixes Database Absolute Location
+    file_cwd =  path.abspath(__file__)
+    file_dir = path.dirname(file_cwd)
+    db_dir = file_dir+'/db'
+    return db_dir 
+
 

@@ -8,9 +8,8 @@ from mercurial      import commands, ui, hg
 from ConfigParser   import ConfigParser, NoOptionError
 from guachi         import ConfigMapper
 
-from pacha.database import DB_FILE
 from pacha.host     import hostname
-from pacha.util     import run_command, YELLOW, ENDS
+from pacha.util     import run_command, YELLOW, ENDS, get_db_file
 
 hg_log = logging.getLogger('pacha.hg')
 
@@ -35,6 +34,7 @@ class Hg(object):
             path = None,
             conf = None,
             log = True,
+            db = None,
             test = False
             ):
         self.port = port
@@ -42,8 +42,10 @@ class Hg(object):
         self.user = user
         self.log = log
         self.conf = conf
+        if not db:
+            self.db = get_db_file
         if self.conf == None:
-            self.conf = ConfigMapper(DB_FILE).stored_config()
+            self.conf = ConfigMapper(self.db).stored_config()
         
         if os.path.exists(path):
             hg_log.debug('verified path exists: %s' % path)

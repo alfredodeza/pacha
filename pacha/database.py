@@ -1,10 +1,7 @@
 import sqlite3
 import os
 
-# Fixes Database Absolute Location
-FILE_CWD =  os.path.abspath(__file__)
-FILE_DIR = os.path.dirname(FILE_CWD)
-DB_FILE = FILE_DIR+'/db/pacha.db'
+from pacha.util         import get_db_file, get_db_dir
 
 
 REPOS_TABLE = """CREATE TABLE IF NOT EXISTS repos(
@@ -29,7 +26,8 @@ METADATA_TABLE = """CREATE TABLE IF NOT EXISTS metadata(
 
 def is_tracked():
     """Is this database being tracked?"""
-    hg_dir = FILE_DIR+'/db/.hg'
+    hg_dir = get_db_dir()
+    #hg_dir = FILE_DIR+'/db/.hg'
     if os.path.isdir(hg_dir):
         return True
     return False
@@ -39,7 +37,7 @@ class Worker(object):
     """All database operations happen here"""
 
     def __init__(self,
-            db = DB_FILE):
+            db = get_db_file()):
         self.db = db 
         self.conn = sqlite3.connect(self.db)
         self.c = self.conn.cursor()

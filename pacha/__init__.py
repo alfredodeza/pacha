@@ -28,9 +28,9 @@ from optparse       import OptionParser, OptionGroup
 from guachi         import ConfigMapper
 from pacha.config   import set_mappings
 from pacha          import daemon, hg, rebuild, permissions
-from pacha.database import Worker, is_tracked, DB_FILE
+from pacha.database import Worker, is_tracked
 from pacha.host     import Host
-from pacha.util     import WARNING, CONFIG_GONE
+from pacha.util     import WARNING, CONFIG_GONE, get_db_file, get_db_dir
 
  
 class PachaCommands(object):
@@ -38,8 +38,14 @@ class PachaCommands(object):
     it is easier if everything lives under a class rather than
     the widely used main()"""
 
-    def __init__(self, argv=None, test=False, parse=True, db=ConfigMapper(DB_FILE)):
-        self.db = db
+    def __init__(self, 
+            argv=None, 
+            test=False, 
+            parse=True, 
+            db=ConfigMapper(get_db_file()),
+            db_file=get_db_file()):
+        self.db = db 
+        self.db_file = db_file
         if argv is None:
             argv = sys.argv
 
@@ -84,7 +90,7 @@ class PachaCommands(object):
         conf = self.db.stored_config()
         abspath = os.path.abspath(path)
         conf['path'] = abspath
-        set_mappings(DB_FILE)
+        set_mappings(self.db_file)
         self.msg("Configuration file added: %s" % abspath)
 
 
@@ -179,9 +185,7 @@ Ctrl-C \t = abort
 
         # db tracking
         if not is_tracked():
-            #pacha_file = os.path.abspath(__file__)
-            #pacha_dir = os.path.dirname(pacha_file)
-            db_dir = os.path.dirname(DB_FILE)
+            db_dir = get_db_dir()
 
             mercurial = hg.Hg(path=db_dir, conf=self.db.stored_config())
             mercurial.hgrc()

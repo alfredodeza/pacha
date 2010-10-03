@@ -138,10 +138,12 @@ class TestCommandLine(unittest.TestCase):
         self.assertEqual(actual, "snap")
 
     def test_check_config(self):
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
-        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
-        commands.add_config('/tmp')
-        conf = commands.check_config() 
+        cmd = pacha.PachaCommands(test=True, 
+                parse=False, 
+                db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
+                db_file='/tmp/pacha_test/pacha_test.db') 
+        cmd.add_config('/tmp')
+        conf = cmd.check_config() 
         actual = len(conf.keys())
         config.DEFAULT_MAPPINGS['path'] = '/tmp'
         expected = len(config.DEFAULT_MAPPINGS.keys())
@@ -150,9 +152,7 @@ class TestCommandLine(unittest.TestCase):
     def test_check_config_error(self):
         """Don't set a path and get an error message"""
         sys.stderr = MockSys()
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
-        #os.remove(pacha.DB_FILE)
-        #self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         commands.check_config() 
         actual  = sys.stderr.captured()
@@ -161,7 +161,7 @@ class TestCommandLine(unittest.TestCase):
 
     def test_check_config_gone(self):
         """Set a path that is not reachablei and get an error message"""
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         commands.add_config('/non/existent/path')
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
@@ -178,8 +178,9 @@ class TestCommandLine(unittest.TestCase):
 
     def test_add_config(self):
         """Add a configuration file to the config db"""
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
-        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
+        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
+                db_file='/tmp/pacha_test/pacha_test.db') 
         sys.stdout = MockSys()
         commands.add_config('/non/existent/path')
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
@@ -193,7 +194,7 @@ class TestCommandLine(unittest.TestCase):
         f = open('/tmp/pacha_test/pacha_test.conf', 'w')
         f.write('')
         f.close()
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         db_conf = conf.stored_config()
@@ -209,7 +210,7 @@ class TestCommandLine(unittest.TestCase):
 
     def test_config_values_config_gone(self):
         """When the config is gone show the config_gone message"""
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         db_conf = conf.stored_config()
@@ -230,7 +231,7 @@ class TestCommandLine(unittest.TestCase):
         f = open('/tmp/pacha_test/pacha_test.conf', 'w')
         f.write('')
         f.close()
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         db_conf = conf.stored_config()
@@ -246,7 +247,7 @@ class TestCommandLine(unittest.TestCase):
     def test_add_host(self):
         """Adds a host and displays a message"""
         sys.stdout = MockSys()
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         new_host = 'pacha_test_host'
@@ -261,7 +262,7 @@ class TestCommandLine(unittest.TestCase):
     def test_add_host_already_created(self):
         """When a host has already been created let me know"""
         sys.stdout = MockSys()
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         new_host = 'pacha_test_host'
@@ -277,7 +278,7 @@ class TestCommandLine(unittest.TestCase):
     def test_add_host_exception(self):
         """When an exception occurs creating a host let me know"""
         sys.stdout = MockSys()
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
         commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
         new_host = 'pacha_test_host'
@@ -290,12 +291,10 @@ class TestCommandLine(unittest.TestCase):
 
     def test_watch(self):
         """Watch a directory for changes"""
-        hg.DB_FILE = '/tmp/pacha_test/pacha_test.db'
-        database.DB_FILE = '/tmp/pacha_test/pacha_test.db'
-        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.util.get_db_file ='/tmp/pacha_test/pacha_test.db' 
         conf = ConfigMapper('/tmp/pacha_test/pacha_test.db').stored_config()
-        
-        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
+        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
+            db_file='/tmp/pacha_test/pacha_test.db')
         cmd.add_config('/tmp/pacha_test/pacha.conf')
         cmd.check_config()
         os.mkdir('/tmp/pacha_test/foo')
