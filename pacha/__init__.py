@@ -338,33 +338,10 @@ A systems configuration management engine
         group.add_option('--rebuild',
                 help="""Pass the hostname of the host you want to rebuild.""")
 
-#        group.add_option('--host',
-#                help="""The host to rebuild from""")
-#
-#
-#        group.add_option('--source-path',
-#                help="""Specify the absolute path where Pacha should retrieve\
-# file from""")
-#
-#        group.add_option('--port',
-#                help="""Overrides default port 22 for SSH""")
-#
-#        group.add_option('--destination-path',
-#                help="""Overrides the default destination of the files to a
-# different absolute path""")
-#
         group.add_option('--directory',
                 help="""Specifies a single directory to retrieve from a remote
  host instance of a Pacha server""")
 
-#        group.add_option('--show-directories', action="store_true",
-#                help="""Shows the available directories to retrieve from a
-# given host.""")
-#
-#        group.add_option('--dryrun', action="store_true",
-#                help="""Doesn't *actually* do anything, just prints the 
-#commands as they would happen""")
-#
         parser.add_option_group(group)
 
         options, arguments = parser.parse_args(argv)
