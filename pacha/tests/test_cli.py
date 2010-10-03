@@ -370,7 +370,28 @@ class TestCommandLine(unittest.TestCase):
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
         self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
  
+    def test_watch_single(self):
+        """Watch a single file in a directory"""
+        pacha.DB_DIR = '/tmp/pacha_test'
+        pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.database.DB_DIR = '/tmp/pacha_test'
+        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
+            db_file='/tmp/pacha_test/pacha_test.db')
+        cmd.add_config('/tmp/pacha_test/pacha.conf')
+        cmd.check_config()
+        cmd.watch_single('/tmp/pacha_test/pacha.conf')
+        db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
+        repos = [i for i in db.get_repos()] 
 
+        self.assertEqual(len(repos), 1)
+        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/pacha.conf', None, u'single', None))
+        self.assertTrue(os.path.isdir('/tmp/pacha_test/.hg'))
+        self.assertTrue(os.path.isfile('/tmp/pacha_test/.hgignore'))
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
+        self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
+ 
 
 if __name__ == '__main__':
     unittest.main()

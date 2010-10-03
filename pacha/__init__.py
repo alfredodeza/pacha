@@ -221,14 +221,14 @@ class PachaCommands(object):
             if os.path.isfile(hgignore): # make sure we arent overwriting
                 # we are already watching unique files here
                 # so let's add the new guy and commit it
-                mercurial = hg.Hg(path=dirname, conf=self.config)
+                mercurial = hg.Hg(path=dirname)
                 mercurial.hg_add(abspath)
                 mercurial.commit()
 
             # if it does not exist then this should be the first 
             # time this is being run here 
             else:
-                mercurial = hg.Hg(path=dirname, conf=self.config)
+                mercurial = hg.Hg(path=dirname)
                 # then ignore everything within the path
                 mercurial.hgignore()
                 mercurial.initialize()
@@ -242,7 +242,7 @@ class PachaCommands(object):
             # check for it here. DB can figure out if
             # it is a duplicate so no double checking
             # before inserting
-            db = Worker()
+            db = Worker(DB_FILE)
             db.insert(path=abspath, type='single')
 
         else:

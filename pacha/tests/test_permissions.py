@@ -48,8 +48,8 @@ class TestTracker(unittest.TestCase):
 
     def test_walker_path(self):
         """Walker should insert the dir path"""
-        meta = permissions.Tracker(path='/tmp/tracker',
-                database = '/tmp/tracker/db')
+        permissions.DB_FILE = '/tmp/tracker/db'
+        meta = permissions.Tracker(path='/tmp/tracker')
         meta.walker()
         data = database.Worker('/tmp/tracker/db')
         for i in data.get_meta('/tmp/tracker/db'):
@@ -59,8 +59,8 @@ class TestTracker(unittest.TestCase):
 
     def test_walker_owner(self):
         """Walker should insert the owner for path"""
-        meta = permissions.Tracker(path='/tmp/tracker',
-                database = '/tmp/tracker/db')
+        permissions.DB_FILE = '/tmp/tracker/db'
+        meta = permissions.Tracker(path='/tmp/tracker')
         meta.walker()
         data = database.Worker('/tmp/tracker/db')
         for i in data.get_meta('/tmp/tracker/db'):
@@ -71,8 +71,8 @@ class TestTracker(unittest.TestCase):
 
     def test_walker_group(self):
         """Walker should insert the group for path"""
-        meta = permissions.Tracker(path='/tmp/tracker',
-                database = '/tmp/tracker/db')
+        permissions.DB_FILE = '/tmp/tracker/db'
+        meta = permissions.Tracker(path='/tmp/tracker')
         meta.walker()
         data = database.Worker('/tmp/tracker/db')
         for i in data.get_meta('/tmp/tracker/db'):
@@ -83,8 +83,8 @@ class TestTracker(unittest.TestCase):
 
     def test_walker_rwx(self):
         """Walker should insert rwx for path"""
-        meta = permissions.Tracker(path='/tmp/tracker',
-                database = '/tmp/tracker/db')
+        permissions.DB_FILE = '/tmp/tracker/db'
+        meta = permissions.Tracker(path='/tmp/tracker')
         meta.walker()
         data = database.Worker('/tmp/tracker/db')
         for i in data.get_meta('/tmp/tracker/db'):
@@ -95,8 +95,8 @@ class TestTracker(unittest.TestCase):
 
     def test_walker_single(self):
         """Walker should be able to track single file"""
-        meta = permissions.Tracker(path='/tmp/tracker',
-                database = '/tmp/tracker/db')
+        permissions.DB_FILE = '/tmp/tracker/db'
+        meta = permissions.Tracker(path='/tmp/tracker')
         meta.walker()
         data = database.Worker('/tmp/tracker/db')
         for i in data.get_meta('/tmp/tracker/file.txt'):
@@ -106,8 +106,8 @@ class TestTracker(unittest.TestCase):
 
     def test_single_file(self):
         """A single file should be tracked """
-        meta = permissions.Tracker(path='/tmp/tracker/file.txt',
-                database = '/tmp/tracker/db')
+        permissions.DB_FILE = '/tmp/tracker/db'
+        meta = permissions.Tracker(path='/tmp/tracker/file.txt')
         meta.single_file()
         data = database.Worker('/tmp/tracker/db')
         for i in data.get_meta('/tmp/tracker/file.txt'):
