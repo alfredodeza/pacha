@@ -415,6 +415,47 @@ class TestCommandLine(unittest.TestCase):
         self.assertFalse(os.path.isfile('/tmp/pacha_test/.hgignore'))
         self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
  
+    def test_parse_config_values(self):
+        """Print out the configuration values we set if we call the option"""
+        f = open('/tmp/pacha_test/pacha_test.conf', 'w')
+        f.write('')
+        f.close()
+        pacha.util.get_db_file = '/tmp/pacha_test/pacha_test.db'
+        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db')) 
+        conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
+        db_conf = conf.stored_config()
+        # force a config push/parse:
+        for k,v in config.DEFAULT_MAPPINGS.items():
+            db_conf[k] = v
+        commands.add_config('/tmp/pacha_test/pacha_test.conf')
+        sys.stdout = MockSys()
+        commands.parseArgs(argv=['pacha', '--config-values']) 
+        actual  = sys.stdout.captured()
+        expected = u'\nConfiguration file: /tmp/pacha_test/pacha_test.conf\n\nlog_path       = False\nlog_enable     = False\nhosts_path     = /opt/pacha\nhost           = localhost\nfrequency      = 60  \npath           = /tmp/pacha_test/pacha_test.conf\nlog_datefmt    = %H:%M:%S\nlog_level      = DEBUG\nhg_autocorrect = True\nssh_port       = 22  \nmaster         = False\nssh_user       = root\nlog_format     = %(asctime)s %(levelname)s %(name)s %(message)s\n\n'
+        self.assertEqual(actual, expected) 
+
+    def test_parse_add_config(self):
+        """Add a configuration file to the config db when called via CLI"""
+        pacha.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        commands = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'))
+        conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
+        db_conf = conf.stored_config()
+        db_conf['log_path'] = '/tmp/pacha_test'                
+        db_conf['log_enable'] = False                 
+        db_conf['log_level'] = 'CRITICAL'
+        db_conf['log_format'] = 'H%'
+        db_conf['log_datefmt'] = 'X'
+        sys.stdout = MockSys()
+        commands.parseArgs(argv=['pacha', '--add-config', '/non/existent/path']) 
+        conf = ConfigMapper('/tmp/pacha_test/pacha_test.db')
+        db_conf = conf.stored_config()
+       
+        message = False
+        if 'Configuration file added: /non/existent/path' in sys.stdout.captured():
+            message = True
+        self.assertEqual(db_conf['path'], '/non/existent/path')
+        self.assertTrue(message)
+
 
 if __name__ == '__main__':
     unittest.main()

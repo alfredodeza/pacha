@@ -344,7 +344,6 @@ A systems configuration management engine
 
         parser.add_option_group(group)
 
-        import pdb; pdb.set_trace() 
         options, arguments = parser.parse_args(argv)
 
         if options.add_config:
