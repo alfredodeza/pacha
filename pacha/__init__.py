@@ -393,10 +393,10 @@ A systems configuration management engine
 
         if options.watch:
             # a hack to have ambiguous optparse behavior 
-            if len(sys.argv) is 2: #no path
+            if len(argv) is 2: #no path
                 path = os.getcwd()
-            if len(sys.argv) >=3: #with path
-                path = sys.argv[2]
+            if len(argv) >=3: #with path
+                path = argv[2]
             self.watch(os.path.abspath(path))
 
         if options.watch_single:
