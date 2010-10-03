@@ -392,6 +392,29 @@ class TestCommandLine(unittest.TestCase):
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
         self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
  
+    def test_watch_single_non_existent_path(self):
+        """When there is a non existent path let me know"""
+        pacha.DB_DIR = '/tmp/pacha_test'
+        pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.database.DB_DIR = '/tmp/pacha_test'
+        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
+            db_file='/tmp/pacha_test/pacha_test.db')
+        cmd.add_config('/tmp/pacha_test/pacha.conf')
+        cmd.check_config()
+        sys.stderr = MockSys()
+        cmd.watch_single('/p/to/non/existent/file')
+        db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
+        repos = [i for i in db.get_repos()] 
+        actual  = sys.stderr.captured()
+        expected = "You have provided a wrong or non-existent pathto a file"
+        self.assertEqual(actual, expected)
+        self.assertEqual(len(repos), 0)
+        self.assertFalse(os.path.isdir('/tmp/pacha_test/.hg'))
+        self.assertFalse(os.path.isfile('/tmp/pacha_test/.hgignore'))
+        self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
+ 
 
 if __name__ == '__main__':
     unittest.main()
