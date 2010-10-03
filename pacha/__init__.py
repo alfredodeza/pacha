@@ -144,13 +144,14 @@ class PachaCommands(object):
             print "Could not complete command: %s" % error 
 
 
-    def watch(self, path):                
+    def watch(self, path, raw_input=raw_input):                
         """
         3 things need to happen:
         *  track whatever we initially were asked for
         *  check if this is the first time we are run (db not tracked)
         *  track the db if it is not tracked or push it with the new dir
         """
+        db = Worker(DB_FILE)
         try:
             taking_over = False
             mercurial = hg.Hg(path=path)
@@ -175,7 +176,6 @@ class PachaCommands(object):
                 # we do a first time clone:
                 mercurial.clone()
             # add the path to repos table in database
-            db = Worker(DB_FILE)
             db.insert(path=path, type='dir')
             # now make sure we record permissions metadata
             meta = permissions.Tracker(path=path)
@@ -185,13 +185,12 @@ class PachaCommands(object):
 
         # db tracking
         if not is_tracked():
-            mercurial = hg.Hg(path=DB_DIR, conf=self.db.stored_config())
+            mercurial = hg.Hg(path=DB_DIR)
             mercurial.hgrc()
             # we do a first time clone:
             mercurial.clone()
             # add the path to repos table in database
-            db = Worker()
-            db.insert(path=path, type='dir')
+            db.insert(path=DB_DIR, type='dir')
             # now make sure we record permissions metadata
             try:
                 meta = permissions.Tracker(path=path)

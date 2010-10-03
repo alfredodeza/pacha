@@ -41,8 +41,10 @@ WARNING = YELLOW+"""
 """+ENDS
 
 
-def mock_get_db_file():
-    return False
+class mock_raw_input(object):
+
+    def __call__(self, string):
+        pass
 
 class MockGetDBFile(object):
     def __init__(self, config_path):
@@ -297,6 +299,7 @@ class TestCommandLine(unittest.TestCase):
         pacha.DB_DIR = '/tmp/pacha_test'
         pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.database.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         pacha.database.DB_DIR = '/tmp/pacha_test'
         cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
             db_file='/tmp/pacha_test/pacha_test.db')
@@ -338,6 +341,30 @@ class TestCommandLine(unittest.TestCase):
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
         self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
         
+    def test_watch_taking_over(self):
+        """if we find there is an .hg repo do not overwrite and simply take over"""
+        pacha.DB_DIR = '/tmp/pacha_test'
+        pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.database.DB_DIR = '/tmp/pacha_test'
+        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
+            db_file='/tmp/pacha_test/pacha_test.db')
+        cmd.add_config('/tmp/pacha_test/pacha.conf')
+        cmd.check_config()
+        os.mkdir('/tmp/pacha_test/foo')
+        cmd.watch('/tmp/pacha_test/foo')
+        shutil.rmtree('/tmp/remote_pacha/hosts/%s/pacha_test' % host.hostname())
+        cmd.watch('/tmp/pacha_test/foo', raw_input=mock_raw_input())
+        db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
+        repos = [i for i in db.get_repos()] 
+
+        self.assertEqual(len(repos), 1)
+        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
+        self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
+        self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
+        self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
+ 
 
 
 if __name__ == '__main__':
