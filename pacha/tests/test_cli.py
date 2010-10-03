@@ -302,8 +302,12 @@ class TestCommandLine(unittest.TestCase):
         cmd.check_config()
         os.mkdir('/tmp/pacha_test/foo')
         cmd.watch('/tmp/pacha_test/foo')
-        actual = os.path.isdir('/tmp/pacha_test/foo/.hg')
-        self.assertTrue(actual)
+    
+         
+        self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/mbp.local/foo/.hg'))
+        self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
+        
 
 
 if __name__ == '__main__':
