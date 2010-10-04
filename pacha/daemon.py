@@ -7,9 +7,10 @@ import logging
 from guachi             import ConfigMapper
 from pacha              import hg 
 from pacha.database     import Worker
-from pacha.util         import get_db_file
+from pacha.util         import get_db_file, get_pid_dir
 
 daemon_log = logging.getLogger('pacha.daemon')
+PID_DIR = get_pid_dir()
 
 class Watcher(object):
     """Handles all the Reports to display"""
@@ -75,9 +76,9 @@ def start(config=None, foreground=False):
         log_path = config['log_path']
         log_enable = config['log_enable']
         if not log_enable or log_path is None:
-            daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+            daemon = supay.Daemon(name='pacha', log=False, pid_dir=PID_DIR)
         if log_enable and log_enable:
-            daemon = supay.Daemon(name='pacha', catch_all_log=log_path, pid_dir=os.path.dirname(__file__))
+            daemon = supay.Daemon(name='pacha', catch_all_log=log_path, pid_dir=PID_DIR)
 
         daemon.start()
         daemon_log.debug('Daemon started')
@@ -124,10 +125,10 @@ def start(config=None, foreground=False):
             sys.exit(1)
 
 def stop():
-    daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+    daemon = supay.Daemon(name='pacha', log=False, pid_dir=PID_DIR)
     daemon.stop()
 
 def status():
-    daemon = supay.Daemon(name='pacha', log=False, pid_dir=os.path.dirname(__file__))
+    daemon = supay.Daemon(name='pacha', log=False, pid_dir=PID_DIR)
     daemon.status()
 

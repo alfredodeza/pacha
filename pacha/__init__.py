@@ -349,12 +349,6 @@ A systems configuration management engine
         if options.add_config:
             self.add_config(options.add_config)
 
-        if options.remove_config:
-            db = Worker()
-            db.remove_config()
-            self.msg("Configuration file(s) removed")
-            sys.exit(0)
-
         # important: only config options are allowed before 
         # actually checking for valid conf files stored 
         self.config = self.check_config()       

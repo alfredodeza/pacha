@@ -67,4 +67,8 @@ def get_db_dir():
     db_dir = file_dir+'/db'
     return db_dir 
 
-
+def get_pid_dir():
+    """Returns the absolute dir path for the daemon"""
+    file_cwd =  path.abspath(__file__)
+    file_dir = path.dirname(file_cwd)
+    return file_dir
