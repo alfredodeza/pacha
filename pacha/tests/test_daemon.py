@@ -1,13 +1,39 @@
+import getpass
 import os
 import unittest
-import sys
 import shutil
 
 import pacha
+from guachi     import ConfigMapper
 from pacha      import daemon, host
 from mock       import MockSys
 
+DICT_CONF = dict(
+        frequency       = 60,
+        master          = 'False',
+        host            = '%s' % host.hostname(),
+        ssh_user        = '%s' % getpass.getuser(),
+        ssh_port        = 22,
+        hosts_path      = '/tmp/remote_pacha/hosts',
+        hg_autocorrect  = 'True',
+        log_enable      = 'False',
+        log_path        = 'False',
+        log_level       = 'DEBUG',
+        log_format      = '%(asctime)s %(levelname)s %(name)s %(message)s',
+        log_datefmt     = '%H=%M=%S'
+        )
+
+
+
+
 class TestWatcher(unittest.TestCase):
+
+    username = getpass.getuser()
+    dict_conf = dict(
+            ssh_user = username,
+            host = host.hostname(),
+            hosts_path = '/tmp/remote_pacha/hosts'
+            )
 
     def setUp(self):
         # make sure we do not have db file 
@@ -27,6 +53,7 @@ class TestWatcher(unittest.TestCase):
         pacha.database.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         pacha.database.DB_DIR = '/tmp/pacha_test'
         pacha.daemon.PID_DIR = '/tmp/pacha_test'
+        pacha.daemon.DB_FILE = '/tmp/pacha_test/pacha_test.db'
 
         os.makedirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
         os.mkdir(test_dir)
@@ -36,6 +63,10 @@ class TestWatcher(unittest.TestCase):
         conf.write('pacha.host = %s\n' % host.hostname())
         conf.write('pacha.hosts.path = /tmp/remote_pacha/hosts\n')
         conf.close()
+        conf = ConfigMapper('/tmp/pacha_test/pacha_test.db').stored_config()
+        for k, v in DICT_CONF.items():
+            conf[k] = v
+
 
     def tearDown(self):
         # make sure we do not have db file 
