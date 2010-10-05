@@ -325,6 +325,9 @@ A systems configuration management engine
         daemon_group.add_option('--daemon-status', action='store_true',
                 help="Checks the status of the Pacha daemon")
 
+        daemon_group.add_option('--daemon-run-once', action='store_true',
+                help="Checks the status of the Pacha daemon")
+
         daemon_group.add_option('--daemon-foreground', action='store_true',
                 help="Checks the status of the Pacha daemon")
 
@@ -368,6 +371,10 @@ A systems configuration management engine
 
         if options.daemon_stop:
             daemon.stop()
+
+        if options.daemon_run_once:
+            self.set_logging(verbose=True)
+            daemon.start(foreground=True, run_once=True)
 
         if options.daemon_foreground:
             self.set_logging(verbose=True)

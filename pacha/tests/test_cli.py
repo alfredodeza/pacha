@@ -56,15 +56,12 @@ class MockGetDBFile(object):
 
 class TestCommandLine(unittest.TestCase):
 
-
     username = getpass.getuser()
     dict_conf = dict(
             ssh_user = username,
             host = host.hostname(),
             hosts_path = '/tmp/remote_pacha/hosts'
             )
-
-
 
     def setUp(self):
         # make sure we do not have db file 
@@ -105,18 +102,6 @@ class TestCommandLine(unittest.TestCase):
             shutil.rmtree(remote_dir)
         if os.path.isdir(pacha_host):
             shutil.rmtree(pacha_host)
-
-
-        os.makedirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
-        os.mkdir(test_dir)
-        conf = open('/tmp/pacha_test/pacha.conf', 'w')
-        conf.write('[DEFAULT]\n')
-        conf.write('pacha.ssh.user = %s\n' % self.username)
-        conf.write('pacha.host = %s\n' % host.hostname())
-        conf.write('pacha.hosts.path = /tmp/remote_pacha/hosts\n')
-        conf.close()
-        sys.stdout = sys.__stdout__
-
 
     def test_init(self):
         actual = pacha.PachaCommands(parse=False)

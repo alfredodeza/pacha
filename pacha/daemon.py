@@ -11,6 +11,7 @@ from pacha.util         import get_db_file, get_pid_dir
 
 daemon_log = logging.getLogger('pacha.daemon')
 PID_DIR = get_pid_dir()
+DB_FILE = get_db_file()
 
 class Watcher(object):
     """Handles all the Reports to display"""
@@ -21,7 +22,7 @@ class Watcher(object):
         self.path = os.path.normpath(path) 
         if not os.path.isdir(path):
             self.dir_path = os.path.dirname(path)
-
+        self.db = Worker(DB_FILE)
         self.mercurial = hg.Hg(path=self.dir_path)
 
     def report(self):
@@ -42,8 +43,7 @@ class Watcher(object):
         if rev == None:  #a path without a revision so insert one
             daemon_log.debug('No revision recorded in DB - so adding it')
             revision = self.mercurial.revision()[0]
-            db = Worker()
-            db.update_rev(self.path, revision)
+            self.db.update_rev(self.path, revision)
             daemon_log.debug('added revision %s for path %s' % (revision, self.path))
         else: # we have a hash there so:
             revision = self.mercurial.revision()[0]
@@ -51,8 +51,7 @@ class Watcher(object):
                 daemon_log.debug('found a new revision: %s at %s' % (rev,self.path))
                 mercurial = hg.Hg(path=self.dir_path)
                 mercurial.push()
-                db = Worker()
-                db.update_rev(self.path, revision) 
+                self.db.update_rev(self.path, revision) 
 
 
 def frecuency(seconds):
@@ -69,9 +68,11 @@ def frecuency(seconds):
     return freq 
 
 
-def start(config=None, foreground=False):
+def start(config=None, foreground=False, run_once=False):
+
     if config == None:
         config=ConfigMapper(get_db_file()).stored_config()
+
     if not foreground:
         log_path = config['log_path']
         log_enable = config['log_enable']
@@ -112,6 +113,8 @@ def start(config=None, foreground=False):
                 else:
                     pass
                     daemon_log.warning('path %s does not exist' % repo_path)
+            if run_once:
+                raise KeyboardInterrupt
             daemon_log.debug('daemon going to sleep for %s seconds' % freq)
             time.sleep(freq)
 
