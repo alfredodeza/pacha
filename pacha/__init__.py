@@ -312,6 +312,10 @@ A systems configuration management engine
         parser.add_option('--verbose', '-v', action='store_true',
                 help="Enables verbosity in terminal")
 
+        parser.add_option('--upgrade',
+                help="Rebuilds Pacha's internal DB from a previous version.\
+You need to provide the hostname of the server where Pacha was running.")
+
         # Daemon Group
         daemon_group = OptionGroup(parser, "Daemon Options", "Pacha is able to\
     run in the background, these options will help you manage the daemon")
@@ -391,6 +395,10 @@ A systems configuration management engine
 
         if options.add_host:
             self.add_host(options.add_host)
+
+        # Upgrade
+        if options.upgrade:
+            self.upgrade(options.upgrade)
 
         if options.watch:
             # a hack to have ambiguous optparse behavior 
