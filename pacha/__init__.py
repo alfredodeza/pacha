@@ -325,9 +325,6 @@ A systems configuration management engine
         parser.add_option('--add-config',
                 help="""Adds a path to a configuration file""")
 
-        parser.add_option('--remove-config', action="store_true",
-                help="""Removes the stored configuration file""")
-
         parser.add_option('--add-host',
                 help="""Creates structure for saving host configs\
  only meant for Pacha server""")

@@ -24,6 +24,7 @@ Changelog
  * Removes Row factory, that was causing issues with Sqlite3 
  * Added Guachi for persistent configurations and mappings.
  * Logging will now be OFF in the command line unless you pass the -v or --verbose flag.
+ * Removes the '--remove-config' option. If you want to override a config just add a new one.
 
 
 0.2.3
