@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Daemonization &mdash; pacha v0.2.3 documentation</title>
+    <title>Daemonization &mdash; pacha v0.2.4 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2.3',
+        VERSION:     '0.2.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,9 +22,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pacha v0.2.3 documentation" href="index.html" />
+    <link rel="top" title="pacha v0.2.4 documentation" href="index.html" />
     <link rel="next" title="Configuration" href="configuration.html" />
-    <link rel="prev" title="GettingStarted" href="getting_started.html" /> 
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,9 +37,9 @@
           <a href="configuration.html" title="Configuration"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="getting_started.html" title="GettingStarted"
+          <a href="introduction.html" title="Introduction"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pacha v0.2.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -94,6 +94,20 @@ esac
 
 exit 0</pre>
 </div>
+<div class="section" id="foreground">
+<h2>Foreground<a class="headerlink" href="#foreground" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes you do not need to run the daemon in the background, but rather, see what is going on as you go.</p>
+<p>Pacha has a <tt class="docutils literal"><span class="pre">--daemon-foreground</span></tt> option that lets you do just that. It will run in the foreground  and will
+not exit unless you send a <tt class="docutils literal"><span class="pre">KeyboardInterrupt</span></tt> (Ctrl-C in most cases).</p>
+</div>
+<div class="section" id="run-once">
+<h2>Run Once<a class="headerlink" href="#run-once" title="Permalink to this headline">¶</a></h2>
+<p>Another option to deal with daemonization is if you do not really care for a daemon to be always in the background.
+To avoid this issue, we provide an option that will run all the tasks once and will exit safely at the end.
+The option <tt class="docutils literal"><span class="pre">daemon-run-once</span></tt> will accomplish this and it is really convenient if you want to call pacha via <tt class="docutils literal"><span class="pre">cron</span></tt>
+and set up a cron job that can take care of running.</p>
+<p>Sometimes, setting up cron and calling pacha is easier than dealing with annoying daemonizing processes from the OS.</p>
+</div>
 </div>
 
 
@@ -102,9 +116,18 @@ exit 0</pre>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Daemonization</a><ul>
+<li><a class="reference internal" href="#foreground">Foreground</a></li>
+<li><a class="reference internal" href="#run-once">Run Once</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
-  <p class="topless"><a href="getting_started.html"
-                        title="previous chapter">GettingStarted</a></p>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">Introduction</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="configuration.html"
                         title="next chapter">Configuration</a></p>
@@ -140,9 +163,9 @@ exit 0</pre>
           <a href="configuration.html" title="Configuration"
              >next</a> |</li>
         <li class="right" >
-          <a href="getting_started.html" title="GettingStarted"
+          <a href="introduction.html" title="Introduction"
              >previous</a> |</li>
-        <li><a href="index.html">pacha v0.2.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

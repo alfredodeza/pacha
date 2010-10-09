@@ -14,10 +14,12 @@ Contents:
    :maxdepth: 2
 
    getting_started.rst
+   introduction.rst
    daemon.rst
    configuration.rst
    testing.rst
    changelog.rst
+   dont_do_that.rst 
 
 Configuration Manager
 -----------------------

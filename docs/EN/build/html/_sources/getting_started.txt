@@ -8,23 +8,6 @@ Introduction
 The main goal is to get Pacha running and having you backing up your configuration files in as 
 little steps as possible. More advanced Pacha functions are not covered here.
 
-
-Dependencies
------------------
-We have 3 dependencies, make sure you have them installed and ready:
-
- *  SSH (versions 4.7p1 to 5.1p1)
- *  Mercurial (versions 0.9.5 to 1.3.1)
- *  Python (version 2.5 to 2.6)
-
-About version differences
-----------------------------
-You should NOT use Pacha with different versions of Mercurial in different servers otherwise you will get undesired behavior when trying to rebuild a host. This would happen when functionality found in later versions of Mercurial will conflict with the older ones, hence the ability lack of being able to get the latest version of the files you need to rebuild.
-
-Operating Systems
--------------------
-Pacha should work with any system that has the above installed. If you experience any issues let us know!
-
 Installation
 --------------
 We recommend installing from the Python Package Index (PYPI)::
@@ -73,9 +56,7 @@ Once you have a config file, run::
 
     pacha --add-config /path/to/config
 
-If you want to remove it, you can::
-
-    pacha --remove-config /path/to/config
+If you want to remove it, you can re-add it. Pacha will override the information.
 
 And if you want to check the values that are being parsed, you can run::
 
@@ -167,4 +148,5 @@ And in the foreground::
 
     pacha --daemon-foreground
 
-
+If you want to have more control and choices over the daemon process (like using Pacha with ``cron``) check the 
+:ref:`daemon` docs.
