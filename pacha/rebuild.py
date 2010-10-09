@@ -6,14 +6,17 @@ import os
 import sys
 import pwd
 import grp
-from subprocess import call
 import shutil
-from time import strftime
 
-from pacha import database
-from pacha.hg import update
+from subprocess     import call
+from time           import strftime
+
+from pacha          import database
+from pacha.hg       import update
+from pacha.util     import get_db_dir
 
 rebuild_log = logging.getLogger('pacha.rebuild')
+DB_DIR = get_db_dir()
 
 class Rebuild(object):
     """Does all the rebuilding work when a host needs to be reconstructed 
@@ -41,6 +44,9 @@ class Rebuild(object):
         """scp all the files we need to /tmp"""
         # this could probably be much better with a Mercurial Clone command
         os.chdir('/') # avoids being in a dir that will no longer exist
+        if os.path.exists('/tmp/%s' % self.hostname):
+            shutil.move('/tmp/%s' % self.hostname, '/tmp/%s.%s' % (self.hostname, strftime('%H%M%s')))
+
         if not self.directory:
             rebuild_log.debug("Getting all files (not single dir)")
             command = "scp -r -P %d %s:%s/%s %s" % (self.port, self.server,
@@ -70,8 +76,18 @@ class Rebuild(object):
         else:
             print """
 Pacha was not able to retrieve the files from the SSH server provided.
-Check your configuration file settings and run --rebuild again."""
+Check your configuration file settings and try again."""
             sys.exit(1)
+
+    def upgrade_database(self):
+        db_location = '/tmp/%s/db/pacha.db' % self.hostname
+        db_dir_location = os.path.dirname(db_location)
+        db_to_replace = DB_DIR 
+        if os.path.exists(db_location):
+            # move initial db out
+            shutil.move(db_to_replace, '/tmp/pacha.db.%s' % strftime('%H%M%s'))
+            # get old db in 
+            shutil.copytree(db_dir_location, db_to_replace)
 
     def replace_manager(self):
         """Depending on the database information for each path, you may or 

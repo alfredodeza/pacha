@@ -144,6 +144,38 @@ class PachaCommands(object):
             print "Could not complete command: %s" % error 
 
 
+    def restore_db(self, hostname):
+        """
+        server  = user@server
+        host    = host to rebuild the database from (must exist in Master Pacha Server) 
+        hostname    = Host to be rebuilt 
+        """
+        server = "%s@%s" % (self.config['ssh_user'], self.config['host'])
+        port = self.config['ssh_port']
+        source = self.config['hosts_path']
+ 
+
+        print "SSH Connection: %-15s" % server
+        print "SSH Port:       %-15s" % port
+        print "Host to rebuild DB: %-15s" % hostname
+        
+        try:
+            confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
+            run = rebuild.Rebuild(
+                    server=server,
+                    hostname=hostname, 
+                    source=source,
+                    directory='db',
+                    port=port)
+            run.retrieve_files()
+            run.upgrade_database()
+
+        except KeyboardInterrupt:
+            print "\nExiting nicely from Pacha"
+            sys.exit(0)
+
+
+
     def watch(self, path, raw_input=raw_input):                
         """
         3 things need to happen:
@@ -312,8 +344,8 @@ A systems configuration management engine
         parser.add_option('--verbose', '-v', action='store_true',
                 help="Enables verbosity in terminal")
 
-        parser.add_option('--upgrade',
-                help="Rebuilds Pacha's internal DB from a previous version.\
+        parser.add_option('--restore-db',
+                help="Restores Pacha's internal DB from a previous version.\
 You need to provide the hostname of the server where Pacha was running.")
 
         # Daemon Group
@@ -397,8 +429,8 @@ You need to provide the hostname of the server where Pacha was running.")
             self.add_host(options.add_host)
 
         # Upgrade
-        if options.upgrade:
-            self.upgrade(options.upgrade)
+        if options.restore_db:
+            self.restore_db(options.restore_db)
 
         if options.watch:
             # a hack to have ambiguous optparse behavior 
