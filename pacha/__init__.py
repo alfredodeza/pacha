@@ -362,10 +362,10 @@ You need to provide the hostname of the server where Pacha was running.")
                 help="Checks the status of the Pacha daemon")
 
         daemon_group.add_option('--daemon-run-once', action='store_true',
-                help="Checks the status of the Pacha daemon")
+                help="Runs all daemon tasks once and then exits.")
 
         daemon_group.add_option('--daemon-foreground', action='store_true',
-                help="Checks the status of the Pacha daemon")
+                help="Runs on the foreground until it receives a Ctrl-C")
 
         parser.add_option_group(daemon_group)
 
