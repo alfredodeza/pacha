@@ -9,30 +9,18 @@ The main goal is to get Pacha running and having you backing up your configurati
 little steps as possible. More advanced Pacha functions are not covered here.
 
 
-Dependencies
------------------
-We have 3 dependencies, make sure you have them installed and ready:
+.. note::
+    The only "dependency" Pacha has is SSH. Make sure you have it installed and running
+    (e.g. that you can *ssh* to other machines 
 
- *  SSH (versions 4.7p1 to 5.1p1)
- *  Mercurial (versions 0.9.5 to 1.3.1)
- *  Python (version 2.5 to 2.6)
 
-About version differences
-----------------------------
-You should NOT use Pacha with different versions of Mercurial in different servers otherwise you will get undesired behavior when trying to rebuild a host. This would happen when functionality found in later versions of Mercurial will conflict with the older ones, hence the ability lack of being able to get the latest version of the files you need to rebuild.
 
-Operating Systems
--------------------
-Pacha should work with any system that has the above installed. If you experience any issues let us know!
-
-Installation
---------------
+Installation and setup 
+------------------------
 We recommend installing from the Python Package Index (PYPI)::
 
     pip install pacha 
 
-After Installation
-======================
 Have your SSH keys ready for the machines you want Pacha to talk to.
 
 Even if you plan to keep files in a single server, get your ssh keys for ``localhost``. 
@@ -49,15 +37,16 @@ Verify it is working by logging in passwordless::
 
     ssh localhost
 
+If the above does not work, then Pacha will not work since any and all network communications
+are done via SSH. 
+
 
 Edit the configuration file
 -------------------------------
-After installing you need to edit the config file. Pacha needs to have  a configuration 
-file added to be running properly. The config file can be located anywhere and can be 
-called whatever you want. For a sample config file see :ref:`configuration`
+After installing you need to add a configuration file. The config file can be located 
+anywhere and can be called whatever you want. For a sample config file see :ref:`configuration`
 
 If no configuration file is added, Pacha complains::
-
         
      +----------------------------------------------------+
      |                 ** WARNING **                      |
@@ -106,7 +95,7 @@ Mercurial needs to know what is the user that is going to make the changes. If y
          username = Firstname Lastname <firstname.lastname@example.net>
          verbose = True
 
-So follow that above warning to add a username and avoid the daemon problem.
+So follow the above warning to add a username and avoid the daemon problem.
 
 Master Slave approach
 ----------------------
@@ -124,7 +113,8 @@ Pacha can run as a single instance but we want to accomplish a good configuratio
 |                 |   ``/opt/hosts``                                                                         |
 +-----------------+------------------------------------------------------------------------------------------+
 
-.. note:: We will not cover the rebuilding process here. Again, the goal is to have Pacha backing up configuration files in this guide.
+.. note:: 
+    We will not cover the rebuilding process here. Again, the goal is to have Pacha backing up configuration files in this guide.
 
 Tracking Configuration Files
 ------------------------------
