@@ -1,12 +1,9 @@
-.. pacha documentation master file, created by
-   sphinx-quickstart on Fri Aug 13 17:38:26 2010.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. pacha documentation master file
 
 pacha's documentation
 =================================
 
-
+.. image:: _static/pacha_light.jpg
 
 Contents:
 
