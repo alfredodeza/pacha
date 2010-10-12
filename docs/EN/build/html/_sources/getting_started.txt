@@ -14,8 +14,6 @@ We recommend installing from the Python Package Index (PYPI)::
 
     pip install pacha 
 
-After Installation
-======================
 Have your SSH keys ready for the machines you want Pacha to talk to.
 
 Even if you plan to keep files in a single server, get your ssh keys for ``localhost``. 
@@ -33,9 +31,9 @@ Verify it is working by logging in passwordless::
     ssh localhost
 
 
-Edit the configuration file
+Add a configuration file
 -------------------------------
-After installing you need to edit the config file. Pacha needs to have  a configuration 
+After installing you need to add a config file. Pacha needs to have  a configuration 
 file added to be running properly. The config file can be located anywhere and can be 
 called whatever you want. For a sample config file see :ref:`configuration`
 

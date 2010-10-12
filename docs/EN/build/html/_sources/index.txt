@@ -17,6 +17,8 @@ Contents:
    introduction.rst
    daemon.rst
    configuration.rst
+   rebuilding.rst
+   permissions.rst
    testing.rst
    changelog.rst
    dont_do_that.rst 

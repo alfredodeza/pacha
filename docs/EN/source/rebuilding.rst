@@ -31,7 +31,7 @@ At this point, you should be able to:
  * Pacha should not give you a warning about configurations.
 
 
- A crash story
+A crash story
 ----------------
 To be able to understand the rebuild process and what is going where, lets know a bit more 
 about the crash that took that server down.

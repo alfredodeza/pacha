@@ -60,10 +60,6 @@ little steps as possible. More advanced Pacha functions are not covered here.</p
 <p>We recommend installing from the Python Package Index (PYPI):</p>
 <div class="highlight-python"><pre>pip install pacha</pre>
 </div>
-</div>
-</div>
-<div class="section" id="after-installation">
-<h1>After Installation<a class="headerlink" href="#after-installation" title="Permalink to this headline">¶</a></h1>
 <p>Have your SSH keys ready for the machines you want Pacha to talk to.</p>
 <p>Even if you plan to keep files in a single server, get your ssh keys for <tt class="docutils literal"><span class="pre">localhost</span></tt>.
 Pacha pushes information <strong>only</strong> via SSH.</p>
@@ -76,9 +72,10 @@ cat id_rsa.pub &gt;&gt; authorized_keys</pre>
 <p>Verify it is working by logging in passwordless:</p>
 <div class="highlight-python"><pre>ssh localhost</pre>
 </div>
-<div class="section" id="edit-the-configuration-file">
-<h2>Edit the configuration file<a class="headerlink" href="#edit-the-configuration-file" title="Permalink to this headline">¶</a></h2>
-<p>After installing you need to edit the config file. Pacha needs to have  a configuration
+</div>
+<div class="section" id="add-a-configuration-file">
+<h2>Add a configuration file<a class="headerlink" href="#add-a-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>After installing you need to add a config file. Pacha needs to have  a configuration
 file added to be running properly. The config file can be located anywhere and can be
 called whatever you want. For a sample config file see <a class="reference internal" href="configuration.html#configuration"><em>Configuration</em></a></p>
 <p>If no configuration file is added, Pacha complains:</p>
@@ -213,10 +210,7 @@ help with the <em>automated</em> part of using Pacha.</p>
 <li><a class="reference internal" href="#">GettingStarted</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#after-installation">After Installation</a><ul>
-<li><a class="reference internal" href="#edit-the-configuration-file">Edit the configuration file</a></li>
+<li><a class="reference internal" href="#add-a-configuration-file">Add a configuration file</a></li>
 <li><a class="reference internal" href="#verify-username-in-hgrc">Verify username in HGRC</a></li>
 <li><a class="reference internal" href="#master-slave-approach">Master Slave approach</a></li>
 <li><a class="reference internal" href="#tracking-configuration-files">Tracking Configuration Files</a></li>
