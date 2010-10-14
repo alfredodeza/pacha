@@ -68,7 +68,7 @@ would look like::
 
 That is **13** lines including comments! It can't get more simple than that simple config file.
 
-To be rebuild this host, you would need to run the ``--rebuild`` flag::
+To be rebuild this host, you would needs to run the ``--rebuild`` flag::
 
     pacha --rebuild bar 
 
