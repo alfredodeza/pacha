@@ -153,6 +153,71 @@ originally.</p>
 it had stored from before (e.g. owner, group ownership and rwx permissions).</p>
 </div>
 </div>
+<div class="section" id="hooks">
+<h1>Hooks<a class="headerlink" href="#hooks" title="Permalink to this headline">¶</a></h1>
+<p>Since the beginning of Pacha, we decided that the best way to accomplish tasks that were
+out of Pacha&#8217;s scope, was to implement a hook space.</p>
+<p>Since version 0.2.4 (see: <a class="reference internal" href="changelog.html#changelog"><em>Changelog</em></a>) Pacha has a full hook system.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Hooks get triggered only when performing a full rebuild.</p>
+</div>
+<p>There is no user interface for hooks since they get automatically executed when rebuilding.</p>
+<p>You can have <em>any</em> number of scripts in a hooks directory and they get executed in
+alphabetical order.</p>
+<div class="section" id="languages-supported">
+<h2>Languages Supported<a class="headerlink" href="#languages-supported" title="Permalink to this headline">¶</a></h2>
+<p>The short answe is <strong>any language!</strong>. The language support for hook scripts is limited
+to the Languages supported by the server you want to rebuild.</p>
+<p>For example, shell scripts would almost certainly be able to execute regardless, but
+you may not have Ruby installed, so Ruby scripts would not be able to get executed.</p>
+<p>Whatever language you choose, make sure it is available in the server.</p>
+</div>
+<div class="section" id="pre-hooks">
+<h2>Pre Hooks<a class="headerlink" href="#pre-hooks" title="Permalink to this headline">¶</a></h2>
+<p>&#8220;Pre&#8221; hooks get executed before Pacha attempts to start moving files around but
+after it has been able to retrieve the files from the Master Pacha Server.</p>
+<p>Pre-hooks become handy when you want to make sure certain packages are installed
+in the server or if you need to create some users.</p>
+<p>As with any hooks, Pacha makes sure the file is executable and changes the sticky-bit
+always to be able to run the script.</p>
+<p>These collection of scripts, should live inside a host directory in the Master Pacha
+Server.</p>
+<p>If you have your Master Pacha server set up to receive files in this way:</p>
+<div class="highlight-python"><pre>/opt/pacha/hosts</pre>
+</div>
+<p>Then the pre-hooks for the <tt class="docutils literal"><span class="pre">example.com</span></tt> server would look like:</p>
+<div class="highlight-python"><pre>/opt/pacha/hosts/example.com/pacha_pre</pre>
+</div>
+<p>It is <strong>very</strong> important that you name that directory correctly, in this case
+<tt class="docutils literal"><span class="pre">pacha_pre</span></tt> because this is the directory Pacha looks for when rebuilding to
+properly execute the scripts within.</p>
+</div>
+<div class="section" id="post-hooks">
+<h2>Post Hooks<a class="headerlink" href="#post-hooks" title="Permalink to this headline">¶</a></h2>
+<p>Post hooks get executed after Pacha has retrieved files from the server and has relocated
+them in their original locations.</p>
+<p>Anything will get executed after all Pacha tasks are done, so a good example of a post-hook
+would be sending an email or notification that the server is up and running.</p>
+<p>These collection of scripts, should live inside a host directory in the Master Pacha
+Server.</p>
+<p>If you have your Master Pacha server set up to receive files in this way:</p>
+<div class="highlight-python"><pre>/opt/pacha/hosts</pre>
+</div>
+<p>Then the post-hooks for the <tt class="docutils literal"><span class="pre">example.com</span></tt> server would look like:</p>
+<div class="highlight-python"><pre>/opt/pacha/hosts/example.com/pacha_post</pre>
+</div>
+<p>It is <strong>very</strong> important that you name that directory correctly, in this case
+<tt class="docutils literal"><span class="pre">pacha_post</span></tt> because this is the directory Pacha looks for when rebuilding to
+properly execute the scripts within.</p>
+</div>
+<div class="section" id="restrictions-in-hooks">
+<h2>Restrictions in Hooks<a class="headerlink" href="#restrictions-in-hooks" title="Permalink to this headline">¶</a></h2>
+<p>There are no restrictions in running hooks with Pacha. Just make sure you have
+those scripts in <tt class="docutils literal"><span class="pre">pre_pacha</span></tt> or <tt class="docutils literal"><span class="pre">post_pacha</span></tt> and living inside the proper
+host directory.</p>
+</div>
+</div>
 
 
           </div>
@@ -166,6 +231,13 @@ it had stored from before (e.g. owner, group ownership and rwx permissions).</p>
 <li><a class="reference internal" href="#prepare-the-new-server">Prepare the new server</a></li>
 <li><a class="reference internal" href="#a-crash-story">A crash story</a></li>
 <li><a class="reference internal" href="#actual-rebuilding">Actual Rebuilding</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hooks">Hooks</a><ul>
+<li><a class="reference internal" href="#languages-supported">Languages Supported</a></li>
+<li><a class="reference internal" href="#pre-hooks">Pre Hooks</a></li>
+<li><a class="reference internal" href="#post-hooks">Post Hooks</a></li>
+<li><a class="reference internal" href="#restrictions-in-hooks">Restrictions in Hooks</a></li>
 </ul>
 </li>
 </ul>

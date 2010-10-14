@@ -116,3 +116,87 @@ originally.
 
 Once it is done copying all the files, it runs a permission check and sets the permissions that 
 it had stored from before (e.g. owner, group ownership and rwx permissions).
+
+Hooks
+=========
+Since the beginning of Pacha, we decided that the best way to accomplish tasks that were 
+out of Pacha's scope, was to implement a hook space.
+
+Since version 0.2.4 (see: :ref:`changelog`) Pacha has a full hook system.
+
+.. note::
+    Hooks get triggered only when performing a full rebuild.
+
+There is no user interface for hooks since they get automatically executed when rebuilding.
+
+You can have *any* number of scripts in a hooks directory and they get executed in 
+alphabetical order.
+
+
+Languages Supported
+---------------------
+The short answe is **any language!**. The language support for hook scripts is limited
+to the Languages supported by the server you want to rebuild.
+
+For example, shell scripts would almost certainly be able to execute regardless, but 
+you may not have Ruby installed, so Ruby scripts would not be able to get executed.
+
+Whatever language you choose, make sure it is available in the server.
+
+Pre Hooks
+-----------
+"Pre" hooks get executed before Pacha attempts to start moving files around but 
+after it has been able to retrieve the files from the Master Pacha Server.
+
+Pre-hooks become handy when you want to make sure certain packages are installed
+in the server or if you need to create some users.
+
+As with any hooks, Pacha makes sure the file is executable and changes the sticky-bit
+always to be able to run the script.
+
+These collection of scripts, should live inside a host directory in the Master Pacha 
+Server.
+
+If you have your Master Pacha server set up to receive files in this way::
+
+    /opt/pacha/hosts 
+
+Then the pre-hooks for the ``example.com`` server would look like::
+
+    /opt/pacha/hosts/example.com/pacha_pre
+
+It is **very** important that you name that directory correctly, in this case 
+``pacha_pre`` because this is the directory Pacha looks for when rebuilding to 
+properly execute the scripts within.
+
+
+Post Hooks
+-----------
+Post hooks get executed after Pacha has retrieved files from the server and has relocated 
+them in their original locations. 
+
+Anything will get executed after all Pacha tasks are done, so a good example of a post-hook 
+would be sending an email or notification that the server is up and running.
+
+These collection of scripts, should live inside a host directory in the Master Pacha 
+Server.
+
+If you have your Master Pacha server set up to receive files in this way::
+
+    /opt/pacha/hosts 
+
+Then the post-hooks for the ``example.com`` server would look like::
+
+    /opt/pacha/hosts/example.com/pacha_post
+
+It is **very** important that you name that directory correctly, in this case 
+``pacha_post`` because this is the directory Pacha looks for when rebuilding to 
+properly execute the scripts within.
+
+
+Restrictions in Hooks 
+-----------------------
+There are no restrictions in running hooks with Pacha. Just make sure you have 
+those scripts in ``pre_pacha`` or ``post_pacha`` and living inside the proper 
+host directory.
+
