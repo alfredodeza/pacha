@@ -117,8 +117,12 @@ originally.
 Once it is done copying all the files, it runs a permission check and sets the permissions that 
 it had stored from before (e.g. owner, group ownership and rwx permissions).
 
+
+.. _hooks:
+
 Hooks
 =========
+
 Since the beginning of Pacha, we decided that the best way to accomplish tasks that were 
 out of Pacha's scope, was to implement a hook space.
 
@@ -135,6 +139,7 @@ alphabetical order.
 
 Languages Supported
 ---------------------
+
 The short answe is **any language!**. The language support for hook scripts is limited
 to the Languages supported by the server you want to rebuild.
 
@@ -143,8 +148,10 @@ you may not have Ruby installed, so Ruby scripts would not be able to get execut
 
 Whatever language you choose, make sure it is available in the server.
 
+
 Pre Hooks
 -----------
+
 "Pre" hooks get executed before Pacha attempts to start moving files around but 
 after it has been able to retrieve the files from the Master Pacha Server.
 
@@ -172,6 +179,7 @@ properly execute the scripts within.
 
 Post Hooks
 -----------
+
 Post hooks get executed after Pacha has retrieved files from the server and has relocated 
 them in their original locations. 
 
@@ -196,6 +204,7 @@ properly execute the scripts within.
 
 Restrictions in Hooks 
 -----------------------
+
 There are no restrictions in running hooks with Pacha. Just make sure you have 
 those scripts in ``pre_pacha`` or ``post_pacha`` and living inside the proper 
 host directory.
