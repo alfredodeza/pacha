@@ -146,6 +146,10 @@ Check your configuration file settings and try again."""
     def default_replace(self, dirname, path):
         """Usually you will replace the configs you were backing up. Here
         the directory gets pushed if not specified in the database"""
+        temp_bucket = '/tmp/pacha_bucket'
+        if os.path.exists(temp_bucket):
+            shutil.rmtree(temp_bucket)
+        os.makedirs(temp_bucket)
         rebuild_log.debug('repos path: %s' % path)
         tmp_dir = '/tmp/%s/' % self.hostname
         rebuild_log.debug('tmp_dir: %s' % tmp_dir)
@@ -156,10 +160,11 @@ Check your configuration file settings and try again."""
             rebuild_log.debug('found path with matching dir: %s %s' % (dirname, 
                 base))
             if os.path.exists(path):
-                shutil.move(path,'/tmp/%s.%s' % (base, 
+                shutil.move(path,'/tmp/pacha_bucket/%s.%s' % (base, 
                     strftime('%H%M%s'))) # get it out of the way
-                rebuild_log.debug('moving %s' % path)
-                # remove .hg:
+                rebuild_log.debug(
+                        'moving %s to /tmp/pacha_bucket/%s.%s' % (
+                            path, base, strftime('%H%M%s')))
             try:
                 shutil.rmtree(tmp_dir+dirname+'/.hg')
                 shutil.copytree(tmp_dir+dirname, path)

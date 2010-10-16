@@ -3,10 +3,15 @@ import os
 import shutil
 import getpass
 import sys
+
+import pacha
+
 from time           import strftime
 
+from guachi         import ConfigMapper
 from mock           import MockSys
 from pacha          import rebuild, host 
+from pacha.hg       import hg_push_update
 
 
 class TestRebuild(unittest.TestCase):
@@ -20,6 +25,10 @@ class TestRebuild(unittest.TestCase):
             shutil.rmtree('/tmp/localhost')
         if os.path.isdir('/tmp/test_pacha'):
             shutil.rmtree('/tmp/test_pacha')
+        if os.path.isdir('/tmp/%s' % host.hostname()):
+            shutil.rmtree('/tmp/%s' % host.hostname())
+        if os.path.isdir('/tmp/pacha_test'):
+            shutil.rmtree('/tmp/pacha_test')
         os.mkdir('/tmp/test_pacha')
         config = open('/tmp/test_pacha/pacha.conf', 'w')
         config.write('[DEFAULT]\n')
@@ -27,10 +36,38 @@ class TestRebuild(unittest.TestCase):
         config.write('pacha.host = %s\n' % host.hostname())
         config.write('pacha.hosts.path = /tmp/remote_pacha/hosts\n')
         config.close()
+        # static mappings for file locations 
+        pacha.DB_DIR = '/tmp/pacha_test'
+        pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.database.DB_FILE = '/tmp/pacha_test/pacha_test.db'
+        pacha.database.DB_DIR = '/tmp/pacha_test'
+        pacha.daemon.PID_DIR = '/tmp/pacha_test'
+
+        # write a config file 
+        os.makedirs('/tmp/pacha_test')
+        conf = open('/tmp/pacha_test/pacha.conf', 'w')
+        conf.write('[DEFAULT]\n')
+        conf.write('pacha.ssh.user = %s\n' % self.username)
+        conf.write('pacha.host = %s\n' % host.hostname())
+        conf.write('pacha.hosts.path = /tmp/remote_pacha/hosts\n')
+        conf.close()
+        
+
 
 
     def tearDown(self):
         """Will run last at the end of all tests"""
+        if os.path.isdir('/tmp/remote_pacha'):
+            shutil.rmtree('/tmp/remote_pacha')
+        if os.path.isdir('/tmp/localhost'):
+            shutil.rmtree('/tmp/localhost')
+        if os.path.isdir('/tmp/test_pacha'):
+            shutil.rmtree('/tmp/test_pacha')
+        if os.path.isdir('/tmp/pacha_test'):
+            shutil.rmtree('/tmp/pacha_test')
+
         try:
             shutil.rmtree('/tmp/test_pacha')
             shutil.rmtree('/tmp/remote_pacha')
@@ -190,7 +227,6 @@ Check your configuration file settings and try again.
         touch_script = open('/tmp/remote_pacha/localhost/pacha_pre/foo.sh', 'w')
         touch_script.write('''touch /tmp/remote_pacha/localhost/pre_got_executed.txt''')
         touch_script.close()
-
         server = "%s@%s" % (self.username, host.hostname()) 
         run = rebuild.Rebuild(server=server,
                         hostname='localhost', 
@@ -204,6 +240,71 @@ Check your configuration file settings and try again.
         self.assertTrue(result_2)
         self.assertTrue(result_1)
         self.assertTrue(os.path.isfile('/tmp/remote_pacha/localhost/pre_got_executed.txt'))
+
+
+    def test_rebuild_no_db(self):
+        """Run a full rebuild and fail because no db was found"""
+        os.makedirs('/tmp/remote_pacha/localhost/etc')
+        os.mkdir('/tmp/remote_pacha/localhost/home')
+        remote_file = open('/tmp/remote_pacha/localhost/etc/etc.conf', 'w')
+        remote_file.write("remote second file")
+        remote_file.close()
+        remote_file = open('/tmp/remote_pacha/localhost/home/home.conf', 'w')
+        remote_file.write("remote file")
+        remote_file.close()
+        server = "%s@%s" % (self.username, host.hostname()) 
+        run = rebuild.Rebuild(server=server,
+                        hostname='localhost', 
+                        source='/tmp/remote_pacha')
+        sys.stdout = MockSys()
+        sys.exit = MockSys()
+        run.retrieve_files()
+        run.replace_manager()
+        actual = sys.stdout.captured()
+        expected = """Could not find DB at /tmp/localhost/db/pacha.db\n"""
+        self.assertEqual(actual, expected) 
+
+
+    def test_rebuild(self):
+        """Test a simple rebuild with some files in the pacha.db"""
+        pacha.DB_DIR = '/tmp/pacha_test/db'
+        pacha.DB_FILE ='/tmp/pacha_test/db/pacha_test.db' 
+        pacha.permissions.DB_FILE ='/tmp/pacha_test/db/pacha_test.db' 
+        pacha.hg.DB_FILE ='/tmp/pacha_test/db/pacha_test.db' 
+        pacha.database.DB_FILE = '/tmp/pacha_test/db/pacha_test.db'
+        pacha.database.DB_DIR = '/tmp/pacha_test/db'
+        pacha.daemon.PID_DIR = '/tmp/pacha_test'
+
+        os.makedirs('/tmp/pacha_test/db')
+        os.makedirs('/tmp/remote_pacha/hosts/%s' % host.hostname())
+        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/db/pacha_test.db'),
+            db_file='/tmp/pacha_test/db/pacha_test.db')
+        cmd.add_config('/tmp/pacha_test/pacha.conf')
+        cmd.check_config()
+        os.makedirs('/tmp/pacha_test/foo/bar')
+        test_file = open('/tmp/pacha_test/foo/bar/test.txt', 'w')
+        test_file.write('file should be rebuilt')
+        test_file.close()
+        
+
+        cmd.watch('/tmp/pacha_test/foo/bar')
+        # do hg update on the newly cloned files: 
+        hg_push_update('/tmp/remote_pacha/hosts/mbp.local/bar')
+        
+
+        # fake getting the db to the expected location 
+        shutil.copy('/tmp/pacha_test/db/pacha_test.db' , '/tmp/remote_pacha/hosts/%s/db/pacha.db' % host.hostname())
+        shutil.rmtree('/tmp/pacha_test')
+
+        server = "%s@%s" % (self.username, host.hostname()) 
+        run = rebuild.Rebuild(server=server,
+                        hostname=host.hostname(), 
+                        source='/tmp/remote_pacha/hosts')
+        run.retrieve_files()
+        self.assertFalse(os.path.exists('/tmp/pacha_test'))
+        run.replace_manager()
+        self.assertTrue(os.path.exists('/tmp/pacha_test/foo/bar'))
+        self.assertEqual(open('/tmp/pacha_test/foo/bar/test.txt').readline(), 'file should be rebuilt')
 
 
 if __name__ == '__main__':
