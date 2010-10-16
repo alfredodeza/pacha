@@ -3,6 +3,7 @@ import os
 import shutil
 import getpass
 import sys
+from time           import strftime
 
 from mock           import MockSys
 from pacha          import rebuild, host 
@@ -104,6 +105,34 @@ Pacha was not able to retrieve the files from the SSH server provided.
 Check your configuration file settings and try again.
 """
         self.assertEqual(actual, expected) 
+
+
+    def test_retrieve_files_move_existing_file(self):
+        """if there is an exisiting file when retrieving - move it"""
+        os.makedirs('/tmp/remote_pacha/localhost/etc')
+        os.mkdir('/tmp/remote_pacha/localhost/home')
+        remote_file = open('/tmp/remote_pacha/localhost/etc/etc.conf', 'w')
+        remote_file.write("remote second file")
+        remote_file.close()
+        remote_file = open('/tmp/remote_pacha/localhost/home/home.conf', 'w')
+        remote_file.write("remote file")
+        remote_file.close()
+        server = "%s@%s" % (self.username, host.hostname()) 
+        os.mkdir('/tmp/localhost')
+
+        run = rebuild.Rebuild(server=server,
+                        hostname='localhost', 
+                        source='/tmp/remote_pacha')
+        run.retrieve_files()
+        result_1 = os.path.isfile('/tmp/localhost/etc/etc.conf')
+        result_2 = os.path.isfile('/tmp/localhost/home/home.conf')
+        result_3 = os.path.isdir('/tmp/localhost.%s' % strftime('%H%M%s'))
+        line = open('/tmp/localhost/etc/etc.conf')
+        remote_line = line.readline()
+        self.assertEqual(remote_line, "remote second file")
+        self.assertTrue(result_3)
+        self.assertTrue(result_2)
+        self.assertTrue(result_1)
 
 
 if __name__ == '__main__':
