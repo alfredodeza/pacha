@@ -3,6 +3,9 @@ class MockSys(object):
     def __init__(self):
         self.message = []
 
+    def __call__(self, *args, **kw):
+        pass
+
     def write(self, string):
         self.message.append(string)
         pass

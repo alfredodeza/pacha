@@ -2,8 +2,10 @@ import unittest
 import os
 import shutil
 import getpass
+import sys
 
-from pacha import rebuild, host 
+from mock           import MockSys
+from pacha          import rebuild, host 
 
 
 class TestRebuild(unittest.TestCase):
@@ -32,7 +34,7 @@ class TestRebuild(unittest.TestCase):
             shutil.rmtree('/tmp/localhost')
             shutil.rmtree('/tmp/single_dir')
         except OSError:
-            pass # nevermind if you could not delte this guy
+            pass # nevermind if you could not delete this guy
 
 
     def test_retrieve_files_single(self):
@@ -77,6 +79,31 @@ class TestRebuild(unittest.TestCase):
         self.assertEqual(remote_line, "remote second file")
         self.assertTrue(result_2)
         self.assertTrue(result_1)
+
+
+    def test_retrieve_files_error_message(self):
+        """If you can't retrieve files let me know"""
+        os.makedirs('/tmp/remote_pacha/localhost/etc')
+        os.mkdir('/tmp/remote_pacha/localhost/home')
+        remote_file = open('/tmp/remote_pacha/localhost/etc/etc.conf', 'w')
+        remote_file.write("remote second file")
+        remote_file.close()
+        remote_file = open('/tmp/remote_pacha/localhost/home/home.conf', 'w')
+        remote_file.write("remote file")
+        remote_file.close()
+        server = "%s@%s" % (self.username, host.hostname()) 
+        run = rebuild.Rebuild(server=server,
+                        hostname='localhost', 
+                        source='/tmpp/remote_pacha')
+        sys.stdout = MockSys()
+        sys.exit = MockSys()
+        run.retrieve_files()
+        actual = sys.stdout.captured()
+        expected = """
+Pacha was not able to retrieve the files from the SSH server provided.
+Check your configuration file settings and try again.
+"""
+        self.assertEqual(actual, expected) 
 
 
 if __name__ == '__main__':
