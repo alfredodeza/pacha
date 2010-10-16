@@ -16,6 +16,8 @@ class TestRebuild(unittest.TestCase):
         """Will setup just once for all tests"""
         if os.path.isdir('/tmp/remote_pacha'):
             shutil.rmtree('/tmp/remote_pacha')
+        if os.path.isdir('/tmp/localhost'):
+            shutil.rmtree('/tmp/localhost')
         if os.path.isdir('/tmp/test_pacha'):
             shutil.rmtree('/tmp/test_pacha')
         os.mkdir('/tmp/test_pacha')
@@ -133,6 +135,75 @@ Check your configuration file settings and try again.
         self.assertTrue(result_3)
         self.assertTrue(result_2)
         self.assertTrue(result_1)
+
+
+    def test_pre_hooks(self):
+        """Execute pre hook script"""
+        os.makedirs('/tmp/localhost/pacha_pre')
+        touch_script = open('/tmp/localhost/pacha_pre/foo.sh', 'w')
+        touch_script.write('''touch /tmp/localhost/pre_got_executed.txt''')
+        touch_script.close()
+        run = rebuild.Rebuild(hostname='localhost') 
+        run.pre_hooks()
+        self.assertTrue(os.path.isfile('/tmp/localhost/pre_got_executed.txt'))
+
+
+    def test_post_hooks(self):
+        """Execute post hook script"""
+        os.makedirs('/tmp/localhost/pacha_post')
+        touch_script = open('/tmp/localhost/pacha_post/bar.sh', 'w')
+        touch_script.write('''touch /tmp/localhost/post_got_executed.txt''')
+        touch_script.close()
+        run = rebuild.Rebuild(hostname='localhost') 
+        run.post_hooks()
+        self.assertTrue(os.path.isfile('/tmp/localhost/post_got_executed.txt'))
+
+
+    def test_pre_post_hooks(self):
+        """Execute both pre and post hooks"""
+        os.makedirs('/tmp/localhost/pacha_pre')
+        os.makedirs('/tmp/localhost/pacha_post')
+        pre_script = open('/tmp/localhost/pacha_pre/foo.sh', 'w')
+        pre_script.write('''touch /tmp/localhost/pre_got_executed.txt''')
+        pre_script.close()
+        post_script = open('/tmp/localhost/pacha_post/bar.sh', 'w')
+        post_script.write('''touch /tmp/localhost/post_got_executed.txt''')
+        post_script.close()
+        run = rebuild.Rebuild(hostname='localhost') 
+        run.pre_hooks()
+        run.post_hooks()
+        self.assertTrue(os.path.isfile('/tmp/localhost/post_got_executed.txt'))
+        self.assertTrue(os.path.isfile('/tmp/localhost/pre_got_executed.txt'))
+
+
+    def test_retrieve_files_with_pre_hook(self):
+        """Retrieve files and execute the pre_hook if found"""
+        os.makedirs('/tmp/remote_pacha/localhost/etc')
+        os.mkdir('/tmp/remote_pacha/localhost/home')
+        remote_file = open('/tmp/remote_pacha/localhost/etc/etc.conf', 'w')
+        remote_file.write("remote second file")
+        remote_file.close()
+        remote_file = open('/tmp/remote_pacha/localhost/home/home.conf', 'w')
+        remote_file.write("remote file")
+        remote_file.close()
+        os.makedirs('/tmp/remote_pacha/localhost/pacha_pre')
+        touch_script = open('/tmp/remote_pacha/localhost/pacha_pre/foo.sh', 'w')
+        touch_script.write('''touch /tmp/remote_pacha/localhost/pre_got_executed.txt''')
+        touch_script.close()
+
+        server = "%s@%s" % (self.username, host.hostname()) 
+        run = rebuild.Rebuild(server=server,
+                        hostname='localhost', 
+                        source='/tmp/remote_pacha')
+        run.retrieve_files()
+        result_1 = os.path.isfile('/tmp/localhost/etc/etc.conf')
+        result_2 = os.path.isfile('/tmp/localhost/home/home.conf')
+        line = open('/tmp/localhost/etc/etc.conf')
+        remote_line = line.readline()
+        self.assertEqual(remote_line, "remote second file")
+        self.assertTrue(result_2)
+        self.assertTrue(result_1)
+        self.assertTrue(os.path.isfile('/tmp/remote_pacha/localhost/pre_got_executed.txt'))
 
 
 if __name__ == '__main__':
