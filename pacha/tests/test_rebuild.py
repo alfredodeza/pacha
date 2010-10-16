@@ -27,6 +27,8 @@ class TestRebuild(unittest.TestCase):
             shutil.rmtree('/tmp/test_pacha')
         if os.path.isdir('/tmp/%s' % host.hostname()):
             shutil.rmtree('/tmp/%s' % host.hostname())
+        if os.path.isdir('/tmp/pacha_bucket'):
+            shutil.rmtree('/tmp/pacha_bucket')
         if os.path.isdir('/tmp/pacha_test'):
             shutil.rmtree('/tmp/pacha_test')
         os.mkdir('/tmp/test_pacha')
@@ -67,6 +69,8 @@ class TestRebuild(unittest.TestCase):
             shutil.rmtree('/tmp/test_pacha')
         if os.path.isdir('/tmp/pacha_test'):
             shutil.rmtree('/tmp/pacha_test')
+        if os.path.isdir('/tmp/pacha_bucket'):
+            shutil.rmtree('/tmp/pacha_bucket')
 
         try:
             shutil.rmtree('/tmp/test_pacha')
