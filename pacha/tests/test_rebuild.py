@@ -289,12 +289,10 @@ Check your configuration file settings and try again.
         test_file = open('/tmp/pacha_test/foo/bar/test.txt', 'w')
         test_file.write('file should be rebuilt')
         test_file.close()
-        
-
         cmd.watch('/tmp/pacha_test/foo/bar')
+
         # do hg update on the newly cloned files: 
         hg_push_update('/tmp/remote_pacha/hosts/mbp.local/bar')
-        
 
         # fake getting the db to the expected location 
         shutil.copy('/tmp/pacha_test/db/pacha_test.db' , '/tmp/remote_pacha/hosts/%s/db/pacha.db' % host.hostname())
