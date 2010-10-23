@@ -1,3 +1,5 @@
+from time               import time
+
 import sqlite3
 import os
 
@@ -51,11 +53,11 @@ class Worker(object):
         self.conn.close()
 
 
-    def insert(self, path=None, permissions=None, type=None, revision=None, timestamp=):
+    def insert(self, path=None, permissions=None, type=None, revision=None, timestamp=int(time())):
         """Puts a new repo in the database and checks if the record
         is not already there"""
-        values = (path, permissions, type, revision, path)
-        command = 'INSERT INTO repos(path, permissions, type, revision) select ?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM repos WHERE path=?)'
+        values = (path, permissions, type, revision, timestamp, path)
+        command = 'INSERT INTO repos(path, permissions, type, revision, timestamp) select ?,?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM repos WHERE path=?)'
         self.c.execute(command, values)
         self.conn.commit()
 

@@ -1,10 +1,18 @@
+from time           import time
 import os
 import unittest
 
-from guachi import ConfigMapper
-from pacha import database
+from guachi         import ConfigMapper
+from pacha          import database
 
 class TestWorker(unittest.TestCase):
+
+    def setUp(self):
+        """Remove all the files that the database may have created"""
+        try:
+            os.remove('/tmp/pacha.db')
+        except:
+            pass # do not care if you could not remove that file
 
     def tearDown(self):
         """Remove all the files that the database may have created"""
@@ -29,6 +37,18 @@ class TestWorker(unittest.TestCase):
             actual = i[1]
         expected = u'/tmp/foo'
         self.assertEqual(actual, expected)
+
+    def test_timestamp(self):
+        """Add a repo and check the timestamp"""
+        db = database.Worker(db='/tmp/pacha.db')
+        tstamp = int(time())
+        db.insert(path='/tmp/foo', type="dir")
+        # create the connection again:
+        db = database.Worker(db='/tmp/pacha.db')
+        actual = [i[5] for i in db.get_repo('/tmp/foo')][0]
+        expected = u'%s' % tstamp
+        self.assertEqual(actual, expected)
+
 
     def test_insert_type(self):
         """Do a simple insert of a path and its type into db"""
