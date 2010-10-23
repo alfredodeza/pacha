@@ -58,7 +58,6 @@ def get_db_file():
     db_file = file_dir+'/db/pacha.db'
     return db_file 
 
-
 def get_db_dir():
     """Returns the absolute path  of the db directory"""
     # Fixes Database Absolute Location
@@ -72,3 +71,5 @@ def get_pid_dir():
     file_cwd =  path.abspath(__file__)
     file_dir = path.dirname(file_cwd)
     return file_dir
+
+

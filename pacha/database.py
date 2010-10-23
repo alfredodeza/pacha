@@ -9,7 +9,8 @@ REPOS_TABLE = """CREATE TABLE IF NOT EXISTS repos(
     path            TEXT,  
     permissions     TEXT, 
     type            TEXT, 
-    revision        TEXT
+    revision        TEXT,
+    timestamp       TEXT
 )"""
 
 
@@ -50,7 +51,7 @@ class Worker(object):
         self.conn.close()
 
 
-    def insert(self, path=None, permissions=None, type=None, revision=None):
+    def insert(self, path=None, permissions=None, type=None, revision=None, timestamp=):
         """Puts a new repo in the database and checks if the record
         is not already there"""
         values = (path, permissions, type, revision, path)
