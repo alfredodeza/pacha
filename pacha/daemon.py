@@ -28,9 +28,12 @@ class Watcher(object):
     def report(self):
         """Report if a file changed and the change has not been commited"""
         daemon_log.debug('watching for changes in %s' % self.path)
-
+        repo = self.db.get_repo(self.path)
+        saved_tstamp = int([i[5] for i in repo][0])
+#        saved_tstamp = int([i[4] for i in repo][0])
+        if saved_tstamp < self.mercurial.is_modified():
         # make sure hgrc users match 
-        if self.mercurial.is_modified():
+#        if self.mercurial.is_modified():
             self.mercurial.hgrc_user()
             self.mercurial.commit()
             self.mercurial.push()
