@@ -42,7 +42,7 @@ class TestWorker(unittest.TestCase):
         """Add a repo and check the timestamp"""
         db = database.Worker(db='/tmp/pacha.db')
         tstamp = int(time())
-        db.insert(path='/tmp/foo', type="dir")
+        db.insert(path='/tmp/foo', type="dir", timestamp=tstamp)
         # create the connection again:
         db = database.Worker(db='/tmp/pacha.db')
         actual = [i[5] for i in db.get_repo('/tmp/foo')][0]

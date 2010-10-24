@@ -1,3 +1,5 @@
+from time           import time
+
 import unittest
 import sys
 import os
@@ -288,8 +290,20 @@ class TestCommandLine(unittest.TestCase):
         repos = [i for i in db.get_repos()] 
 
         self.assertEqual(len(repos), 2)
-        self.assertEqual(repos[1], (2, u'/tmp/pacha_test', None, u'dir', None))
-        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
+        self.assertEqual(repos[1][0], 2)
+        self.assertEqual(repos[1][1], u'/tmp/pacha_test')
+        self.assertEqual(repos[1][2], None)
+        self.assertEqual(repos[1][3], u'dir')
+        self.assertEqual(repos[1][4], None)
+
+        self.assertEqual(repos[0][0], 1)
+        self.assertEqual(repos[0][1], u'/tmp/pacha_test/foo')
+        self.assertEqual(repos[0][2], None)
+        self.assertEqual(repos[0][3], u'dir')
+        self.assertEqual(repos[0][4], None)
+
+
+
         self.assertTrue(os.path.isdir('/tmp/pacha_test/.hg'))
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
         self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
@@ -310,7 +324,13 @@ class TestCommandLine(unittest.TestCase):
         repos = [i for i in db.get_repos()] 
 
         self.assertEqual(len(repos), 1)
-        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
+        self.assertEqual(repos[0][0], 1)
+        self.assertEqual(repos[0][1], u'/tmp/pacha_test/foo')
+        self.assertEqual(repos[0][2], None)
+        self.assertEqual(repos[0][3], u'dir')
+        self.assertEqual(repos[0][4], None)
+
+
         self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
         self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
@@ -328,10 +348,19 @@ class TestCommandLine(unittest.TestCase):
         cmd.watch('/tmp/pacha_test/foo', raw_input=mock_raw_input())
         db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
         repos = [i for i in db.get_repos()] 
-
         self.assertEqual(len(repos), 2)
-        self.assertEqual(repos[1], (2, u'/tmp/pacha_test', None, u'dir', None))
-        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
+        self.assertEqual(repos[1][0], 2)
+        self.assertEqual(repos[1][1], u'/tmp/pacha_test')
+        self.assertEqual(repos[1][2], None)
+        self.assertEqual(repos[1][3], u'dir')
+        self.assertEqual(repos[1][4], None)
+
+        self.assertEqual(repos[0][0], 1)
+        self.assertEqual(repos[0][1], u'/tmp/pacha_test/foo')
+        self.assertEqual(repos[0][2], None)
+        self.assertEqual(repos[0][3], u'dir')
+        self.assertEqual(repos[0][4], None)
+
         self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
         self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
@@ -339,11 +368,6 @@ class TestCommandLine(unittest.TestCase):
  
     def test_watch_single(self):
         """Watch a single file in a directory"""
-#        pacha.DB_DIR = '/tmp/pacha_test'
-#        pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
-#        pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
-#        pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
-#        pacha.database.DB_DIR = '/tmp/pacha_test'
         cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
             db_file='/tmp/pacha_test/pacha_test.db')
         cmd.add_config('/tmp/pacha_test/pacha.conf')
@@ -353,7 +377,12 @@ class TestCommandLine(unittest.TestCase):
         repos = [i for i in db.get_repos()] 
 
         self.assertEqual(len(repos), 1)
-        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/pacha.conf', None, u'single', None))
+        self.assertEqual(repos[0][0], 1)
+        self.assertEqual(repos[0][1], u'/tmp/pacha_test/pacha.conf')
+        self.assertEqual(repos[0][2], None)
+        self.assertEqual(repos[0][3], u'single')
+        self.assertEqual(repos[0][4], None)
+
         self.assertTrue(os.path.isdir('/tmp/pacha_test/.hg'))
         self.assertTrue(os.path.isfile('/tmp/pacha_test/.hgignore'))
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
@@ -429,8 +458,19 @@ class TestCommandLine(unittest.TestCase):
         repos = [i for i in db.get_repos()] 
 
         self.assertEqual(len(repos), 2)
-        self.assertEqual(repos[1], (2, u'/tmp/pacha_test', None, u'dir', None))
-        self.assertEqual(repos[0], (1, u'/tmp/pacha_test/foo', None, u'dir', None))
+        self.assertEqual(repos[1][0], 2)
+        self.assertEqual(repos[1][1], u'/tmp/pacha_test')
+        self.assertEqual(repos[1][2], None)
+        self.assertEqual(repos[1][3], u'dir')
+        self.assertEqual(repos[1][4], None)
+
+        self.assertEqual(repos[0][0], 1)
+        self.assertEqual(repos[0][1], u'/tmp/pacha_test/foo')
+        self.assertEqual(repos[0][2], None)
+        self.assertEqual(repos[0][3], u'dir')
+        self.assertEqual(repos[0][4], None)
+        
+        
         self.assertTrue(os.path.isdir('/tmp/pacha_test/.hg'))
         self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
         self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
