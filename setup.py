@@ -6,9 +6,9 @@ tests_require = ['nose', 'unittest2']
 
 setup(
     name = "pacha",
-    version = "0.3.0",
+    version = "0.2.5",
     packages = ['pacha'],
-    install_requires = ['supay>=0.0.7', 'guachi==0.0.5'],
+    install_requires = ['supay==0.0.7', 'guachi==0.0.5'],
     entry_points = {
         'console_scripts': [
             'pacha = pacha:main_'

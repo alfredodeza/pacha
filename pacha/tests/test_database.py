@@ -1,5 +1,7 @@
 from time           import time
+
 import os
+import shutil
 import unittest
 
 from guachi         import ConfigMapper
@@ -9,6 +11,12 @@ class TestWorker(unittest.TestCase):
 
     def setUp(self):
         """Remove all the files that the database may have created"""
+        if os.path.exists('/tmp/pacha_test'):
+            shutil.rmtree('/tmp/pacha_test')
+        os.makedirs('/tmp/pacha_test')
+        f = open('/tmp/pacha_test/foo', 'w')
+        f.write('foo')
+        f.close
         try:
             os.remove('/tmp/pacha.db')
         except:
@@ -16,6 +24,10 @@ class TestWorker(unittest.TestCase):
 
     def tearDown(self):
         """Remove all the files that the database may have created"""
+        try:
+            shutil.rmtree('/tmp/pacha_test')
+        except:
+            pass # do not care if you could not remove that file
         try:
             os.remove('/tmp/pacha.db')
         except:
@@ -30,22 +42,22 @@ class TestWorker(unittest.TestCase):
     def test_insert_path(self):
         """Do a simple insert of a path into db"""
         db = database.Worker(db='/tmp/pacha.db')
-        db.insert(path='/tmp/foo', type="dir")
+        db.insert(path='/tmp/pacha_test', type="dir")
         # create the connection again:
         db = database.Worker(db='/tmp/pacha.db')
-        for i in db.get_repo('/tmp/foo'):
+        for i in db.get_repo('/tmp/pacha_test'):
             actual = i[1]
-        expected = u'/tmp/foo'
+        expected = u'/tmp/pacha_test'
         self.assertEqual(actual, expected)
 
     def test_timestamp(self):
         """Add a repo and check the timestamp"""
         db = database.Worker(db='/tmp/pacha.db')
         tstamp = int(time())
-        db.insert(path='/tmp/foo', type="dir", timestamp=tstamp)
+        db.insert(path='/tmp/pacha_test', type="dir", timestamp=tstamp)
         # create the connection again:
         db = database.Worker(db='/tmp/pacha.db')
-        actual = [i[5] for i in db.get_repo('/tmp/foo')][0]
+        actual = [i[5] for i in db.get_repo('/tmp/pacha_test')][0]
         expected = u'%s' % tstamp
         self.assertEqual(actual, expected)
 
@@ -53,10 +65,10 @@ class TestWorker(unittest.TestCase):
     def test_insert_type(self):
         """Do a simple insert of a path and its type into db"""
         db = database.Worker(db='/tmp/pacha.db')
-        db.insert(path='/tmp/foo', type="dir")
+        db.insert(path='/tmp/pacha_test', type="dir")
         # create the connection again:
         db = database.Worker(db='/tmp/pacha.db')
-        for i in db.get_repo('/tmp/foo'):
+        for i in db.get_repo('/tmp/pacha_test'):
             actual = i[3]
         expected = u'dir'
         self.assertEqual(actual, expected)
@@ -64,12 +76,12 @@ class TestWorker(unittest.TestCase):
     def test_update_rev(self):
         """Updates the DB revision information"""
         db = database.Worker(db='/tmp/pacha.db')
-        db.insert(path='/tmp/foo', type='dir',
+        db.insert(path='/tmp/pacha_test', type='dir',
                 revision='1')
         db.closedb()
         db = database.Worker(db='/tmp/pacha.db')
-        db.update_rev(path='/tmp/foo', revision='2')
-        for i in db.get_repo('/tmp/foo'):
+        db.update_rev(path='/tmp/pacha_test', revision='2')
+        for i in db.get_repo('/tmp/pacha_test'):
             actual = i[4]
         expected = '2'
         self.assertEqual(actual, expected)
@@ -77,15 +89,12 @@ class TestWorker(unittest.TestCase):
     def test_remove(self):
         """Remove a record from the db"""
         db = database.Worker(db='/tmp/pacha.db')
-        db.insert('/tmp/foo')
+        db.insert('/tmp/pacha_test')
         db = database.Worker(db='/tmp/pacha.db')
-        db.insert('/tmp/fooo')
+        db.remove('/tmp/pacha_test')
         db = database.Worker(db='/tmp/pacha.db')
-        db.remove('/tmp/foo')
-        db = database.Worker(db='/tmp/pacha.db')
-        for i in db.get_repos():
-            actual = i[1]
-        expected = u'/tmp/fooo'
+        actual = [i for i in db.get_repos()]
+        expected = []
         self.assertEqual(actual, expected)
 
     def test_add_config(self):
