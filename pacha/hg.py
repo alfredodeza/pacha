@@ -211,24 +211,6 @@ class Hg(object):
         ignore.close
 
 
-    def is_modified(self):
-       stat = os.lstat(self.path)
-       modified = int(stat.st_mtime)
-       return modified
-
-
-#    def is_modified(self):
-#        """Checks if a file has been modified and not commited"""
-#        out = run_command(std="stdout", cmd="hg st")
-#        for line in out:
-#            file_name = line[2:].split('\n')[0] # get a nice file name
-#            if line.startswith('M'):
-#                hg_log.debug('found modified file: %s' % file_name)
-#                return True
-#            else:
-#                return False
-#                hg_log.debug('no changes with: %s' % file_name)
-#
     def revision(self):
         """Gets the revision ID from the path"""
         changeset = run_command(std="stdout", cmd="hg head")[0]
