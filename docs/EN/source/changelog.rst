@@ -3,6 +3,12 @@
 Changelog
 ==========
 
+0.2.5
+-------
+ * Minor release
+ * Adds a few more tests that bumps coverage to close to 75%
+ * Minor changes in how we check for modified files. Before we used 'hg st' with Popen but
+   we check for os.lstat and modified timestamps. Much faster and less code.
 
 0.2.4
 -------
