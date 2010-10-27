@@ -2,11 +2,11 @@ import distribute_setup
 distribute_setup.use_setuptools()
 from setuptools import setup
 
-tests_require = ['nose', 'unittest2']
+tests_require = ['py']
 
 setup(
     name = "pacha",
-    version = "0.2.5",
+    version = "0.3.0",
     packages = ['pacha'],
     install_requires = ['supay==0.0.7', 'guachi==0.0.5'],
     entry_points = {
@@ -43,7 +43,7 @@ One main configuration file to manage the package to be installed and one direct
 
 Versioned Configurations
 ----------------------------
-Keep track of any changes done to a configuration file and rollback easily. We use Mercurial as our back-end but you do not need to manage it directly. Pacha can push changes immediately to any number of clients and get instant feedback.
+Keep track of any changes done to a configuration file and rollback easily. We support Mercurial, GIT and SVN to version your configurations.
 
 Light
 ---------

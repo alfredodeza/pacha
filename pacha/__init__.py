@@ -31,6 +31,7 @@ from pacha          import daemon, hg, rebuild, permissions
 from pacha.database import Worker, is_tracked
 from pacha.host     import Host
 from pacha.util     import WARNING, CONFIG_GONE, get_db_file, get_db_dir
+from pacha.sync     import Sync
 
 DB_FILE = get_db_file()
 DB_DIR = get_db_dir()
@@ -174,9 +175,39 @@ class PachaCommands(object):
             print "\nExiting nicely from Pacha"
             sys.exit(0)
 
+    def watch(self, path):                
+        """
+        3 things need to happen:
+        *  track whatever we initially were asked for
+        *  check if this is the first time we are run (db not tracked)
+        *  track the db if it is not tracked or push it with the new dir
+        """
+        db = Worker(DB_FILE)
+        sync = Sync(path=path)
+        sync.sync()
+        # add the path to repos table in database
+        db.insert(path=path, type='dir')
+        # now make sure we record permissions metadata
+        meta = permissions.Tracker(path=path)
+        meta.walker()
+
+        # db tracking
+#        if not is_tracked():
+#            mercurial = hg.Hg(path=DB_DIR)
+#            mercurial.hgrc()
+#            # we do a first time clone:
+#            mercurial.clone()
+#            # add the path to repos table in database
+#            db.insert(path=DB_DIR, type='dir')
+#            # now make sure we record permissions metadata
+#            try:
+#                meta = permissions.Tracker(path=path)
+#                meta.walker()
+#            except Exception, error:
+#                print "Could not complete command: %s" % error 
 
 
-    def watch(self, path, raw_input=raw_input):                
+    def old_watch(self, path, raw_input=raw_input):                
         """
         3 things need to happen:
         *  track whatever we initially were asked for
