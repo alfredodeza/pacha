@@ -212,7 +212,7 @@ class PachaCommands(object):
     def watch_single(self, s_file):
         if os.path.isfile(s_file):
             sync = Sync(path=s_file)
-            sync.sync()
+            sync.single_file()
             
             # permissions metadata
             meta = permissions.Tracker(path=s_file)
