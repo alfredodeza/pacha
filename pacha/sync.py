@@ -2,14 +2,12 @@ import logging
 import os
 import sys
 from subprocess     import call, PIPE
-from getpass        import getuser
 from time           import strftime
 from mercurial      import commands, ui, hg
-from ConfigParser   import ConfigParser, NoOptionError
 from guachi         import ConfigMapper
 
 from pacha.host     import hostname
-from pacha.util     import run_command, YELLOW, ENDS, get_db_file
+from pacha.util     import run_command, get_db_file
 
 snc_log = logging.getLogger('pacha.rsync')
 

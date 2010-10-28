@@ -191,6 +191,9 @@ class PachaCommands(object):
         meta = permissions.Tracker(path=path)
         meta.walker()
 
+        # we always make sure the DB gets in sync:
+        sync_db = Sync(path=DB_DIR)
+        sync_db.sync()
         # db tracking
 #        if not is_tracked():
 #            mercurial = hg.Hg(path=DB_DIR)
@@ -205,6 +208,24 @@ class PachaCommands(object):
 #                meta.walker()
 #            except Exception, error:
 #                print "Could not complete command: %s" % error 
+
+    def watch_single(self, s_file):
+        if os.path.isfile(s_file):
+            sync = Sync(path=s_file)
+            sync.sync()
+            
+            # permissions metadata
+            meta = permissions.Tracker(path=s_file)
+            meta.single_file()
+
+            # now insert the whole path into the database to 
+            # check for it here. DB can figure out if
+            # it is a duplicate so no double checking
+            # before inserting
+            db = Worker(DB_FILE)
+            db.insert(path=s_file, type='single')
+        sync_db = Sync(path=DB_DIR)
+        sync_db.sync()
 
 
     def old_watch(self, path, raw_input=raw_input):                
@@ -262,7 +283,7 @@ class PachaCommands(object):
                 print "Could not complete command: %s" % error 
 
 
-    def watch_single(self, s_file):
+    def watch_single_old(self, s_file):
         if os.path.isfile(s_file):
 
             # can't pass a single file to hg.Hg so 
@@ -469,7 +490,8 @@ You need to provide the hostname of the server where Pacha was running.")
             self.watch(os.path.abspath(path))
 
         if options.watch_single:
-            self.watch_single(options.watch_single)
+            abspath = os.path.abspath(options.watch_single) 
+            self.watch_single(abspath)
 
         # Rebuilding Stuff
         if options.rebuild:
