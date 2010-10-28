@@ -182,32 +182,22 @@ class PachaCommands(object):
         *  check if this is the first time we are run (db not tracked)
         *  track the db if it is not tracked or push it with the new dir
         """
-        db = Worker(DB_FILE)
-        sync = Sync(path=path)
-        sync.sync()
-        # add the path to repos table in database
-        db.insert(path=path, type='dir')
-        # now make sure we record permissions metadata
-        meta = permissions.Tracker(path=path)
-        meta.walker()
+        if os.path.exists(path):
+            db = Worker(DB_FILE)
+            sync = Sync(path=path)
+            sync.sync()
+            # add the path to repos table in database
+            db.insert(path=path, type='dir')
+            # now make sure we record permissions metadata
+            meta = permissions.Tracker(path=path)
+            meta.walker()
 
-        # we always make sure the DB gets in sync:
-        sync_db = Sync(path=DB_DIR)
-        sync_db.sync()
-        # db tracking
-#        if not is_tracked():
-#            mercurial = hg.Hg(path=DB_DIR)
-#            mercurial.hgrc()
-#            # we do a first time clone:
-#            mercurial.clone()
-#            # add the path to repos table in database
-#            db.insert(path=DB_DIR, type='dir')
-#            # now make sure we record permissions metadata
-#            try:
-#                meta = permissions.Tracker(path=path)
-#                meta.walker()
-#            except Exception, error:
-#                print "Could not complete command: %s" % error 
+            # we always make sure the DB gets in sync:
+            sync_db = Sync(path=DB_DIR)
+            sync_db.sync()
+        else:
+            self.msg("You have provided a wrong or non-existent path\
+to a file", std="err")
 
     def watch_single(self, s_file):
         if os.path.isfile(s_file):
@@ -218,116 +208,12 @@ class PachaCommands(object):
             meta = permissions.Tracker(path=s_file)
             meta.single_file()
 
-            # now insert the whole path into the database to 
-            # check for it here. DB can figure out if
-            # it is a duplicate so no double checking
-            # before inserting
             db = Worker(DB_FILE)
             db.insert(path=s_file, type='single')
-        sync_db = Sync(path=DB_DIR)
-        sync_db.sync()
 
-
-    def old_watch(self, path, raw_input=raw_input):                
-        """
-        3 things need to happen:
-        *  track whatever we initially were asked for
-        *  check if this is the first time we are run (db not tracked)
-        *  track the db if it is not tracked or push it with the new dir
-        """
-        db = Worker(DB_FILE)
-        try:
-            taking_over = False
-            mercurial = hg.Hg(path=path)
-            default_path = mercurial.hgrc_validate()
-            if default_path:
-                print """
-    Found an existing repository with a default path:
-    %s
-    """ % default_path     
-                try:
-                    confirm = raw_input("""
-    Enter  \t = use that same path
-    Ctrl-C \t = abort
-    """)
-                    taking_over = True
-                except KeyboardInterrupt:
-                    print confirm
-                    print "\nExiting nicely from Pacha"
-                    sys.exit(0)
-            if not taking_over:    
-                mercurial.hgrc()
-                # we do a first time clone:
-                mercurial.clone()
-            # add the path to repos table in database
-            db.insert(path=path, type='dir')
-            # now make sure we record permissions metadata
-            meta = permissions.Tracker(path=path)
-            meta.walker()
-        except Exception, error:
-            print "Could not complete command: %s" % error 
-
-        # db tracking
-        if not is_tracked():
-            mercurial = hg.Hg(path=DB_DIR)
-            mercurial.hgrc()
-            # we do a first time clone:
-            mercurial.clone()
-            # add the path to repos table in database
-            db.insert(path=DB_DIR, type='dir')
-            # now make sure we record permissions metadata
-            try:
-                meta = permissions.Tracker(path=path)
-                meta.walker()
-            except Exception, error:
-                print "Could not complete command: %s" % error 
-
-
-    def watch_single_old(self, s_file):
-        if os.path.isfile(s_file):
-
-            # can't pass a single file to hg.Hg so 
-            # convert it to file path without the file here
-            # whatever we receive (either a full path or a single
-            # file name 
-            abspath = os.path.abspath(s_file)
-
-            # now we need only the directory name:
-            dirname = os.path.dirname(abspath)
-
-            # get the abs_path and add '.hgignore' and make
-            # sure it does not exist, 
-            hgignore = dirname+'/.hgignore'
-
-            # permissions metadata
-            meta = permissions.Tracker(path=abspath)
-            meta.single_file()
-            if os.path.isfile(hgignore): # make sure we arent overwriting
-                # we are already watching unique files here
-                # so let's add the new guy and commit it
-                mercurial = hg.Hg(path=dirname)
-                mercurial.hg_add(abspath)
-                mercurial.commit()
-
-            # if it does not exist then this should be the first 
-            # time this is being run here 
-            else:
-                mercurial = hg.Hg(path=dirname)
-                # then ignore everything within the path
-                mercurial.hgignore()
-                mercurial.initialize()
-                mercurial.hg_add(single=abspath)
-                mercurial.commit()
-                mercurial.clone()
-                # at the end of everything we put the hgrc method in
-                mercurial.hgrc()
-
-            # now insert the whole path into the database to 
-            # check for it here. DB can figure out if
-            # it is a duplicate so no double checking
-            # before inserting
-            db = Worker(DB_FILE)
-            db.insert(path=abspath, type='single')
+            # track db
+            sync_db = Sync(path=DB_DIR)
+            sync_db.sync()
 
         else:
             self.msg("You have provided a wrong or non-existent path\
