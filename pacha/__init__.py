@@ -33,8 +33,11 @@ from pacha.host     import Host
 from pacha.util     import WARNING, CONFIG_GONE, get_db_file, get_db_dir
 from pacha.sync     import Sync
 
+
 DB_FILE = get_db_file()
 DB_DIR = get_db_dir()
+
+
  
 class PachaCommands(object):
     """A lot of complicated options can happen with Pacha, so 
@@ -109,6 +112,7 @@ class PachaCommands(object):
             # sometimes we can't catch the error
             print "Could not complete command %s" % error
 
+
     def set_logging(self, verbose=False):
         enabled = self.config['log_enable']
         log_path = self.config['log_path']
@@ -131,6 +135,7 @@ class PachaCommands(object):
 
         if not verbose:
             logging.disable(logging.CRITICAL)
+
 
     def add_host(self, host):
         try:
@@ -175,12 +180,13 @@ class PachaCommands(object):
             print "\nExiting nicely from Pacha"
             sys.exit(0)
 
+
     def watch(self, path):                
         """
-        3 things need to happen:
-        *  track whatever we initially were asked for
-        *  check if this is the first time we are run (db not tracked)
-        *  track the db if it is not tracked or push it with the new dir
+        Inserts the directory into the database and syncs the contents to the 
+        remote Pacha server.
+        At the end it also pushes the database to make sure we always have 
+        the latest copy in.
         """
         if os.path.exists(path):
             db = Worker(DB_FILE)
@@ -198,6 +204,7 @@ class PachaCommands(object):
         else:
             self.msg("You have provided a wrong or non-existent path\
 to a file", std="err")
+
 
     def watch_single(self, s_file):
         if os.path.isfile(s_file):
@@ -334,7 +341,6 @@ You need to provide the hostname of the server where Pacha was running.")
         if len(argv) == 1:
             parser.print_help()
   
-
         # Deamon Stuff
         if options.daemon_start:
             self.set_logging(verbose=True)
@@ -351,14 +357,14 @@ You need to provide the hostname of the server where Pacha was running.")
             self.set_logging(verbose=True)
             daemon.start(config=self.config, foreground=True)
 
+        if options.daemon_status:
+            daemon.status()
+
         if options.verbose:
             self.set_logging(verbose=True)
 
         if not options.verbose:
             self.set_logging()
-
-        if options.daemon_status:
-            daemon.status()
 
         if options.add_host:
             self.add_host(options.add_host)
@@ -385,6 +391,7 @@ You need to provide the hostname of the server where Pacha was running.")
             if options.directory:
                 directory = options.directory
             self.rebuild(hostname=options.rebuild, directory=directory)
+
 
 main = PachaCommands
 
