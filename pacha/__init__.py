@@ -27,8 +27,8 @@ import sys
 from optparse       import OptionParser, OptionGroup
 from guachi         import ConfigMapper
 from pacha.config   import set_mappings
-from pacha          import daemon, hg, rebuild, permissions
-from pacha.database import Worker, is_tracked
+from pacha          import daemon, rebuild, permissions
+from pacha.database import Worker
 from pacha.host     import Host
 from pacha.util     import WARNING, CONFIG_GONE, get_db_file, get_db_dir
 from pacha.sync     import Sync
