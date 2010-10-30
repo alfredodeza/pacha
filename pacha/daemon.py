@@ -8,22 +8,25 @@ from guachi             import ConfigMapper
 from pacha              import hg 
 from pacha.database     import Worker
 from pacha.util         import get_db_file, get_pid_dir
+from pacha.sync         import Sync
 
 daemon_log = logging.getLogger('pacha.daemon')
 PID_DIR = get_pid_dir()
 DB_FILE = get_db_file()
 
+
 class Watcher(object):
     """Handles all the Reports to display"""
  
-    def __init__(self,
-                 path=None):
+
+    def __init__(self, path=None):
         self.dir_path = os.path.normpath(path)
         self.path = os.path.normpath(path) 
         if not os.path.isdir(path):
             self.dir_path = os.path.dirname(path)
         self.db = Worker(DB_FILE)
-        self.mercurial = hg.Hg(path=self.dir_path)
+#        self.mercurial = hg.Hg(path=self.dir_path)
+
 
     def report(self):
         """Report if a file changed and the change has not been commited"""
@@ -35,28 +38,36 @@ class Watcher(object):
 
         if saved_tstamp < modified:
             daemon_log.info('found modified files in %s' % self.path)
-            self.mercurial.hgrc_user()
-            self.mercurial.commit()
-            self.mercurial.push()
 
-    def revision_compare(self, path, rev):
-        """Conect to the database for revision comparison
-        and insert a revision hash from Mercurial if it 
-        does not exist"""
-   
-        if rev == None:  #a path without a revision so insert one
-            daemon_log.debug('No revision recorded in DB - so adding it')
-            revision = self.mercurial.revision()[0]
-            self.db.update_rev(self.path, revision)
-            daemon_log.debug('added revision %s for path %s' % (revision, self.path))
-        else: # we have a hash there so:
-            revision = self.mercurial.revision()[0]
-            if rev != revision:
-                daemon_log.debug('found a new revision: %s at %s' % (rev,self.path))
-                mercurial = hg.Hg(path=self.dir_path)
-                mercurial.push()
-                self.db.update_rev(self.path, revision) 
+            sync = Sync(path=self.path)
+            sync.sync()
+            # NOTE a sync needs to happen here
+#            self.mercurial.hgrc_user()
+#            self.mercurial.commit()
+#            self.mercurial.push()
 
+
+#    def revision_compare(self, path, rev):
+#        """Conect to the database for revision comparison
+#        and insert a revision hash from Mercurial if it 
+#        does not exist"""
+        # I am not entirely sure we need this.
+        # if we don't then this probably doesn't
+        # need to be a class...
+
+#        if rev == None:  #a path without a revision so insert one
+#            daemon_log.debug('No revision recorded in DB - so adding it')
+#            revision = self.mercurial.revision()[0]
+#            self.db.update_rev(self.path, revision)
+#            daemon_log.debug('added revision %s for path %s' % (revision, self.path))
+#        else: # we have a hash there so:
+#            revision = self.mercurial.revision()[0]
+#            if rev != revision:
+#                daemon_log.debug('found a new revision: %s at %s' % (rev,self.path))
+#                mercurial = hg.Hg(path=self.dir_path)
+#                mercurial.push()
+#                self.db.update_rev(self.path, revision) 
+#
 
 def frecuency(seconds):
     """Deal with frecuency and thresholds"""
@@ -98,7 +109,9 @@ def start(config=None, foreground=False, run_once=False):
             try:
                 master = config['master']
                 if master == 'True':
-                    hg.update(config['hosts_path'])
+                # we need to inject DVCS support HERE
+                    
+#                    hg.update(config['hosts_path'])
                     daemon_log.debug('machine set to master')
             except AttributeError, error:
                 # it is ok if this setting is not ON
@@ -113,7 +126,7 @@ def start(config=None, foreground=False, run_once=False):
                 if os.path.exists(repo_path): # catches a path no longer there...
                     watch = Watcher(path=repo_path)
                     watch.report()
-                    watch.revision_compare(path=repo_path, rev=repo[4])
+                    #watch.revision_compare(path=repo_path, rev=repo[4])
                 else:
                     pass
                     daemon_log.warning('path %s does not exist' % repo_path)
