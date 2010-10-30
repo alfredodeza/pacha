@@ -224,7 +224,7 @@ to a file", std="err")
 
         else:
             self.msg("You have provided a wrong or non-existent path\
-to a file", std="err")
+ to a file", std="err")
 
 
     def rebuild(self, hostname, directory=None):

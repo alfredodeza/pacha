@@ -11,7 +11,6 @@ REPOS_TABLE = """CREATE TABLE IF NOT EXISTS repos(
     path            TEXT,  
     permissions     TEXT, 
     type            TEXT, 
-    revision        TEXT,
     timestamp       TEXT
 )"""
 
@@ -23,10 +22,12 @@ METADATA_TABLE = """CREATE TABLE IF NOT EXISTS metadata(
     grp         TEXT, 
     permissions INT, 
     ftype       TEXT
-)""" #sqlite does not like 'group'
+)""" 
+
 
 DB_FILE = get_db_file()
 DB_DIR = get_db_dir()
+
 
 def is_tracked():
     """Is this database being tracked?"""
@@ -37,10 +38,9 @@ def is_tracked():
 
 
 class Worker(object):
-    """All database operations happen here"""
+    """CRUD Database operations"""
 
-    def __init__(self,
-            db = DB_FILE):
+    def __init__(self, db = DB_FILE):
         self.db = db 
         self.conn = sqlite3.connect(self.db)
         self.c = self.conn.cursor()
@@ -53,14 +53,14 @@ class Worker(object):
         self.conn.close()
 
 
-    def insert(self, path=None, permissions=None, type=None, revision=None, timestamp=None):
+    def insert(self, path=None, permissions=None, type=None, timestamp=None):
         """Puts a new repo in the database and checks if the record
         is not already there"""
         stat = os.lstat(path)
         timestamp = int(stat.st_mtime)
                       
-        values = (path, permissions, type, revision, timestamp, path)
-        command = 'INSERT INTO repos(path, permissions, type, revision, timestamp) select ?,?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM repos WHERE path=?)'
+        values = (path, permissions, type, timestamp, path)
+        command = 'INSERT INTO repos(path, permissions, type, timestamp) select ?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM repos WHERE path=?)'
         self.c.execute(command, values)
         self.conn.commit()
 
@@ -80,13 +80,13 @@ class Worker(object):
         return self.c.execute(command, values)
 
 
-    def update_rev(self, path, revision):
-        """Inserts a path with a revision and keeps updating this 
-        for a comparison """
-        values = (revision, path)
-        command = 'UPDATE repos SET revision=? WHERE path=?'
+    def update_timestamp(self, path, timestamp):
+        """Updates the timestamp for a repo that got modified"""
+        values = (timestamp, path)
+        command = 'UPDATE repos SET timestamp=? WHERE path=?'
         self.c.execute(command, values)
         self.conn.commit()
+
 
     def remove(self, path):
         """Removes a repo from the database"""
@@ -94,6 +94,7 @@ class Worker(object):
         command = "DELETE FROM repos WHERE path = (?)"
         self.c.execute(command, values)
         self.conn.commit()
+
 
     def get_repos(self):
         """Gets all the hosts"""
