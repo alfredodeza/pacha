@@ -1,5 +1,3 @@
-from time           import time
-
 import unittest
 import sys
 import os
@@ -79,6 +77,7 @@ class TestCommandLine(unittest.TestCase):
         pacha.DB_DIR = '/tmp/pacha_test'
         pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.sync.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.database.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         pacha.database.DB_DIR = '/tmp/pacha_test'
@@ -452,7 +451,8 @@ class TestCommandLine(unittest.TestCase):
             db_file='/tmp/pacha_test/pacha_test.db')
         cmd.add_config('/tmp/pacha_test/pacha.conf')
         cmd.check_config()
-        os.mkdir('/tmp/pacha_test/foo')
+
+        os.makedirs('/tmp/pacha_test/foo')
         cmd.parseArgs(['pacha', '--watch', '/tmp/pacha_test/foo'])
         db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
         repos = [i for i in db.get_repos()] 

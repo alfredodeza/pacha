@@ -5,7 +5,7 @@ import supay
 import logging
 
 from guachi             import ConfigMapper
-from pacha              import hg 
+#from pacha              import hg 
 from pacha.database     import Worker
 from pacha.util         import get_db_file, get_pid_dir
 from pacha.sync         import Sync

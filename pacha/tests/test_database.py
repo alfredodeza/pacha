@@ -57,7 +57,7 @@ class TestWorker(unittest.TestCase):
         db.insert(path='/tmp/pacha_test', type="dir", timestamp=tstamp)
         # create the connection again:
         db = database.Worker(db='/tmp/pacha.db')
-        actual = [i[5] for i in db.get_repo('/tmp/pacha_test')][0]
+        actual = [i[4] for i in db.get_repo('/tmp/pacha_test')][0]
         expected = u'%s' % tstamp
         self.assertEqual(actual, expected)
 
@@ -73,17 +73,17 @@ class TestWorker(unittest.TestCase):
         expected = u'dir'
         self.assertEqual(actual, expected)
 
-    def test_update_rev(self):
-        """Updates the DB revision information"""
+    def test_update_timestamp(self):
+        """Updates the DB timestamp information"""
         db = database.Worker(db='/tmp/pacha.db')
         db.insert(path='/tmp/pacha_test', type='dir',
-                revision='1')
+                timestamp='0')
         db.closedb()
         db = database.Worker(db='/tmp/pacha.db')
-        db.update_rev(path='/tmp/pacha_test', revision='2')
+        db.update_timestamp(path='/tmp/pacha_test', timestamp='1')
         for i in db.get_repo('/tmp/pacha_test'):
             actual = i[4]
-        expected = '2'
+        expected = '1'
         self.assertEqual(actual, expected)
 
     def test_remove(self):
