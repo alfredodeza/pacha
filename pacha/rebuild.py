@@ -42,7 +42,6 @@ class Rebuild(object):
 
     def retrieve_files(self):
         """scp all the files we need to /tmp"""
-        # this could probably be much better with a Mercurial Clone command
         os.chdir('/') # avoids being in a dir that will no longer exist
         if os.path.exists('/tmp/%s' % self.hostname):
             shutil.move('/tmp/%s' % self.hostname, '/tmp/%s.%s' % (self.hostname, strftime('%H%M%s')))
@@ -166,7 +165,6 @@ Check your configuration file settings and try again."""
                         'moving %s to /tmp/pacha_bucket/%s.%s' % (
                             path, base, strftime('%H%M%s')))
             try:
-                shutil.rmtree(tmp_dir+dirname+'/.hg')
                 shutil.copytree(tmp_dir+dirname, path)
                 rebuild_log.debug('moving %s to %s' % (tmp_dir+dirname, path))
                 # get ownership and permissions right walking the tree
@@ -175,8 +173,9 @@ Check your configuration file settings and try again."""
                 self.chown(path)
                 self.chmod(path)
 
-            except OSError:
-                pass # maybe there is no .hg dir
+            except OSError, error:
+                rebuild_log.error(error)
+                pass 
 
     def walk(self, path):
         """If we are replacing whole directories we need to make sure

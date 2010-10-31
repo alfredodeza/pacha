@@ -26,7 +26,7 @@ DICT_CONF = dict(
 
 
 
-class TestWatcher(unittest.TestCase):
+class SingleRepository(unittest.TestCase):
 
     username = getpass.getuser()
     dict_conf = dict(
@@ -36,7 +36,6 @@ class TestWatcher(unittest.TestCase):
             )
 
     def setUp(self):
-        # make sure we do not have db file 
         test_dir = '/tmp/pacha_test'
         remote_dir = '/tmp/remote_pacha'
         pacha_host = '/tmp/pacha_test_host'
@@ -83,7 +82,7 @@ class TestWatcher(unittest.TestCase):
     def test_init(self):
         """Should get a normpath from a path"""
         path = "/tmp/"
-        watch = daemon.Watcher(path)
+        watch = daemon.SingleRepository(path)
         actual = watch.path 
         expected = "/tmp"
         self.assertEqual(actual, expected) 
@@ -92,14 +91,12 @@ class TestWatcher(unittest.TestCase):
     def test_init_dir(self):
         """convert a path ending in file to a path ending in dir"""
         path = "/tmp/file.txt"
-        watch = daemon.Watcher(path)
+        watch = daemon.SingleRepository(path)
         actual = watch.dir_path 
         expected = "/tmp"
         self.assertEqual(actual, expected) 
         self.assertEqual(watch.path, '/tmp/file.txt')
 
-    def test_report_unmodified(self):
-        """if a file hasn't changed do not do anything"""
 
 class TestFrecuency(unittest.TestCase):
 

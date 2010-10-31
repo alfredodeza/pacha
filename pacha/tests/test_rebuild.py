@@ -274,6 +274,7 @@ Check your configuration file settings and try again.
         pacha.DB_DIR = '/tmp/pacha_test/db'
         pacha.DB_FILE ='/tmp/pacha_test/db/pacha_test.db' 
         pacha.permissions.DB_FILE ='/tmp/pacha_test/db/pacha_test.db' 
+        pacha.sync.DB_FILE ='/tmp/pacha_test/db/pacha_test.db' 
         pacha.hg.DB_FILE ='/tmp/pacha_test/db/pacha_test.db' 
         pacha.database.DB_FILE = '/tmp/pacha_test/db/pacha_test.db'
         pacha.database.DB_DIR = '/tmp/pacha_test/db'
@@ -291,8 +292,6 @@ Check your configuration file settings and try again.
         test_file.close()
         cmd.watch('/tmp/pacha_test/foo/bar')
 
-        # do hg update on the newly cloned files: 
-        hg_push_update('/tmp/remote_pacha/hosts/mbp.local/bar')
 
         # fake getting the db to the expected location 
         shutil.copy('/tmp/pacha_test/db/pacha_test.db' , '/tmp/remote_pacha/hosts/%s/db/pacha.db' % host.hostname())
@@ -303,7 +302,9 @@ Check your configuration file settings and try again.
                         hostname=host.hostname(), 
                         source='/tmp/remote_pacha/hosts')
         run.retrieve_files()
+        self.assertTrue(os.path.exists('/tmp/%s' % host.hostname()))
         self.assertFalse(os.path.exists('/tmp/pacha_test'))
+
         run.replace_manager()
         self.assertTrue(os.path.exists('/tmp/pacha_test/foo/bar'))
         self.assertEqual(open('/tmp/pacha_test/foo/bar/test.txt').readline(), 'file should be rebuilt')

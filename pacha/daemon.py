@@ -5,7 +5,6 @@ import supay
 import logging
 
 from guachi             import ConfigMapper
-#from pacha              import hg 
 from pacha.database     import Worker
 from pacha.util         import get_db_file, get_pid_dir
 from pacha.sync         import Sync
@@ -15,7 +14,7 @@ PID_DIR = get_pid_dir()
 DB_FILE = get_db_file()
 
 
-class ChangedRepository(object):
+class SingleRepository(object):
     """ Compares the modified time of a file or directory via lstat 
     and the timestamp stored in the database """
  
@@ -112,7 +111,7 @@ def start(config=None, foreground=False, run_once=False):
                 daemon_log.debug('looping over repos in db')
                 repo_path = repo[1]
                 if os.path.exists(repo_path): # catches a path no longer there
-                    stat_check = ChangedRepository(repo_path)
+                    stat_check = SingleRepository(repo_path)
                     stat_check.synchronize()
                 else:
                     pass
