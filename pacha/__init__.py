@@ -199,8 +199,10 @@ class PachaCommands(object):
             meta.walker()
 
             # we always make sure the DB gets in sync:
-            sync_db = Sync(path=DB_DIR)
-            sync_db.sync()
+            if not db.is_tracked():
+                sync_db = Sync(path=DB_DIR)
+                sync_db.sync()
+                db.insert(path=DB_DIR, type='dir')# insert to db
         else:
             self.msg("You have provided a wrong or non-existent path\
 to a file", std="err")
@@ -219,8 +221,10 @@ to a file", std="err")
             db.insert(path=s_file, type='single')
 
             # track db
-            sync_db = Sync(path=DB_DIR)
-            sync_db.sync()
+            if not db.is_tracked():
+                sync_db = Sync(path=DB_DIR)
+                sync_db.sync()
+                db.insert(path=DB_DIR, type='dir')# insert to db
 
         else:
             self.msg("You have provided a wrong or non-existent path\
