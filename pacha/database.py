@@ -29,14 +29,6 @@ DB_FILE = get_db_file()
 DB_DIR = get_db_dir()
 
 
-#def is_tracked():
-#    """Is this database being tracked?"""
-#    hg_dir = DB_DIR+'/.hg'
-#    if os.path.isdir(hg_dir):
-#        return True
-#    return False
-#
-
 class Worker(object):
     """CRUD Database operations"""
 

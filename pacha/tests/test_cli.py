@@ -293,78 +293,42 @@ class TestCommandLine(unittest.TestCase):
         self.assertEqual(repos[1][1], u'/tmp/pacha_test')
         self.assertEqual(repos[1][2], None)
         self.assertEqual(repos[1][3], u'dir')
-        #self.assertEqual(repos[1][4], None)
 
         self.assertEqual(repos[0][0], 1)
         self.assertEqual(repos[0][1], u'/tmp/pacha_test/foo')
         self.assertEqual(repos[0][2], None)
         self.assertEqual(repos[0][3], u'dir')
-        #self.assertEqual(repos[0][4], None)
-
-
-
-        #self.assertTrue(os.path.isdir('/tmp/pacha_test/.hg'))
-        #self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
-        #self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
-        #self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
+        
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test' % host.hostname()))
+        self.assertTrue(os.path.isdir('/tmp/pacha_test/foo'))
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo' % host.hostname()))
         self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
         
     def test_watch_db_tracked(self):
         """Watch a directory for changes and do not watch the db if tracked"""
-        os.mkdir('/tmp/pacha_test/.hg')
         pacha.database.DB_DIR = '/tmp/pacha_test'
         cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
             db_file='/tmp/pacha_test/pacha_test.db')
         cmd.add_config('/tmp/pacha_test/pacha.conf')
         cmd.check_config()
         os.mkdir('/tmp/pacha_test/foo')
+        db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
+        db.insert('/tmp/pacha_test')
+        db.closedb()
         cmd.watch('/tmp/pacha_test/foo')
         db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
         repos = [i for i in db.get_repos()] 
 
-        self.assertEqual(len(repos), 1)
-        self.assertEqual(repos[0][0], 1)
-        self.assertEqual(repos[0][1], u'/tmp/pacha_test/foo')
-        self.assertEqual(repos[0][2], None)
-        self.assertEqual(repos[0][3], u'dir')
-        #self.assertEqual(repos[0][4], None)
-
-
-        self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
-        self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
-        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
-        self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
-        
-    def test_watch_taking_over(self):
-        """if we find there is an .hg repo do not overwrite and simply take over"""
-        cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
-            db_file='/tmp/pacha_test/pacha_test.db')
-        cmd.add_config('/tmp/pacha_test/pacha.conf')
-        cmd.check_config()
-        os.mkdir('/tmp/pacha_test/foo')
-        cmd.watch('/tmp/pacha_test/foo')
-        shutil.rmtree('/tmp/remote_pacha/hosts/%s/pacha_test' % host.hostname())
-        cmd.watch('/tmp/pacha_test/foo', raw_input=mock_raw_input())
-        db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
-        repos = [i for i in db.get_repos()] 
+        #assert 0
         self.assertEqual(len(repos), 2)
         self.assertEqual(repos[1][0], 2)
-        self.assertEqual(repos[1][1], u'/tmp/pacha_test')
+        self.assertEqual(repos[1][1], u'/tmp/pacha_test/foo')
         self.assertEqual(repos[1][2], None)
         self.assertEqual(repos[1][3], u'dir')
-        #self.assertEqual(repos[1][4], None)
-
-        self.assertEqual(repos[0][0], 1)
-        self.assertEqual(repos[0][1], u'/tmp/pacha_test/foo')
-        self.assertEqual(repos[0][2], None)
-        self.assertEqual(repos[0][3], u'dir')
-        #self.assertEqual(repos[0][4], None)
-
-        self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
-        self.assertTrue(os.path.isdir('/tmp/pacha_test/foo/.hg'))
-        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/foo/.hg' % host.hostname()))
+        self.assertFalse(os.path.exists('/tmp/remote_pacha/hosts/%s/pacha_test'
+            % host.hostname()))
         self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
- 
+        
     def test_watch_single(self):
         """Watch a single file in a directory"""
         cmd = pacha.PachaCommands(test=True, parse=False, db=ConfigMapper('/tmp/pacha_test/pacha_test.db'),
@@ -375,16 +339,13 @@ class TestCommandLine(unittest.TestCase):
         db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
         repos = [i for i in db.get_repos()] 
 
-        self.assertEqual(len(repos), 1)
+        self.assertEqual(len(repos), 2)
         self.assertEqual(repos[0][0], 1)
         self.assertEqual(repos[0][1], u'/tmp/pacha_test/pacha.conf')
         self.assertEqual(repos[0][2], None)
         self.assertEqual(repos[0][3], u'single')
-        #self.assertEqual(repos[0][4], None)
 
-        self.assertTrue(os.path.isdir('/tmp/pacha_test/.hg'))
-        self.assertTrue(os.path.isfile('/tmp/pacha_test/.hgignore'))
-        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test/.hg' % host.hostname()))
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test' % host.hostname()))
         self.assertTrue(os.path.isfile('/tmp/pacha_test/pacha_test.db'))
  
     def test_watch_single_non_existent_path(self):
@@ -398,7 +359,7 @@ class TestCommandLine(unittest.TestCase):
         db = pacha.database.Worker(db='/tmp/pacha_test/pacha_test.db')
         repos = [i for i in db.get_repos()] 
         actual  = sys.stderr.captured()
-        expected = "You have provided a wrong or non-existent pathto a file"
+        expected = "You have provided a wrong or non-existent path to a file"
         self.assertEqual(actual, expected)
         self.assertEqual(len(repos), 0)
         self.assertFalse(os.path.isdir('/tmp/pacha_test/.hg'))
