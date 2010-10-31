@@ -4,9 +4,10 @@ import unittest
 import shutil
 
 import pacha
-from guachi     import ConfigMapper
-from pacha      import daemon, host
-from mock       import MockSys
+from guachi             import ConfigMapper
+from pacha              import daemon, host
+from pacha.database     import Worker
+from mock               import MockSys
 
 DICT_CONF = dict(
         frequency       = 60,
@@ -96,6 +97,22 @@ class SingleRepository(unittest.TestCase):
         expected = "/tmp"
         self.assertEqual(actual, expected) 
         self.assertEqual(watch.path, '/tmp/file.txt')
+
+    def test_is_modified_true(self):
+        """Return true when a directory timestamp is newer than the tracked
+        one"""
+        db = Worker('/tmp/pacha_test/pacha_test.db')
+        db.insert('/tmp',None, None, timestamp=1)
+        watch = daemon.SingleRepository('/tmp')
+        self.assertTrue(watch.is_modified())
+
+    def test_is_modified_false(self):
+        """Return false when the directory timestamp is older than the tracked
+        one"""
+        db = Worker('/tmp/pacha_test/pacha_test.db')
+        db.insert('/tmp',None, None, timestamp=9997446874)
+        watch = daemon.SingleRepository('/tmp')
+        self.assertFalse(watch.is_modified())
 
 
 class TestFrecuency(unittest.TestCase):

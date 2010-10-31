@@ -54,8 +54,9 @@ class Worker(object):
     def insert(self, path=None, permissions=None, type=None, timestamp=None):
         """Puts a new repo in the database and checks if the record
         is not already there"""
-        stat = os.lstat(path)
-        timestamp = int(stat.st_mtime)
+        if not timestamp:
+            stat = os.lstat(path)
+            timestamp = int(stat.st_mtime)
                       
         values = (path, permissions, type, timestamp, path)
         command = 'INSERT INTO repos(path, permissions, type, timestamp) select ?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM repos WHERE path=?)'
