@@ -74,7 +74,7 @@ def frecuency(seconds):
 def start(config=None, foreground=False, run_once=False):
 
     if config == None:
-        config=ConfigMapper(get_db_file()).stored_config()
+        config=ConfigMapper(DB_FILE).stored_config()
 
     if not foreground:
         log_path = config['log_path']
@@ -89,7 +89,7 @@ def start(config=None, foreground=False, run_once=False):
 
     while True:
         try:
-            db = Worker()
+            db = Worker(DB_FILE)
             daemon_log.debug('reading repos from database')
             repos = [i for i in db.get_repos()]
             db.closedb()

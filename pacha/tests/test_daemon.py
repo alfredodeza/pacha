@@ -49,6 +49,7 @@ class SingleRepository(unittest.TestCase):
         pacha.DB_DIR = '/tmp/pacha_test'
         pacha.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.permissions.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
+        pacha.sync.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.hg.DB_FILE ='/tmp/pacha_test/pacha_test.db' 
         pacha.database.DB_FILE = '/tmp/pacha_test/pacha_test.db'
         pacha.database.DB_DIR = '/tmp/pacha_test'
@@ -113,6 +114,49 @@ class SingleRepository(unittest.TestCase):
         db.insert('/tmp',None, None, timestamp=9997446874)
         watch = daemon.SingleRepository('/tmp')
         self.assertFalse(watch.is_modified())
+
+    def test_store_timestamp(self):
+        """Make sure we are storing (updating) the timestamp"""
+        db = Worker('/tmp/pacha_test/pacha_test.db')
+        db.insert('/tmp',None, None, timestamp=9997446874)
+        db.closedb()
+        watch = daemon.SingleRepository('/tmp')
+        watch.store_timestamp(111)
+        dbase = Worker('/tmp/pacha_test/pacha_test.db')
+        repo = [i for i in dbase.get_repo('/tmp')]
+        actual = repo[0][4]
+        expected = u'111'
+        self.assertEqual(actual, expected) 
+
+    def test_synchronize_true(self):
+        """When we find a modified file we need to synchronize"""
+        db = Worker('/tmp/pacha_test/pacha_test.db')
+        db.insert('/tmp/pacha_test',None, None, timestamp=1)
+        watch = daemon.SingleRepository('/tmp/pacha_test')
+        watch.synchronize()
+        repo  = [i for i in db.get_repo('/tmp/pacha_test')]
+        self.assertTrue(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test' %
+            host.hostname()))
+        self.assertNotEqual(repo[0][4], 1)
+
+    def test_synchronize_false(self):
+        """Do not synchronize anything if the timestamp is older"""
+        db = Worker('/tmp/pacha_test/pacha_test.db')
+        db.insert('/tmp/pacha_test',None, None, timestamp=9999999999)
+        watch = daemon.SingleRepository('/tmp/pacha_test')
+        watch.synchronize()
+        repo  = [i for i in db.get_repo('/tmp/pacha_test')]
+        self.assertFalse(os.path.isdir('/tmp/remote_pacha/hosts/%s/pacha_test' %
+            host.hostname()))
+        self.assertEqual(repo[0][4], u'9999999999')
+
+    def test_daemon_do_nothing(self):
+        """Since the repos are empty just run once and exit cleanly """
+        #daemon.start(foreground=True, run_once=True)
+        self.assertRaises(SystemExit, daemon.start, foreground=True,
+                run_once=True)
+        self.assertEqual(len(os.listdir('/tmp/remote_pacha/hosts/%s' %
+            host.hostname())), 0)
 
 
 class TestFrecuency(unittest.TestCase):
