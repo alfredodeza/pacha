@@ -152,7 +152,6 @@ class SingleRepository(unittest.TestCase):
 
     def test_daemon_do_nothing(self):
         """Since the repos are empty just run once and exit cleanly """
-        #daemon.start(foreground=True, run_once=True)
         self.assertRaises(SystemExit, daemon.start, foreground=True,
                 run_once=True)
         self.assertEqual(len(os.listdir('/tmp/remote_pacha/hosts/%s' %

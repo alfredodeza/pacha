@@ -98,14 +98,9 @@ def start(config=None, foreground=False, run_once=False):
 #            try:
 #                master = config['master']
 #                if master == 'True':
-#                # we need to inject DVCS support HERE
-#                    
 #                    hg.update(config['hosts_path'])
 #                    daemon_log.debug('machine set to master')
 #            except AttributeError, error:
-#                # it is ok if this setting is not ON
-#                # but annoying if you see this INFO all over
-#                # your log files, so nothing to see here
 #                pass
             for repo in repos:
                 daemon_log.debug('looping over repos in db')
