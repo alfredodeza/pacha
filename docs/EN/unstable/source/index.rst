@@ -1,12 +1,9 @@
-.. pacha documentation master file, created by
-   sphinx-quickstart on Fri Aug 13 17:38:26 2010.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. pacha documentation master file
 
 pacha's documentation
 =================================
 
-
+.. image:: _static/pacha_light.jpg
 
 Contents:
 
@@ -14,24 +11,73 @@ Contents:
    :maxdepth: 2
 
    getting_started.rst
+   introduction.rst
    daemon.rst
    configuration.rst
+   rebuilding.rst
+   permissions.rst
    testing.rst
    changelog.rst
+   dont_do_that.rst 
+
+
+Next Release
+------------
+Import configuration files like::
+
+    config = imp.load_source('PachaConfigurationFile', 'foo.conf')
+
+Create a file structure. This should be in the Master. If we have a structure
+like::
+
+    /opt/pacha/hosts 
+
+Then we would add something like:
+
+Templates::
+    /opt/pacha/templates 
+
+Scripts::
+    /opt/pacha/scripts
+    /opt/pacha/scripts/pre 
+    /opt/pacha/scripts/post
+
+
+Nodes::
+    /opt/pacha/nodes
+
+Inside Nodes is were all the *action* occurs. Nodes should contain configuration 
+files that will orchestrate how a node needs to be configured. For example if
+we have srv1 and srv1 that are webservers, we would have ``/opt/pacha/nodes``
+like so::
+    /opt/pacha/nodes/srv1.conf
+    /opt/pacha/nodes/srv2.conf
+
+It should be allowed to have *meta* nodes configured. For example, if we want
+srv1 and srv2 to be configured at the same time, we do not want to run them
+individually so we go ahead and have a ``srvs.conf`` file that uses both config
+files::
+
+    # meta config file for multiple servers
+    include_nodes = ['srv1.conf', 'srv2.conf']
+
+Like Python lists, order would be preserved.    
+
+
+
+
+****************************************************************************************************
 
 Configuration Manager
 -----------------------
 Pacha was designed from the ground up to be a simple way to backup and manage software configuration files from single or multiple server instances across the network.
 
-Written entirely in Python, Pacha's approach is to easily deploy an instance and capture any changes via a version control, giving the System Administrator the ability to rollback and safe guard valid, working configurations and rebuild a host from those same configurations.
+Written entirely in Python (although you shouldn't care), Pacha's approach is to easily deploy an instance and capture any changes via a version control, giving the System Administrator the ability to rollback and safe guard valid, working configurations and rebuild a host from those same configurations.
 
-Coming next
-------------
-We have a few changes coming, make sure you check our WorkingOn page to check Pacha's next version features.
 
 Project Name
 -------------
-Pacha is the quechua word for Land a nice metaphor for the configuration land that lies in front of the System Administrator!
+Pacha is the quechua word for Land. A nice metaphor for the configuration land that lies in front of the System Administrator!
 
 Goals
 =======
@@ -60,12 +106,4 @@ Security
 -----------
 Transferring system configuration files, even across a trusted private network is a security risk. Pacha tackles this problem using SSH as the transport protocol. Although this may add a slight complexity to the framework, we encourage security and think this is the best shot for dealing with critical data related to your systems.
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
