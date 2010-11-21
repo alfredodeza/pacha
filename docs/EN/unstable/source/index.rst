@@ -36,6 +36,24 @@ Then we would add something like:
 Templates::
     /opt/pacha/templates 
 
+Inside templates, applications should be inside a directory and inside a give
+template name. For example, if we want to deal with Apache::
+
+    /opt/pacha/templates/apache 
+
+For a "default" tempalte::
+
+    /opt/pacha/templates/apache/default/httpd.conf 
+    /opt/pacha/templates/apache/default/ports.conf 
+
+For other type of templates in apache we just add another dir::
+
+    /opt/pacha/templates/apache/production/httpd.conf
+    /opt/pacha/templates/apache/production/ports.conf
+
+
+
+
 Scripts::
     /opt/pacha/scripts
     /opt/pacha/scripts/pre 
