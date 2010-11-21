@@ -22,11 +22,10 @@ Contents:
 
 
 Next Release
-------------
-Import configuration files like::
+============
 
-    config = imp.load_source('PachaConfigurationFile', 'foo.conf')
-
+Directory Structure
+---------------------
 Create a file structure. This should be in the Master. If we have a structure
 like::
 
