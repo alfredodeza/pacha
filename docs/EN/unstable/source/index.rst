@@ -41,7 +41,7 @@ template name. For example, if we want to deal with Apache::
 
     /opt/pacha/templates/apache 
 
-For a "default" tempalte::
+For a "default" template::
 
     /opt/pacha/templates/apache/default/httpd.conf 
     /opt/pacha/templates/apache/default/ports.conf 
@@ -52,12 +52,15 @@ For other type of templates in apache we just add another dir::
     /opt/pacha/templates/apache/production/ports.conf
 
 
-
-
 Scripts::
     /opt/pacha/scripts
     /opt/pacha/scripts/pre 
     /opt/pacha/scripts/post
+
+We follow the same convention of having directories for each script::
+
+    /opt/pacha/scripts/pre/install
+    /opt/pacha/scripts/pre/install/ubuntu_install_samba.sh 
 
 
 Nodes::
@@ -67,8 +70,8 @@ Inside Nodes is were all the *action* occurs. Nodes should contain configuration
 files that will orchestrate how a node needs to be configured. For example if
 we have srv1 and srv1 that are webservers, we would have ``/opt/pacha/nodes``
 like so::
-    /opt/pacha/nodes/srv1.conf
-    /opt/pacha/nodes/srv2.conf
+    /opt/pacha/nodes/srv1/srv1.conf 
+    /opt/pacha/nodes/srv2/srv2.conf
 
 It should be allowed to have *meta* nodes configured. For example, if we want
 srv1 and srv2 to be configured at the same time, we do not want to run them
@@ -80,7 +83,36 @@ files::
 
 Like Python lists, order would be preserved.    
 
+Interaction
+===========
 
+I want interaction to be DEAD SIMPLE. Something like this would be ideal:
+
+Pushing
+-------
+One simple command to push configuration to a node(s)::
+
+    pacha push node state 
+
+``node``: the name of the server we want to push (should exist)
+``state``: the type of state we want: production, test, default, foobar. This is closely
+related to the definitions we want in templates.
+
+So for example, if you have a node called *dhcp* and the state is called
+*production* you can push changes like so::
+
+    pacha push dhcp production 
+
+Pulling
+-------
+Pulling is initiated from a remote server that just booted::
+
+    pacha pull node state 
+
+Same description as above.
+
+NOTHING ELSE should be needed. Everything we need should be in those
+configuration files.
 
 
 ****************************************************************************************************
