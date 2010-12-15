@@ -1,0 +1,192 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Changelog &mdash; pacha v0.2.4 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pacha v0.2.4 documentation" href="index.html" />
+    <link rel="next" title="Don’t do that!" href="dont_do_that.html" />
+    <link rel="prev" title="Testing" href="testing.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dont_do_that.html" title="Don’t do that!"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="changelog">
+<span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2>0.2.4<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>Added &#8220;&#8211;daemon-run-once&#8221; that allows the daemon to run on the foreground one time and then exit.</li>
+<li>Added &#8220;&#8211;restore-db&#8221; that will pull the database from a master server</li>
+<li>Included a lot more tests for stuff that was missing like watch and watch single.</li>
+<li>Changed some attributes in __init__ that allows better argv handling and testing.</li>
+<li>Fixes a bug where the database was not tracked at all</li>
+<li>Adds a way to &#8220;auto-correct&#8221; certain things when there is a mismatch in hgrc on where/what username to use to push</li>
+<li>Pacha doesn&#8217;t need to parse the config file every single time it is run. We now have persistent configurations.</li>
+<li>Warning messages are now color coded (mostly yellowish.</li>
+<li>Pacha can now &#8220;take over&#8221; an exisiting repo. Useful when you have used pacha before or when wanting to push somewhere else.</li>
+<li>Fixes issue where &#8211;watch path was not absolute</li>
+<li>adds an except block to catch possible permission denied issues when updating</li>
+<li>Added PRE and POST hooks that get executed when rebuilding (FINALLY!)</li>
+<li>Simplified the way we ask input for rebuilding a host. Now you only need to pass in the hostname (since everything should be in the config file)</li>
+<li>Fixes unicode issue with Mercurial that would make it crash.</li>
+<li>Cleans up commented out code and unused imports.</li>
+<li>Removes Row factory, that was causing issues with Sqlite3</li>
+<li>Added Guachi for persistent configurations and mappings.</li>
+<li>Logging will now be OFF in the command line unless you pass the -v or &#8211;verbose flag.</li>
+<li>Removes the &#8216;&#8211;remove-config&#8217; option. If you want to override a config just add a new one.</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="id3">
+<h2>0.2.3<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>Better warning messsages that don&#8217;t allow you to make changes unless you add a config.</li>
+<li>Configuration defaults that fill in missing values</li>
+<li>&#8220;&#8211;daemon-foreground&#8221; allows anyone to run the daemon in the foreground (e.g. it doesn&#8217;t daemonize at all)</li>
+<li>All ConfigParse options are now within a class instead of a huge function.</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="id4">
+<h2>0.2.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>Changed installation type to work as a Python package via setup.py</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="id5">
+<h2>0.1.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>Users coming from versions 0.0.4 and older cannot upgrade to 0.1.0 with pacha &#8211;upgrade</li>
+<li>Added Sqlite3 that will effectively break on Python versions older than 2.5</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="id6">
+<h2>0.0.4<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>&#8211;upgrade has been rebuilt to grab the latest .tar.gz from the homepage instead of pulling changes via Mercurial.
+Some info about what is going on when you upgrade is now displayed.</li>
+<li>master = True If you are a Pacha user from any previous version, you will need to add the following line to pacha
+for your master server: master = True
+This will tell the daemon to run: hg update on your host repositories so you can always see the latests changes
+(when a server pushes changes, files do not get updated via mercurial).</li>
+<li>More tests have been added to Pacha which have triggered some re-coding at some of the libraries. It is always
+great to be able to test specific functionality of Pacha to make sure we have the right results.</li>
+<li>Faster Pacha! On most of the Mercurial calls Pacha was making on the backend, we were actually forking a
+subprocess to run hg. Speed has increased a lot since we are now calling and import modules straight from Mercurial.</li>
+</ul>
+</blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#id2">0.2.4</a></li>
+<li><a class="reference internal" href="#id3">0.2.3</a></li>
+<li><a class="reference internal" href="#id4">0.2.0</a></li>
+<li><a class="reference internal" href="#id5">0.1.0</a></li>
+<li><a class="reference internal" href="#id6">0.0.4</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="testing.html"
+                        title="previous chapter">Testing</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dont_do_that.html"
+                        title="next chapter">Don&#8217;t do that!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/changelog.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dont_do_that.html" title="Don’t do that!"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             >previous</a> |</li>
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Alfredo Deza.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

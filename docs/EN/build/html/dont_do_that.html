@@ -1,0 +1,138 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Don’t do that! &mdash; pacha v0.2.4 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pacha v0.2.4 documentation" href="index.html" />
+    <link rel="prev" title="Changelog" href="changelog.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="don-t-do-that">
+<span id="dont-do-that"></span><h1>Don&#8217;t do that!<a class="headerlink" href="#don-t-do-that" title="Permalink to this headline">¶</a></h1>
+<p>Some &#8220;best practices&#8221; that you should keep in mind, that would otherwise would cause you problems.</p>
+<div class="section" id="permissions">
+<h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
+<p>Pacha needs as much permissions as the files it is reading. That is, if you need to watch stuff inside of <tt class="docutils literal"><span class="pre">/root</span></tt>
+then you would need to have as much permissions as the <tt class="docutils literal"><span class="pre">root</span></tt> user.</p>
+</div>
+<div class="section" id="mixed-versions">
+<h2>Mixed Versions<a class="headerlink" href="#mixed-versions" title="Permalink to this headline">¶</a></h2>
+<p>We are in constant and heavy development, for the most part, that means that Pacha can make some internal changes that
+will not be compatible for older versions.</p>
+<p>If you have an environment that runs Pacha, have all the instances running the same version. If you are updating, make
+sure <strong>all</strong> your instances are updated as well.</p>
+</div>
+<div class="section" id="mixed-users">
+<h2>Mixed Users<a class="headerlink" href="#mixed-users" title="Permalink to this headline">¶</a></h2>
+<p>Pacha can run with different users with different permission levels. However, we do not encourage using it as a Master with
+an unpriviliged user. This will cause issues when trying to read files.</p>
+<p>We had someone report issues when trying to have a Single instance (Master/Slave in a single server) that would have certain
+files owned by <tt class="docutils literal"><span class="pre">root</span></tt> that would not be able to push to the unpriviliged user.</p>
+</div>
+<div class="section" id="about-complaints-and-feature-requests">
+<h2>About Complaints and Feature Requests<a class="headerlink" href="#about-complaints-and-feature-requests" title="Permalink to this headline">¶</a></h2>
+<p>It is OK to send me (Alfredo Deza) an email, but do not use it as a fast way to make me help you with your issue. The same
+goes to a feature request.</p>
+<p>I usually find it annoying to receive those kind of emails when there is an <a class="reference external" href="http://code.google.com/p/pacha/issues/entry">Issue Tracker</a>
+that works as a feature request tracker.</p>
+<p>Use it!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Don&#8217;t do that!</a><ul>
+<li><a class="reference internal" href="#permissions">Permissions</a></li>
+<li><a class="reference internal" href="#mixed-versions">Mixed Versions</a></li>
+<li><a class="reference internal" href="#mixed-users">Mixed Users</a></li>
+<li><a class="reference internal" href="#about-complaints-and-feature-requests">About Complaints and Feature Requests</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="changelog.html"
+                        title="previous chapter">Changelog</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/dont_do_that.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             >previous</a> |</li>
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Alfredo Deza.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

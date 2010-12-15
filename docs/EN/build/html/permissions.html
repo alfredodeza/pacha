@@ -1,0 +1,165 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Permissions &mdash; pacha v0.2.4 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pacha v0.2.4 documentation" href="index.html" />
+    <link rel="next" title="Testing" href="testing.html" />
+    <link rel="prev" title="Rebuilding" href="rebuilding.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="rebuilding.html" title="Rebuilding"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="permissions">
+<span id="id1"></span><h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
+<p>Pacha tracks all permissions related to files and directories that it tracks. This is
+where the tool starts to separate from the versioning engine.</p>
+<p>Usually, DVCS (Distributed Versioning Control Systems) do not track permissions, but
+since Pacha is able to rebuild hosts, it needed to be able to track granular permissions
+on files <strong>and</strong> directories.</p>
+<div class="section" id="what-is-tracked">
+<h2>What is tracked<a class="headerlink" href="#what-is-tracked" title="Permalink to this headline">¶</a></h2>
+<p>When you issue a <tt class="docutils literal"><span class="pre">--watch</span></tt> or <tt class="docutils literal"><span class="pre">--watch-single</span></tt> command option Pacha not only versions,
+commits, and pushes the files, but it also adds every bit of permissions related to every
+single file.</p>
+</div>
+<div class="section" id="rwx">
+<h2>rwx<a class="headerlink" href="#rwx" title="Permalink to this headline">¶</a></h2>
+<p>We track the sticky bit, what are the <tt class="docutils literal"><span class="pre">rwx</span></tt> permissions related
+to the owner, group and everyone else. This would allow us to match <strong>exactly</strong>
+the original permissions regardless of what changed when the files moved or where
+handled by the DVCS.</p>
+</div>
+<div class="section" id="ownership">
+<h2>Ownership<a class="headerlink" href="#ownership" title="Permalink to this headline">¶</a></h2>
+<p>Files and directories can have an owner and a group owner. In this case we track both.</p>
+<p>So if a file is owned by <tt class="docutils literal"><span class="pre">root</span></tt> and the group owner is <tt class="docutils literal"><span class="pre">admins</span></tt>, at the time of rebuilding
+both should be &#8220;applied&#8221; to the file.</p>
+</div>
+<div class="section" id="when-it-might-not-work">
+<h2>When it might not work<a class="headerlink" href="#when-it-might-not-work" title="Permalink to this headline">¶</a></h2>
+<p>There are certain ocassions where tracking or setting permissions might not work correctly. There
+are basically 2 scenarios where this would happen:</p>
+<blockquote>
+<ul class="simple">
+<li>Insuficcient rights to read the permissions</li>
+<li><tt class="docutils literal"><span class="pre">user</span></tt> or <tt class="docutils literal"><span class="pre">group</span></tt> does not exist in the host when rebuilding.</li>
+</ul>
+<p>The first scenario is simple, you try to watch a directory that is owned by a user that has a higher
+level of permissions and doesn&#8217;t allow you to properly read the files. Usually, Pacha would tell
+you it couldn&#8217;t read and version the files correctly, but in certain cases you might be allowed to
+push the files but not the metadata associated with them.</p>
+<p>The second case, would happen when rebuilding a host. If host-1 has a bunch of tracked files owned by
+<tt class="docutils literal"><span class="pre">admin-one</span></tt> and group owned by <tt class="docutils literal"><span class="pre">group-one</span></tt> and you try to rebuild a host where both the user and group
+do not exist, then Pacha would simply skip setting the permissions.</p>
+<p>If in that host, by some reason you had <tt class="docutils literal"><span class="pre">admin-two</span></tt> and <tt class="docutils literal"><span class="pre">group-two</span></tt> the ownership would still not be
+able to be applied.</p>
+<p>A way around this problem would be to use the <strong>pre</strong> and <strong>post</strong> hooks provided with Pacha.</p>
+</blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Permissions</a><ul>
+<li><a class="reference internal" href="#what-is-tracked">What is tracked</a></li>
+<li><a class="reference internal" href="#rwx">rwx</a></li>
+<li><a class="reference internal" href="#ownership">Ownership</a></li>
+<li><a class="reference internal" href="#when-it-might-not-work">When it might not work</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="rebuilding.html"
+                        title="previous chapter">Rebuilding</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="testing.html"
+                        title="next chapter">Testing</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/permissions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="rebuilding.html" title="Rebuilding"
+             >previous</a> |</li>
+        <li><a href="index.html">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Alfredo Deza.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,227 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pacha’s documentation &mdash; pacha v0.2.4 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pacha v0.2.4 documentation" href="#" />
+    <link rel="next" title="GettingStarted" href="getting_started.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="getting_started.html" title="GettingStarted"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pacha-s-documentation">
+<h1>pacha&#8217;s documentation<a class="headerlink" href="#pacha-s-documentation" title="Permalink to this headline">¶</a></h1>
+<img alt="_images/pacha_light.jpg" src="_images/pacha_light.jpg" />
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">GettingStarted</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#add-a-configuration-file">Add a configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#verify-username-in-hgrc">Verify username in HGRC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#master-slave-approach">Master Slave approach</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#tracking-configuration-files">Tracking Configuration Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#daemon">Daemon</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#about-version-differences">About version differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#operating-systems">Operating Systems</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="daemon.html">Daemonization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="daemon.html#foreground">Foreground</a></li>
+<li class="toctree-l2"><a class="reference internal" href="daemon.html#run-once">Run Once</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#config-file">Config File</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rebuilding.html">Rebuilding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rebuilding.html#prepare-the-new-server">Prepare the new server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rebuilding.html#a-crash-story">A crash story</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rebuilding.html#actual-rebuilding">Actual Rebuilding</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rebuilding.html#hooks">Hooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rebuilding.html#languages-supported">Languages Supported</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rebuilding.html#pre-hooks">Pre Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rebuilding.html#post-hooks">Post Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rebuilding.html#restrictions-in-hooks">Restrictions in Hooks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="permissions.html#what-is-tracked">What is tracked</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permissions.html#rwx">rwx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permissions.html#ownership">Ownership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="permissions.html#when-it-might-not-work">When it might not work</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#keys-and-ssh">Keys and SSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#install-first-then-test">Install first, then test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#running-your-tests">Running your tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.2.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id5">0.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id6">0.0.4</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dont_do_that.html">Don&#8217;t do that!</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dont_do_that.html#permissions">Permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dont_do_that.html#mixed-versions">Mixed Versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dont_do_that.html#mixed-users">Mixed Users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dont_do_that.html#about-complaints-and-feature-requests">About Complaints and Feature Requests</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="configuration-manager">
+<h2>Configuration Manager<a class="headerlink" href="#configuration-manager" title="Permalink to this headline">¶</a></h2>
+<p>Pacha was designed from the ground up to be a simple way to backup and manage software configuration files from single or multiple server instances across the network.</p>
+<p>Written entirely in Python (although you shouldn&#8217;t care), Pacha&#8217;s approach is to easily deploy an instance and capture any changes via a version control, giving the System Administrator the ability to rollback and safe guard valid, working configurations and rebuild a host from those same configurations.</p>
+</div>
+<div class="section" id="project-name">
+<h2>Project Name<a class="headerlink" href="#project-name" title="Permalink to this headline">¶</a></h2>
+<p>Pacha is the quechua word for Land. A nice metaphor for the configuration land that lies in front of the System Administrator!</p>
+</div>
+</div>
+<div class="section" id="goals">
+<h1>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="don-t-learn-another-language">
+<h2>Don&#8217;t learn another language<a class="headerlink" href="#don-t-learn-another-language" title="Permalink to this headline">¶</a></h2>
+<p>Other configuration frameworks tell you this, but are written in a language like Ruby and require you to extend,modify or adapt this writing Ruby. We don&#8217;t! It doesn&#8217;t matter that Pacha is written in Python. You do not need to know Python to make any changes to the software you want to deploy.</p>
+</div>
+<div class="section" id="easy-learn-curve">
+<h2>Easy learn curve<a class="headerlink" href="#easy-learn-curve" title="Permalink to this headline">¶</a></h2>
+<p>One main configuration file to manage the package to be installed and one directory where you can place any number of executable shell scripts to extend and modify your deployment according to your needs.</p>
+</div>
+<div class="section" id="versioned-configurations">
+<h2>Versioned Configurations<a class="headerlink" href="#versioned-configurations" title="Permalink to this headline">¶</a></h2>
+<p>Keep track of any changes done to a configuration file and rollback easily. We use Mercurial as our back-end but you do not need to manage it directly. Pacha can push changes immediately to any number of clients and get instant feedback.</p>
+</div>
+<div class="section" id="light">
+<h2>Light<a class="headerlink" href="#light" title="Permalink to this headline">¶</a></h2>
+<p>Deploy Pacha as a client, server, or standalone version. Either way, you get an extremely light, low memory tool that can communicate with your configuration files almost instantly.</p>
+</div>
+<div class="section" id="extend-and-conquer">
+<h2>Extend and Conquer<a class="headerlink" href="#extend-and-conquer" title="Permalink to this headline">¶</a></h2>
+<p>Forget about the &#8220;but this tool doesn&#8217;t do this&#8221;. We provide a full hook environment to plug in directly into Pacha so you can extend whatever need you have for your deployment.</p>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>Transferring system configuration files, even across a trusted private network is a security risk. Pacha tackles this problem using SSH as the transport protocol. Although this may add a slight complexity to the framework, we encourage security and think this is the best shot for dealing with critical data related to your systems.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pacha&#8217;s documentation</a><ul>
+<li><a class="reference internal" href="#configuration-manager">Configuration Manager</a></li>
+<li><a class="reference internal" href="#project-name">Project Name</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#goals">Goals</a><ul>
+<li><a class="reference internal" href="#don-t-learn-another-language">Don&#8217;t learn another language</a></li>
+<li><a class="reference internal" href="#easy-learn-curve">Easy learn curve</a></li>
+<li><a class="reference internal" href="#versioned-configurations">Versioned Configurations</a></li>
+<li><a class="reference internal" href="#light">Light</a></li>
+<li><a class="reference internal" href="#extend-and-conquer">Extend and Conquer</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="getting_started.html"
+                        title="next chapter">GettingStarted</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="getting_started.html" title="GettingStarted"
+             >next</a> |</li>
+        <li><a href="#">pacha v0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Alfredo Deza.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>
