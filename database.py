@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-from pacha.util         import get_db_file, get_db_dir
+from teja.util         import get_db_file, get_db_dir
 
 
 REPOS_TABLE = """CREATE TABLE IF NOT EXISTS repos(

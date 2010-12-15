@@ -13,32 +13,25 @@ YELLOW = '\033[93m'
 RED = '\033[91m'
 ENDS = '\033[0m'
 
-CONFIG_GONE = YELLOW+"""
-    +-----------------------------------------------------+
-    |                   ** WARNING **                     |
-    |                                                     |
-    |  The config file supplied does not exist. Try       |
-    |  adding a new valid path by running:                |
-    |                                                     |      
-    |    pacha --add-config /path/to/config               |
-    |                                                     | 
-    +-----------------------------------------------------+
-
-"""+ENDS
-
 
 WARNING = YELLOW+""" 
      +----------------------------------------------------+
-     |                 ** WARNING **                      |
+     |                 ** NOTICE **                       |
      |                                                    |
-     |  You have not set a configuration file for Pacha.  |
-     |  To add a configuration file, run:                 |
+     |  You have not set a config path for Teja.          |
+     |  To add a path to load your configs with run:      |
      |                                                    |
-     |    pacha --add-config /path/to/config              |
+     |    teja --config-path /path/to/config/dir          |
      |                                                    |
      +----------------------------------------------------+
 
 """+ENDS
+
+def sanitize_argv(argv):
+    """Make sure we have a clean argv for the test runners 
+    """
+    return argv[1:]
+    
 
 def run_command(std, cmd):
     """Runs a command via Popen"""
@@ -55,7 +48,7 @@ def get_db_file():
     # Fixes Database Absolute Location
     file_cwd =  path.abspath(__file__)
     file_dir = path.dirname(file_cwd)
-    db_file = file_dir+'/db/pacha.db'
+    db_file = file_dir+'/db/teja.db'
     return db_file 
 
 def get_db_dir():
