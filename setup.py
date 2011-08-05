@@ -10,7 +10,7 @@ setup(
     packages = ['pacha'],
     install_requires = [
         'supay==0.0.7', 
-        'guachi==0.0.5',
+        'guachi==0.0.6',
         'coima==0.0.2'],
     entry_points = {
         'console_scripts': [
