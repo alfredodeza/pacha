@@ -109,8 +109,10 @@ class Hg(object):
             try:
                 hgrc = open(self.path+'/.hg/hgrc', 'w')
                 hgrc.write('[paths]\n')
-                ssh_line = "default = ssh://%s@%s%s" % (self.conf['ssh_user'],
-                        self.conf['host'], self.dest_path)
+                ssh_line = "default = ssh://%s@%s:%s%s" % (self.conf['ssh_user'],
+                                    self.conf['host'],
+                                    self.conf.get('ssh_port', 22),
+                                    self.dest_path)
                 hgrc.write(ssh_line)
                 hgrc.close()
                 hg_log.debug("wrote hgrc in %s" % self.path)
@@ -159,9 +161,10 @@ class Hg(object):
         needs to be ouralled when --watch is passed, runs just one time
         """
         source = self.path
-        dest = 'ssh://%s@%s%s' % (self.conf['ssh_user'], 
+        dest = 'ssh://%s@%s:%s%s' % (self.conf['ssh_user'],
                 self.conf['host'],
-            self.dest_path)
+                self.conf.get('ssh_port', 22),
+                self.dest_path)
         hg_log.debug('destination command for clone: %s' % dest)
         try:
             commands.clone(ui.ui(), source, str(dest), pull=False, uncompressed=False, rev=False,
