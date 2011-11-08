@@ -3,6 +3,15 @@
 Changelog
 ==========
 
+0.2.7
+-----
+* Minor bug fix release: fixes issue31 where bad symlinks would make pacha
+  break
+
+0.2.6
+-----
+* Fixes bad ssh option being passed in (issue 30)
+
 0.2.5
 -------
  * Minor release
