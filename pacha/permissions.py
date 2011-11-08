@@ -59,6 +59,8 @@ class Tracker(object):
             for dirs in directories:
                 try:
                     absolute = os.path.join(root, dirs)
+                    if not os.path.exists(absolute):
+                        continue
                     metadata = Permissions(absolute)
                     rwx_log.debug("stat on subdir %s" % absolute)
                     if os.path.isdir(absolute):
@@ -73,6 +75,8 @@ class Tracker(object):
             for f in files:
                 try:
                     absolute = os.path.join(root, f)
+                    if not os.path.exists(absolute):
+                        continue
                     metadata = Permissions(absolute)
                     rwx_log.debug("stat on subdir %s" % absolute)
                     if os.path.isfile(absolute):
