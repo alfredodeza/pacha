@@ -266,7 +266,7 @@ to a file", std="err")
         parser = OptionParser(description="""
 A systems configuration management engine
     """
-        ,version='0.2.4')
+        ,version='0.2.7')
 
         parser.add_option('--config-values', action="store_true",
                 help="""Displays the current configuration values used""")
