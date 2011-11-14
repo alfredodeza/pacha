@@ -38,19 +38,19 @@ DB_FILE = get_db_file()
 DB_DIR = get_db_dir()
 
 
- 
+
 class PachaCommands(object):
-    """A lot of complicated options can happen with Pacha, so 
+    """A lot of complicated options can happen with Pacha, so
     it is easier if everything lives under a class rather than
     the widely used main()"""
 
-    def __init__(self, 
-            argv=None, 
-            test=False, 
-            parse=True, 
+    def __init__(self,
+            argv=None,
+            test=False,
+            parse=True,
             db=ConfigMapper(DB_FILE),
             db_file=DB_FILE):
-        self.db = db 
+        self.db = db
         self.db_file = db_file
         if argv is None:
             argv = sys.argv
@@ -83,9 +83,9 @@ class PachaCommands(object):
             self.db.set_config(config_file)
             return self.db.stored_config()
         elif not os.path.isfile(config_file) and len(conf.items()) > 3: # Meaning already parsed
-            print CONFIG_GONE 
+            print CONFIG_GONE
             return self.db.stored_config()
-        elif len(conf.items()) <= 1: # config might not be set 
+        elif len(conf.items()) <= 1: # config might not be set
             self.db.set_config(config_file)
             return self.db.stored_config()
         else:
@@ -121,7 +121,7 @@ class PachaCommands(object):
                 'debug': logging.DEBUG,
                'info': logging.INFO
                 }
-        
+
         level = levels.get(self.config['log_level'].lower())
         log_format = self.config['log_format']
         datefmt = self.config['log_datefmt']
@@ -139,7 +139,7 @@ class PachaCommands(object):
 
     def add_host(self, host):
         try:
-            new = Host(host=host, 
+            new = Host(host=host,
                     host_path=self.config['hosts_path'])
             created = new.create()
             if created:
@@ -147,29 +147,29 @@ class PachaCommands(object):
             else:
                 print "Host %s has been already created" % host
         except Exception, error:
-            print "Could not complete command: %s" % error 
+            print "Could not complete command: %s" % error
 
 
     def restore_db(self, hostname):
         """
         server  = user@server
-        host    = host to rebuild the database from (must exist in Master Pacha Server) 
-        hostname    = Host to be rebuilt 
+        host    = host to rebuild the database from (must exist in Master Pacha Server)
+        hostname    = Host to be rebuilt
         """
         server = "%s@%s" % (self.config['ssh_user'], self.config['host'])
         port = self.config['ssh_port']
         source = self.config['hosts_path']
- 
+
 
         print "SSH Connection: %-15s" % server
         print "SSH Port:       %-15s" % port
         print "Host to rebuild DB: %-15s" % hostname
-        
+
         try:
             confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
             run = rebuild.Rebuild(
                     server=server,
-                    hostname=hostname, 
+                    hostname=hostname,
                     source=source,
                     directory='db',
                     port=port)
@@ -181,11 +181,11 @@ class PachaCommands(object):
             sys.exit(0)
 
 
-    def watch(self, path):                
+    def watch(self, path):
         """
-        Inserts the directory into the database and syncs the contents to the 
+        Inserts the directory into the database and syncs the contents to the
         remote Pacha server.
-        At the end it also pushes the database to make sure we always have 
+        At the end it also pushes the database to make sure we always have
         the latest copy in.
         """
         if os.path.exists(path):
@@ -212,7 +212,7 @@ to a file", std="err")
         if os.path.isfile(s_file):
             sync = Sync(path=s_file)
             sync.single_file()
-            
+
             # permissions metadata
             meta = permissions.Tracker(path=s_file)
             meta.single_file()
@@ -234,23 +234,23 @@ to a file", std="err")
     def rebuild(self, hostname, directory=None):
         """
         server  = user@server
-        host    = host to rebuild from (must exist in Master Pacha Server) 
-        hostname    = Host to be rebuilt 
+        host    = host to rebuild from (must exist in Master Pacha Server)
+        hostname    = Host to be rebuilt
         """
         server = "%s@%s" % (self.config['ssh_user'], self.config['host'])
         port = self.config['ssh_port']
         source = self.config['hosts_path']
- 
+
 
         print "SSH Connection: %-15s" % server
         print "SSH Port:       %-15s" % port
         print "Host to rebuild: %-15s" % hostname
-        
+
         try:
             confirm = raw_input("Hit Enter to confirm or Ctrl-C to cancel")
             run = rebuild.Rebuild(
                     server=server,
-                    hostname=hostname, 
+                    hostname=hostname,
                     source=source,
                     directory=directory,
                     port=port)
@@ -279,13 +279,13 @@ A systems configuration management engine
  only meant for Pacha server""")
 
         parser.add_option('--watch', action="store_true",
-               help="Provide a path for Pacha to watch and keep track of")  
+               help="Provide a path for Pacha to watch and keep track of")
 
         parser.add_option('--watch-single',
                help="Provide a single file for Pacha to watch in a given\
  directory. Everything else in the directory will be ignored.\
  Also used to add more individual files to track within the same\
- directory (e.g. like tracking .vimrc in $HOME)") 
+ directory (e.g. like tracking .vimrc in $HOME)")
 
         parser.add_option('--verbose', '-v', action='store_true',
                 help="Enables verbosity in terminal")
@@ -334,9 +334,9 @@ You need to provide the hostname of the server where Pacha was running.")
         if options.add_config:
             self.add_config(options.add_config)
 
-        # important: only config options are allowed before 
-        # actually checking for valid conf files stored 
-        self.config = self.check_config()       
+        # important: only config options are allowed before
+        # actually checking for valid conf files stored
+        self.config = self.check_config()
 
         if options.config_values:
             self.config_values()
@@ -344,7 +344,7 @@ You need to provide the hostname of the server where Pacha was running.")
         # Cleanest way to show the help menu if no options are given
         if len(argv) == 1:
             parser.print_help()
-  
+
         # Deamon Stuff
         if options.daemon_start:
             self.set_logging(verbose=True)
@@ -378,7 +378,7 @@ You need to provide the hostname of the server where Pacha was running.")
             self.restore_db(options.restore_db)
 
         if options.watch:
-            # a hack to have ambiguous optparse behavior 
+            # a hack to have ambiguous optparse behavior
             if len(argv) is 2: #no path
                 path = os.getcwd()
             if len(argv) >=3: #with path
@@ -386,7 +386,7 @@ You need to provide the hostname of the server where Pacha was running.")
             self.watch(os.path.abspath(path))
 
         if options.watch_single:
-            abspath = os.path.abspath(options.watch_single) 
+            abspath = os.path.abspath(options.watch_single)
             self.watch_single(abspath)
 
         # Rebuilding Stuff
